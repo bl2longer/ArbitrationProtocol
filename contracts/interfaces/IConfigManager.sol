@@ -18,8 +18,6 @@ interface IConfigManager {
     // 仲裁人相关配置
     function setArbitrationFrozenPeriod(uint256 period) external;
     function getArbitrationFrozenPeriod() external view returns (uint256);
-    function setArbitratorCooldownPeriod(uint256 period) external;
-    function getArbitratorCooldownPeriod() external view returns (uint256);
     function setSystemFeeRate(uint256 rate) external;
     function getSystemFeeRate() external view returns (uint256);
     
@@ -30,7 +28,6 @@ interface IConfigManager {
     event ConfigUpdated(bytes32 indexed key, uint256 oldValue, uint256 newValue);
     event ArbitrationFrozenPeriodUpdated(uint256 oldPeriod, uint256 newPeriod);
     event ArbitrationTimeoutUpdated(uint256 oldTimeout, uint256 newTimeout);
-    event ArbitratorCooldownPeriodUpdated(uint256 oldPeriod, uint256 newPeriod);
     event SystemFeeRateUpdated(uint256 oldRate, uint256 newRate);
     event SystemRevenueAddressesUpdated(
         address oldEthAddress,

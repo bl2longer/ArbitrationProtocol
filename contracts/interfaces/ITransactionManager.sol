@@ -6,7 +6,7 @@ import "../libraries/DataTypes.sol";
 interface ITransactionManager {    
     // 登记交易
     function registerTransaction(
-        bytes32 txId,
+        bytes32 id,
         address arbitrator,
         uint256 deadline,
         address compensationReceiver
@@ -17,19 +17,19 @@ interface ITransactionManager {
     
     // 请求仲裁
     function requestArbitration(
-        bytes32 txId,
+        bytes32 id,
         bytes calldata btcTx,
         address timeoutCompensationReceiver
     ) external;
     
     // 提交仲裁结果
     function submitArbitration(
-        bytes32 txId,
-        bytes calldata signature
+        bytes32 id,
+        bytes32 btcTxId
     ) external;
     
     // 查询交易
-    function getTransaction(bytes32 txId) external view returns (DataTypes.Transaction memory);
+    function getTransaction(bytes32 id) external view returns (DataTypes.Transaction memory);
     
     function getTransaction(bytes calldata btcTx) external view returns (DataTypes.Transaction memory);
 

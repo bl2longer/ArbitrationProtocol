@@ -13,7 +13,7 @@ interface ICompensationManager {
 
     // 提交超时补偿申请
     function claimTimeoutCompensation(
-        bytes32 txId
+        bytes32 id
     ) external returns (bytes32 claimId);
     
     // 提交错误仲裁签名补偿申请
