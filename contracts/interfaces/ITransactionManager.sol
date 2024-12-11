@@ -4,31 +4,30 @@ pragma solidity ^0.8.20;
 import "../libraries/DataTypes.sol";
 
 interface ITransactionManager {    
-    // 登记交易
+    // Register transaction
     function registerTransaction(
-        bytes32 id,
         address arbitrator,
         uint256 deadline,
         address compensationReceiver
-    ) external payable returns (uint256 txId);
+    ) external payable returns (uint256 id);
     
-    // 完成交易
-    function completeTransaction(bytes32 txId) external;
+    // Complete transaction
+    function completeTransaction(bytes32 id) external;
     
-    // 请求仲裁
+    // Request arbitration
     function requestArbitration(
         bytes32 id,
         bytes calldata btcTx,
         address timeoutCompensationReceiver
     ) external;
     
-    // 提交仲裁结果
+    // Submit arbitration result
     function submitArbitration(
         bytes32 id,
-        bytes32 btcTxId
+        bytes calldata btcTxSignature
     ) external;
     
-    // 查询交易
+    // Query transaction
     function getTransaction(bytes32 id) external view returns (DataTypes.Transaction memory);
     
     function getTransaction(bytes calldata btcTx) external view returns (DataTypes.Transaction memory);

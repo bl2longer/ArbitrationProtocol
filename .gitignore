@@ -1,0 +1,30 @@
+# Dependencies
+node_modules
+package-lock.json
+
+# Hardhat
+artifacts
+cache
+typechain
+typechain-types
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+
+# Build
+dist
+build
+
+# Coverage
+coverage
+coverage.json
+
+# Logs
+*.log

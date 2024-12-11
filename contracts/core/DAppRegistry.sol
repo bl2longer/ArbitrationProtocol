@@ -1,99 +1,139 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/IDAppRegistry.sol";
 import "../libraries/DataTypes.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "../libraries/Errors.sol";
 
 /**
  * @title DAppRegistry
- * @notice DApp 注册表合约，管理所有接入仲裁协议的 DApp
+ * @notice Manages DApp registration and authorization in the BeLayer2 arbitration protocol
  */
 contract DAppRegistry is IDAppRegistry, Ownable {
-    // DApp 注册映射
-    mapping(address => bool) private registeredDapps;
+    // DApp status mapping
+    mapping(address => DataTypes.DAppStatus) private dappStatus;
     
-    // DApp 授权映射
-    mapping(address => bool) private authorizedDapps;
-    
-    // 修饰器：检查 DApp 是否已注册
-    modifier dappRegistered(address dapp) {
-        require(registeredDapps[dapp], "DAppNotRegistered");
-        _;
-    }
-    
-    // 修饰器：检查 DApp 是否未注册
-    modifier dappNotRegistered(address dapp) {
-        require(!registeredDapps[dapp], "DAppAlreadyRegistered");
-        _;
+    // DApp owner mapping
+    mapping(address => address) private dappOwner;
+
+    // DApp registration fee mapping
+    mapping(address => uint256) private dappFees;
+
+    // Registration fee amount
+    uint256 public constant REGISTRATION_FEE = 0.1 ether;
+
+    /**
+     * @notice Constructor to set initial owner
+     * @param initialOwner Initial owner of the contract
+     */
+    constructor(address initialOwner) Ownable(initialOwner) {}
+
+    /**
+     * @notice Register DApp
+     * @param dappContract DApp contract address
+     */
+    function registerDApp(address dappContract) external payable {
+        if (dappContract == address(0)) {
+            revert Errors.ZERO_ADDRESS();
+        }
+
+        if (dappStatus[dappContract] != DataTypes.DAppStatus.None) {
+            revert Errors.DAPP_ALREADY_REGISTERED();
+        }
+
+        if (msg.value < REGISTRATION_FEE) {
+            revert Errors.INSUFFICIENT_FEE();
+        }
+
+        dappStatus[dappContract] = DataTypes.DAppStatus.Pending;
+        dappOwner[dappContract] = msg.sender;
+        dappFees[dappContract] = msg.value;
+
+        emit DAppRegistered(dappContract, msg.sender);
     }
 
     /**
-     * @notice 注册新的 DApp
-     * @param dapp DApp 合约地址
-     * @param owner DApp 所有者地址
-     * @param minStake 最小质押要求
-     * @param arbitratorCount 所需仲裁人数量
+     * @notice Authorize DApp
+     * @param dapp DApp address
      */
-    function registerDApp(
-        address dapp,
-        address owner,
-        uint256 minStake,
-        uint256 arbitratorCount
-    ) external dappNotRegistered(dapp) returns (bool) {
-        require(dapp != address(0), "InvalidDAppAddress");
-        require(owner != address(0), "InvalidOwner");
-        require(minStake > 0, "InvalidMinStake");
-        require(arbitratorCount > 0, "InvalidArbitratorCount");
+    function authorizeDApp(address dapp) external onlyOwner {
+        if (dapp == address(0)) {
+            revert Errors.ZERO_ADDRESS();
+        }
 
-        registeredDapps[dapp] = true;
-        emit DAppRegistered(dapp, owner, minStake, arbitratorCount);
-        return true;
-    }
+        if (dappStatus[dapp] != DataTypes.DAppStatus.Pending) {
+            revert Errors.DAPP_NOT_REGISTERED();
+        }
 
-    /**
-     * @notice 授权 DApp
-     * @param dapp DApp 合约地址
-     */
-    function authorizeDApp(address dapp) 
-        external 
-        override 
-        onlyOwner 
-        dappRegistered(dapp) 
-    {
-        require(!authorizedDapps[dapp], "DAppAlreadyAuthorized");
-        authorizedDapps[dapp] = true;
+        dappStatus[dapp] = DataTypes.DAppStatus.Active;
+
         emit DAppAuthorized(dapp);
     }
 
     /**
-     * @notice 注销 DApp
-     * @param dapp DApp 合约地址
+     * @notice Deregister DApp
+     * @param dapp DApp address
      */
-    function deregisterDApp(address dapp) 
-        external 
-        override 
-        onlyOwner 
-        dappRegistered(dapp)
-    {
-        registeredDapps[dapp] = false;
-        authorizedDapps[dapp] = false;
+    function deregisterDApp(address dapp) external {
+        if (dapp == address(0)) {
+            revert Errors.ZERO_ADDRESS();
+        }
+
+        if (dappStatus[dapp] == DataTypes.DAppStatus.None) {
+            revert Errors.DAPP_NOT_REGISTERED();
+        }
+
+        if (msg.sender != dappOwner[dapp] && msg.sender != owner()) {
+            revert Errors.NOT_AUTHORIZED();
+        }
+
+        uint256 fee = dappFees[dapp];
+        dappFees[dapp] = 0;
+        dappStatus[dapp] = DataTypes.DAppStatus.Terminated;
+
+        // Return registration fee to DApp owner
+        if (fee > 0) {
+            (bool success, ) = dappOwner[dapp].call{value: fee}("");
+            if (!success) revert Errors.TRANSFER_FAILED();
+        }
+
         emit DAppDeregistered(dapp);
     }
 
     /**
-     * @notice 检查 DApp 是否已注册
-     * @param dapp DApp 合约地址
+     * @notice Check if DApp is registered
+     * @param dapp DApp address
+     * @return Returns true if DApp is registered, false otherwise
      */
     function isRegistered(address dapp) external view returns (bool) {
-        return registeredDapps[dapp];
+        return dappStatus[dapp] == DataTypes.DAppStatus.Pending;
     }
 
     /**
-     * @notice 检查 DApp 是否已授权
-     * @param dapp DApp 合约地址
+     * @notice Check if DApp is active (authorized)
+     * @param dapp DApp address
+     * @return Returns true if DApp is active, false otherwise
      */
-    function isAuthorized(address dapp) external view returns (bool) {
-        return authorizedDapps[dapp];
+    function isActiveDApp(address dapp) external view returns (bool) {
+        return dappStatus[dapp] == DataTypes.DAppStatus.Active;
+    }
+
+    /**
+     * @notice Get DApp owner
+     * @param dapp DApp address
+     * @return DApp owner address
+     */
+    function getDAppOwner(address dapp) external view returns (address) {
+        return dappOwner[dapp];
+    }
+
+    /**
+     * @notice Get DApp status
+     * @param dapp DApp address
+     * @return DApp status
+     */
+    function getDAppStatus(address dapp) external view returns (DataTypes.DAppStatus) {
+        return dappStatus[dapp];
     }
 }

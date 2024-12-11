@@ -2,6 +2,13 @@
 pragma solidity ^0.8.20;
 
 library DataTypes {
+    enum ArbitratorStatus {
+        Active,     // Arbitrator is available for new transactions
+        Working,    // Arbitrator is currently working on a transaction
+        Paused,     // Arbitrator is temporarily paused
+        Terminated  // Arbitrator has been terminated
+    }
+
     enum DAppStatus {
         None,
         Pending,
@@ -24,20 +31,20 @@ library DataTypes {
     }
 
     struct ArbitratorInfo {
-        address arbitrator;        // 仲裁人以太坊地址
-        uint256 currentFeeRate;    // 当前费率
-        uint256 pendingFeeRate;    // 待生效的新费率
-        bool isActive;
-        bytes32 activeTransactionId; // 当前进行中的交易ID
-        uint256 ethAmount;         // ETH质押数量
-        address erc20Token;        // ERC20代币地址
-        uint256 erc20Amount;       // ERC20质押数量
-        address nftContract;       // NFT合约地址
+        address arbitrator;        // Arbitrator Ethereum address
+        uint256 currentFeeRate;    // Current fee rate
+        uint256 pendingFeeRate;    // Pending new fee rate
+        ArbitratorStatus status;   // Arbitrator status
+        bytes32 activeTransactionId; // Current transaction ID
+        uint256 ethAmount;         // ETH stake amount
+        address erc20Token;        // ERC20 token address
+        uint256 erc20Amount;       // ERC20 stake amount
+        address nftContract;       // NFT contract address
         uint256[] nftTokenIds;     // NFT token IDs
-        address operator;          // 操作员地址
-        bytes operatorBtcPubKey;   // 比特币公钥
-        string operatorBtcAddress; // 比特币地址
-        uint256 lastArbitrationTime; // 最后一次仲裁时间
+        address operator;          // Operator address
+        bytes operatorBtcPubKey;   // Bitcoin public key
+        string operatorBtcAddress; // Bitcoin address
+        uint256 lastArbitrationTime; // Last arbitration time
     }
 
     struct Transaction {
@@ -45,12 +52,12 @@ library DataTypes {
         address arbitrator;
         uint256 startTime;
         uint256 deadline;
-        bytes btcTx;               // 待签名的比特币交易
+        bytes btcTx;               // Unsigned Bitcoin transaction
         TransactionStatus status;
         uint256 depositedFee;
-        bytes signature;           // 仲裁人提交的签名
-        address compensationReceiver;           // 错误签名补偿接收地址
-        address timeoutCompensationReceiver;    // 超时补偿接收地址
+        bytes signature;           // Arbitrator's signature
+        address compensationReceiver;           // Compensation receiver address
+        address timeoutCompensationReceiver;    // Timeout compensation receiver address
     }
 
     struct ArbitrationRequest {

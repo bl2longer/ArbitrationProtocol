@@ -2,34 +2,58 @@
 pragma solidity ^0.8.20;
 
 library Errors {
-    // 管理权限相关
-    error NotAdmin();
-    error NotAuthorized();
+    // Common errors
+    error ZERO_ADDRESS();
+    error NOT_AUTHORIZED();
+    error INVALID_PARAMETER();
+    error INSUFFICIENT_BALANCE();
+    error NOT_TRANSACTION_MANAGER();
+    error NOT_ARBITRATOR_MANAGER();
+    error NOT_CONFIG_MANAGER();
+    error NOT_DAPP_REGISTRY();
+    error NOT_INITIALIZED();
+    error ALREADY_INITIALIZED();
+    error INVALID_DURATION();
+    error LENGTH_MISMATCH();
     
-    // DApp相关
-    error AlreadyRegistered();
-    error NotRegistered();
-    error InvalidStatus();
+    // DApp related errors
+    error DAPP_ALREADY_REGISTERED();
+    error DAPP_NOT_REGISTERED();
+    error DAPP_NOT_ACTIVE();
+    error INVALID_DAPP_STATUS();
     
-    // 参数验证相关
-    error InvalidAddress();
-    error InvalidAmount();
-    error InvalidDuration();
-    error InvalidFeeRate();
+    // Transaction related errors
+    error TRANSACTION_NOT_FOUND();
+    error TRANSACTION_EXPIRED();
+    error INVALID_TRANSACTION_STATUS();
+    error INVALID_DEADLINE();
+    error INVALID_FEE();
+    error INSUFFICIENT_FEE();
+    error INVALID_TRANSACTION_ID();
     
-    // 交易相关
-    error TransactionNotFound();
-    error TransactionExpired();
-    error ArbitrationNotRequested();
+    // Arbitrator related errors
+    error ARBITRATOR_ALREADY_REGISTERED();
+    error ARBITRATOR_NOT_REGISTERED();
+    error ARBITRATOR_NOT_ACTIVE();
+    error ARBITRATOR_ALREADY_WORKING();
+    error ARBITRATOR_NOT_WORKING();
+    error INVALID_ARBITRATOR_STATUS();
+    error INVALID_STAKE_AMOUNT();
+    error INVALID_FEE_RATE();
+    error STAKE_STILL_LOCKED();
+    error INSUFFICIENT_STAKE();
+    error STAKE_EXCEEDS_MAX();
+    error INVALID_TOKEN();
+    error INVALID_TOKEN_ID();
+    error TRANSFER_FAILED();
     
-    // 仲裁人相关
-    error ArbitratorNotActive();
-    error UnauthorizedOperator();
-    error StakeStillLocked();
-    error InsufficientStake();
+    // Config related errors
+    error INVALID_CONFIG_KEY();
+    error INVALID_CONFIG_VALUE();
+    error CONFIG_NOT_FOUND();
     
-    // 补偿相关
-    error ClaimNotValid();
-    error AlreadyClaimed();
-    error InsufficientBalance();
+    // Operator related errors
+    error OPERATOR_ALREADY_REGISTERED();
+    error OPERATOR_NOT_REGISTERED();
+    error OPERATOR_NOT_AUTHORIZED();
 }

@@ -1,179 +1,229 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "../interfaces/IConfigManager.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "../interfaces/IConfigManager.sol";
+import "../libraries/Errors.sol";
+import "../libraries/DataTypes.sol";
 
 /**
  * @title ConfigManager
- * @notice 配置管理合约，负责管理协议的各项参数配置
+ * @notice Manages configuration parameters for the BeLayer2 arbitration protocol
  */
 contract ConfigManager is IConfigManager, Ownable {
-    // 仲裁冻结期（秒）
-    uint256 private arbitrationFrozenPeriod;
-    
-    // 仲裁超时时间（秒）
-    uint256 private arbitrationTimeout;
+    // Configuration storage
+    mapping(bytes32 => uint256) private configs;
 
-    // 仲裁人冷却期（秒）
-    uint256 private arbitratorCooldownPeriod;
-
-    // 系统费率（基点，1% = 100）
-    uint256 private systemFeeRate;
-
-    // 系统收款地址
-    struct SystemRevenueAddresses {
-        address ethAddress;
-        bytes btcPubKey;
-        string btcAddress;
-    }
-    SystemRevenueAddresses private systemRevenueAddresses;
+    // Config keys
+    bytes32 public constant MIN_STAKE = keccak256("MIN_STAKE");
+    bytes32 public constant MAX_STAKE = keccak256("MAX_STAKE");
+    bytes32 public constant MIN_STAKE_LOCKED_TIME = keccak256("MIN_STAKE_LOCKED_TIME");
+    bytes32 public constant MIN_TRANSACTION_DURATION = keccak256("MIN_TRANSACTION_DURATION");
+    bytes32 public constant MAX_TRANSACTION_DURATION = keccak256("MAX_TRANSACTION_DURATION");
+    bytes32 public constant TRANSACTION_MIN_FEE_RATE = keccak256("TRANSACTION_MIN_FEE_RATE");
+    bytes32 public constant ARBITRATION_TIMEOUT = keccak256("ARBITRATION_TIMEOUT");
+    bytes32 public constant ARBITRATION_FROZEN_PERIOD = keccak256("arbitrationFrozenPeriod");
+    bytes32 public constant SYSTEM_FEE_RATE = keccak256("systemFeeRate");
+    bytes32 public constant SYSTEM_FEE_COLLECTOR = keccak256("SYSTEM_FEE_COLLECTOR");
 
     /**
-     * @notice 构造函数，初始化默认配置
+     * @notice Constructor to set initial owner
+     * @param initialOwner Initial owner of the contract
      */
-    constructor(
-        uint256 _arbitrationFrozenPeriod,
-        uint256 _arbitrationTimeout,
-        uint256 _arbitratorCooldownPeriod,
-        uint256 _systemFeeRate,
-        address _systemEthAddress,
-        bytes memory _systemBtcPubKey,
-        string memory _systemBtcAddress
-    ) {
-        require(_arbitrationFrozenPeriod > 0, "InvalidFrozenPeriod");
-        require(_arbitrationTimeout > 0, "InvalidTimeout");
-        require(_arbitratorCooldownPeriod > 0, "InvalidCooldownPeriod");
-        require(_systemFeeRate <= 10000, "InvalidFeeRate"); // 最大100%
-        require(_systemEthAddress != address(0), "InvalidEthAddress");
-
-        arbitrationFrozenPeriod = _arbitrationFrozenPeriod;
-        arbitrationTimeout = _arbitrationTimeout;
-        arbitratorCooldownPeriod = _arbitratorCooldownPeriod;
-        systemFeeRate = _systemFeeRate;
-        
-        systemRevenueAddresses = SystemRevenueAddresses({
-            ethAddress: _systemEthAddress,
-            btcPubKey: _systemBtcPubKey,
-            btcAddress: _systemBtcAddress
-        });
+    constructor(address initialOwner) Ownable(initialOwner) {
+        // Set default values
+        configs[MIN_STAKE] = 1 ether;
+        configs[MAX_STAKE] = 100 ether;
+        configs[MIN_STAKE_LOCKED_TIME] = 7 days;
+        configs[MIN_TRANSACTION_DURATION] = 1 days;
+        configs[MAX_TRANSACTION_DURATION] = 30 days;
+        configs[TRANSACTION_MIN_FEE_RATE] = 100; // 1% in basis points
+        configs[ARBITRATION_TIMEOUT] = 24 hours;
+        configs[ARBITRATION_FROZEN_PERIOD] = 30 minutes;
+        configs[SYSTEM_FEE_RATE] = 500; // 5% in basis points
     }
 
     /**
-     * @notice 设置仲裁冻结期
-     * @param period 新的冻结期（秒）
+     * @notice Set minimum stake amount
+     * @param amount Minimum stake amount in wei
      */
-    function setArbitrationFrozenPeriod(uint256 period) external override onlyOwner {
-        require(period > 0, "InvalidPeriod");
-        uint256 oldPeriod = arbitrationFrozenPeriod;
-        arbitrationFrozenPeriod = period;
-        emit ArbitrationFrozenPeriodUpdated(oldPeriod, period);
+    function setMinStake(uint256 amount) external onlyOwner {
+        if (amount >= configs[MAX_STAKE]) revert("MIN_STAKE_EXCEEDS_MAX");
+        uint256 oldValue = configs[MIN_STAKE];
+        configs[MIN_STAKE] = amount;
+        emit ConfigUpdated(MIN_STAKE, oldValue, amount);
     }
 
     /**
-     * @notice 获取仲裁冻结期
+     * @notice Set maximum stake amount
+     * @param amount Maximum stake amount in wei
      */
-    function getArbitrationFrozenPeriod() external view override returns (uint256) {
-        return arbitrationFrozenPeriod;
+    function setMaxStake(uint256 amount) external onlyOwner {
+        if (amount <= configs[MIN_STAKE]) revert("MAX_STAKE_BELOW_MIN");
+        uint256 oldValue = configs[MAX_STAKE];
+        configs[MAX_STAKE] = amount;
+        emit ConfigUpdated(MAX_STAKE, oldValue, amount);
     }
 
     /**
-     * @notice 设置仲裁超时时间
-     * @param timeout 新的超时时间（秒）
+     * @notice Set minimum stake locked time
+     * @param time Minimum time in seconds
      */
-    function setArbitrationTimeout(uint256 timeout) external override onlyOwner {
-        require(timeout > 0, "InvalidTimeout");
-        uint256 oldTimeout = arbitrationTimeout;
-        arbitrationTimeout = timeout;
-        emit ArbitrationTimeoutUpdated(oldTimeout, timeout);
+    function setMinStakeLockedTime(uint256 time) external onlyOwner {
+        uint256 oldValue = configs[MIN_STAKE_LOCKED_TIME];
+        configs[MIN_STAKE_LOCKED_TIME] = time;
+        emit ConfigUpdated(MIN_STAKE_LOCKED_TIME, oldValue, time);
     }
 
     /**
-     * @notice 获取仲裁超时时间
+     * @notice Set minimum transaction duration
+     * @param duration Minimum duration in seconds
      */
-    function getArbitrationTimeout() external view override returns (uint256) {
-        return arbitrationTimeout;
+    function setMinTransactionDuration(uint256 duration) external onlyOwner {
+        if (duration >= configs[MAX_TRANSACTION_DURATION]) revert("MIN_DURATION_EXCEEDS_MAX");
+        uint256 oldValue = configs[MIN_TRANSACTION_DURATION];
+        configs[MIN_TRANSACTION_DURATION] = duration;
+        emit ConfigUpdated(MIN_TRANSACTION_DURATION, oldValue, duration);
     }
 
     /**
-     * @notice 设置仲裁人冷却期
-     * @param period 新的冷却期（秒）
+     * @notice Set maximum transaction duration
+     * @param duration Maximum duration in seconds
      */
-    function setArbitratorCooldownPeriod(uint256 period) external override onlyOwner {
-        require(period > 0, "InvalidPeriod");
-        uint256 oldPeriod = arbitratorCooldownPeriod;
-        arbitratorCooldownPeriod = period;
-        emit ArbitratorCooldownPeriodUpdated(oldPeriod, period);
+    function setMaxTransactionDuration(uint256 duration) external onlyOwner {
+        if (duration <= configs[MIN_TRANSACTION_DURATION]) revert("MAX_DURATION_BELOW_MIN");
+        uint256 oldValue = configs[MAX_TRANSACTION_DURATION];
+        configs[MAX_TRANSACTION_DURATION] = duration;
+        emit ConfigUpdated(MAX_TRANSACTION_DURATION, oldValue, duration);
     }
 
     /**
-     * @notice 获取仲裁人冷却期
+     * @notice Set transaction minimum fee rate
+     * @param rate Minimum fee rate in basis points
      */
-    function getArbitratorCooldownPeriod() external view override returns (uint256) {
-        return arbitratorCooldownPeriod;
+    function setTransactionMinFeeRate(uint256 rate) external onlyOwner {
+        uint256 oldValue = configs[TRANSACTION_MIN_FEE_RATE];
+        configs[TRANSACTION_MIN_FEE_RATE] = rate;
+        emit ConfigUpdated(TRANSACTION_MIN_FEE_RATE, oldValue, rate);
     }
 
     /**
-     * @notice 设置系统费率
-     * @param rate 新的费率（基点，1% = 100）
+     * @notice Set arbitration timeout
+     * @param timeout Timeout duration in seconds
+     */
+    function setArbitrationTimeout(uint256 timeout) external onlyOwner {
+        uint256 oldValue = configs[ARBITRATION_TIMEOUT];
+        configs[ARBITRATION_TIMEOUT] = timeout;
+        emit ArbitrationTimeoutUpdated(oldValue, timeout);
+    }
+
+    /**
+     * @notice Set arbitration frozen period
+     * @param period Frozen period in seconds
+     */
+    function setArbitrationFrozenPeriod(uint256 period) external onlyOwner {
+        uint256 oldValue = configs[ARBITRATION_FROZEN_PERIOD];
+        configs[ARBITRATION_FROZEN_PERIOD] = period;
+        emit ArbitrationFrozenPeriodUpdated(oldValue, period);
+    }
+
+    /**
+     * @notice Set system fee rate
+     * @param rate Fee rate in basis points
      */
     function setSystemFeeRate(uint256 rate) external override onlyOwner {
-        require(rate <= 10000, "InvalidFeeRate"); // 最大100%
-        uint256 oldRate = systemFeeRate;
-        systemFeeRate = rate;
-        emit SystemFeeRateUpdated(oldRate, rate);
+        uint256 oldValue = configs[SYSTEM_FEE_RATE];
+        configs[SYSTEM_FEE_RATE] = rate;
+        emit SystemFeeRateUpdated(oldValue, rate);
     }
 
     /**
-     * @notice 获取系统费率
+     * @notice Set system fee collector
+     * @param collector Address of the system fee collector
+     */
+    function setSystemFeeCollector(address collector) external override onlyOwner {
+        if (collector == address(0)) revert Errors.ZERO_ADDRESS();
+        uint256 oldValue = configs[SYSTEM_FEE_COLLECTOR];
+        configs[SYSTEM_FEE_COLLECTOR] = uint256(uint160(collector));
+        emit ConfigUpdated(SYSTEM_FEE_COLLECTOR, oldValue, uint256(uint160(collector)));
+    }
+
+    /**
+     * @notice Set multiple configs at once
+     * @param keys Array of config keys
+     * @param values Array of config values
+     */
+    function setConfigs(bytes32[] calldata keys, uint256[] calldata values) external onlyOwner {
+        if (keys.length != values.length) revert Errors.LENGTH_MISMATCH();
+        
+        for (uint256 i = 0; i < keys.length; i++) {
+            uint256 oldValue = configs[keys[i]];
+            configs[keys[i]] = values[i];
+            emit ConfigUpdated(keys[i], oldValue, values[i]);
+        }
+    }
+
+    /**
+     * @notice Get a specific config value
+     * @param key Config key
+     * @return uint256 Config value
+     */
+    function getConfig(bytes32 key) external view returns (uint256) {
+        return configs[key];
+    }
+
+    /**
+     * @notice Get all config keys and values
+     * @return keys Array of config keys
+     * @return values Array of config values
+     */
+    function getAllConfigs() external view returns (bytes32[] memory keys, uint256[] memory values) {
+        keys = new bytes32[](10);
+        values = new uint256[](10);
+
+        keys[0] = MIN_STAKE;
+        keys[1] = MAX_STAKE;
+        keys[2] = MIN_STAKE_LOCKED_TIME;
+        keys[3] = MIN_TRANSACTION_DURATION;
+        keys[4] = MAX_TRANSACTION_DURATION;
+        keys[5] = TRANSACTION_MIN_FEE_RATE;
+        keys[6] = ARBITRATION_TIMEOUT;
+        keys[7] = ARBITRATION_FROZEN_PERIOD;
+        keys[8] = SYSTEM_FEE_RATE;
+        keys[9] = SYSTEM_FEE_COLLECTOR;
+
+        for (uint256 i = 0; i < keys.length; i++) {
+            values[i] = configs[keys[i]];
+        }
+
+        return (keys, values);
+    }
+
+    /**
+     * @notice Get arbitration frozen period
+     * @return Frozen period in seconds
+     */
+    function getArbitrationFrozenPeriod() external view override returns (uint256) {
+        return configs[ARBITRATION_FROZEN_PERIOD];
+    }
+
+    /**
+     * @notice Get system fee rate
+     * @return Fee rate (base 10000)
      */
     function getSystemFeeRate() external view override returns (uint256) {
-        return systemFeeRate;
+        return configs[SYSTEM_FEE_RATE];
     }
 
     /**
-     * @notice 设置系统收款地址
-     * @param ethAddress 以太坊收款地址
-     * @param btcPubKey 比特币公钥
-     * @param btcAddress 比特币收款地址
+     * @notice Get system fee collector address
+     * @return Address of the system fee collector
      */
-    function setSystemRevenueAddresses(
-        address ethAddress,
-        bytes calldata btcPubKey,
-        string calldata btcAddress
-    ) external override onlyOwner {
-        require(ethAddress != address(0), "InvalidEthAddress");
-        
-        SystemRevenueAddresses memory oldAddresses = systemRevenueAddresses;
-        
-        systemRevenueAddresses = SystemRevenueAddresses({
-            ethAddress: ethAddress,
-            btcPubKey: btcPubKey,
-            btcAddress: btcAddress
-        });
-
-        emit SystemRevenueAddressesUpdated(
-            oldAddresses.ethAddress,
-            ethAddress,
-            oldAddresses.btcPubKey,
-            btcPubKey,
-            oldAddresses.btcAddress,
-            btcAddress
-        );
-    }
-
-    /**
-     * @notice 获取系统收款地址
-     */
-    function getSystemRevenueAddresses() external view override returns (
-        address ethAddress,
-        bytes memory btcPubKey,
-        string memory btcAddress
-    ) {
-        return (
-            systemRevenueAddresses.ethAddress,
-            systemRevenueAddresses.btcPubKey,
-            systemRevenueAddresses.btcAddress
-        );
+    function getSystemFeeCollector() external view returns (address) {
+        uint256 collector = configs[SYSTEM_FEE_COLLECTOR];
+        if (collector == 0) {
+            return owner();  // Default to contract owner if not set
+        }
+        return address(uint160(collector));
     }
 }
