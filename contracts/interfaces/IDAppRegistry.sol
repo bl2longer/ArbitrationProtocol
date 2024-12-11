@@ -5,14 +5,14 @@ import "../libraries/DataTypes.sol";
 
 interface IDAppRegistry {
     /**
-     * @notice Registration fee amount
+     * @notice Registration fee amount (10 ETH)
      */
     function REGISTRATION_FEE() external view returns (uint256);
 
     /**
      * @notice Register DApp
      * @param dappContract DApp contract address
-     * @dev Requires payment of REGISTRATION_FEE in ETH
+     * @dev Requires payment of REGISTRATION_FEE (10 ETH) which will be sent to system fee collector
      */
     function registerDApp(address dappContract) external payable;
 
@@ -25,7 +25,7 @@ interface IDAppRegistry {
     /**
      * @notice Deregister DApp
      * @param dapp DApp address
-     * @dev Set DApp status to Terminated and refunds the registration fee to the DApp owner
+     * @dev Sets DApp status to Terminated. Registration fee is not refunded.
      */
     function deregisterDApp(address dapp) external;
 

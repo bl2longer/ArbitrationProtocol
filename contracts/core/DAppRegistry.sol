@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/IDAppRegistry.sol";
+import "../interfaces/IConfigManager.sol";
 import "../libraries/DataTypes.sol";
 import "../libraries/Errors.sol";
 
@@ -17,17 +18,26 @@ contract DAppRegistry is IDAppRegistry, Ownable {
     // DApp owner mapping
     mapping(address => address) private dappOwner;
 
-    // DApp registration fee mapping
-    mapping(address => uint256) private dappFees;
-
     // Registration fee amount
-    uint256 public constant REGISTRATION_FEE = 0.1 ether;
+    uint256 public constant REGISTRATION_FEE = 10 ether;
+
+    // Config manager reference
+    IConfigManager public immutable configManager;
 
     /**
-     * @notice Constructor to set initial owner
+     * @notice Constructor to set initial owner and config manager
+     * @param _configManager Address of the config manager contract
      * @param initialOwner Initial owner of the contract
      */
-    constructor(address initialOwner) Ownable(initialOwner) {}
+    constructor(
+        address _configManager,
+        address initialOwner
+    ) Ownable(initialOwner) {
+        if (_configManager == address(0)) {
+            revert Errors.ZERO_ADDRESS();
+        }
+        configManager = IConfigManager(_configManager);
+    }
 
     /**
      * @notice Register DApp
@@ -42,13 +52,19 @@ contract DAppRegistry is IDAppRegistry, Ownable {
             revert Errors.DAPP_ALREADY_REGISTERED();
         }
 
-        if (msg.value < REGISTRATION_FEE) {
+        if (msg.value != REGISTRATION_FEE) {
             revert Errors.INSUFFICIENT_FEE();
         }
 
+        // Get system fee collector address from config manager
+        address feeCollector = configManager.getSystemFeeCollector();
+        
+        // Transfer registration fee to system fee collector
+        (bool success, ) = feeCollector.call{value: msg.value}("");
+        if (!success) revert Errors.TRANSFER_FAILED();
+
         dappStatus[dappContract] = DataTypes.DAppStatus.Pending;
         dappOwner[dappContract] = msg.sender;
-        dappFees[dappContract] = msg.value;
 
         emit DAppRegistered(dappContract, msg.sender);
     }
@@ -88,15 +104,7 @@ contract DAppRegistry is IDAppRegistry, Ownable {
             revert Errors.NOT_AUTHORIZED();
         }
 
-        uint256 fee = dappFees[dapp];
-        dappFees[dapp] = 0;
         dappStatus[dapp] = DataTypes.DAppStatus.Terminated;
-
-        // Return registration fee to DApp owner
-        if (fee > 0) {
-            (bool success, ) = dappOwner[dapp].call{value: fee}("");
-            if (!success) revert Errors.TRANSFER_FAILED();
-        }
 
         emit DAppDeregistered(dapp);
     }
