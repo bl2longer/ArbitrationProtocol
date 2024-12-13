@@ -83,4 +83,6 @@ library Errors {
     error NO_COMPENSATION_AVAILABLE();
     error INSUFFICIENT_SYSTEM_FEE();
     error TRANSACTION_NOT_COMPLETED();
+    error EMPTY_TOKEN_IDS();
+    error INVALID_NFT_CONTRACT();
 }

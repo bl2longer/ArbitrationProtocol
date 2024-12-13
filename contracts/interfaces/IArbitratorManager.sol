@@ -6,6 +6,7 @@ import "../libraries/DataTypes.sol";
 interface IArbitratorManager {
     // Staking operations
     function stakeETH() external payable;
+    function stakeNFT(uint256[] calldata tokenIds) external;
     function unstake() external;  // Withdraw all staked assets
 
     // Set operator information
@@ -57,13 +58,9 @@ interface IArbitratorManager {
 
     // Query interfaces
     function getArbitratorInfo(address arbitrator) external view returns (DataTypes.ArbitratorInfo memory);
-
-    /**
-     * @notice Get the available stake amount of an arbitrator
-     * @param arbitrator The address of the arbitrator
-     * @return The stake amount in wei
-     */
+    function isActiveArbitrator(address arbitrator) external view returns (bool);
     function getAvailableStake(address arbitrator) external view returns (uint256);
+    function getTotalNFTStakeValue(address arbitrator) external view returns (uint256);
 
     /**
      * @notice Check if the given operator address is the operator of the arbitrator
@@ -86,13 +83,6 @@ interface IArbitratorManager {
      * @return True if the arbitrator is paused, false otherwise
      */
     function isPaused(address arbitrator) external view returns (bool);
-
-    /**
-     * @notice Check if an arbitrator is active and meets minimum stake requirements
-     * @param arbitrator The address of the arbitrator to check
-     * @return True if the arbitrator is active and has sufficient stake
-     */
-    function isActiveArbitrator(address arbitrator) external view returns (bool);
     
     // Events
     event ArbitratorStatusChanged(address indexed arbitrator, DataTypes.ArbitratorStatus status);

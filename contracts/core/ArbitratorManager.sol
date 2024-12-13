@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/IArbitratorManager.sol";
+import "../interfaces/IBNFTInfo.sol";
 import "./ConfigManager.sol";
 import "../libraries/DataTypes.sol";
 import "../libraries/Errors.sol";
@@ -32,6 +33,10 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
     // Config manager reference for system parameters
     ConfigManager private immutable configManager;
     
+    // NFT contract reference
+    IERC721 public nftContract;
+    IBNFTInfo public nftInfo;
+
     // Mapping of arbitrator addresses to their information
     mapping(address => DataTypes.ArbitratorInfo) private arbitrators;
     
@@ -70,12 +75,20 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
      * @notice Initializes the contract with config manager
      * @param _configManager Address of the ConfigManager contract
      * @param initialOwner Initial owner of the contract
+     * @param _nftContract Address of the NFT contract
+     * @param _nftInfo Address of the NFT info contract
      * @dev Config manager provides system-wide parameters like minimum stake
      */
-    constructor(address _configManager, address initialOwner) Ownable(initialOwner) {
+    constructor(address _configManager, address initialOwner, address _nftContract, address _nftInfo) Ownable(initialOwner) {
         if (_configManager == address(0)) 
             revert Errors.ZERO_ADDRESS();
+        if (_nftContract == address(0))
+            revert Errors.ZERO_ADDRESS();
+        if (_nftInfo == address(0))
+            revert Errors.ZERO_ADDRESS();
         configManager = ConfigManager(_configManager);
+        nftContract = IERC721(_nftContract);
+        nftInfo = IBNFTInfo(_nftInfo);
     }
 
     /**
@@ -96,28 +109,69 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
     }
 
     /**
-     * @notice Allows arbitrators to stake ETH
-     * @dev First-time stakers must meet minimum stake requirement
-     * Additional stakes can be any amount
+     * @notice Stake ETH as collateral
      */
     function stakeETH() external payable override {
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
+        if (arbitrator.arbitrator == address(0)) revert Errors.ARBITRATOR_NOT_REGISTERED();
+
+        // Calculate total NFT value
+        uint256 totalNftValue = getTotalNFTStakeValue(msg.sender);
+
+        // Update ETH amount and calculate total stake
+        uint256 newEthAmount = arbitrator.ethAmount + msg.value;
+        arbitrator.ethAmount = newEthAmount;
+        uint256 totalStakeValue = newEthAmount + totalNftValue;
+
+        // Check total stake is within limits
+        uint256 minStake = configManager.getConfig(configManager.MIN_STAKE());
+        uint256 maxStake = configManager.getConfig(configManager.MAX_STAKE());
         
-        // First-time stake must meet minimum requirement
-        if (arbitrator.ethAmount == 0) {
-            if (msg.value < configManager.getConfig(configManager.MIN_STAKE())) {
-                revert Errors.INSUFFICIENT_STAKE();
+        if (totalStakeValue < minStake) revert Errors.INSUFFICIENT_STAKE();
+        if (totalStakeValue > maxStake) revert Errors.STAKE_EXCEEDS_MAX();
+
+        emit StakeAdded(msg.sender, address(0), msg.value);
+    }
+
+    /**
+     * @notice Allows arbitrators to stake NFTs
+     * @param tokenIds Array of NFT token IDs to stake
+     */
+    function stakeNFT(uint256[] calldata tokenIds) external override {
+        if (tokenIds.length == 0) revert Errors.EMPTY_TOKEN_IDS();
+
+        DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
+        if (arbitrator.arbitrator == address(0)) revert Errors.ARBITRATOR_NOT_REGISTERED();
+
+        // Calculate total ETH value of NFTs
+        uint256 totalNftValue = 0;
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            (,BNFTVoteInfo memory info) = nftInfo.getNftInfo(tokenIds[i]);
+            for (uint256 j = 0; j < info.infos.length; j++) {
+                totalNftValue += info.infos[j].votes;
             }
+
+            // Transfer NFT to contract
+            nftContract.transferFrom(msg.sender, address(this), tokenIds[i]);
+            arbitrator.nftTokenIds.push(tokenIds[i]);
         }
 
-        // Check if total stake would exceed maximum
-        uint256 newTotalStake = arbitrator.ethAmount + msg.value;
-        if (newTotalStake > configManager.getConfig(configManager.MAX_STAKE())) {
-            revert Errors.STAKE_EXCEEDS_MAX();
-        }
+        // Check total stake (ETH + NFT) is within limits
+        uint256 totalStakeValue = totalNftValue + arbitrator.ethAmount;
+        uint256 minStake = configManager.getConfig(configManager.MIN_STAKE());
+        uint256 maxStake = configManager.getConfig(configManager.MAX_STAKE());
         
-        arbitrator.ethAmount = newTotalStake;
-        emit StakeAdded(msg.sender, zeroAddress, msg.value);
+        if (totalStakeValue < minStake) revert Errors.INSUFFICIENT_STAKE();
+        if (totalStakeValue > maxStake) revert Errors.STAKE_EXCEEDS_MAX();
+
+        // Set NFT contract address if not set
+        if (arbitrator.nftContract == address(0)) {
+            arbitrator.nftContract = address(nftContract);
+        } else if (arbitrator.nftContract != address(nftContract)) {
+            revert Errors.INVALID_NFT_CONTRACT();
+        }
+
+        emit StakeAdded(msg.sender, address(nftContract), totalNftValue);
     }
 
     /**
@@ -127,13 +181,28 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
      */
     function unstake() external override notWorking {
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
-        require(arbitrator.ethAmount > 0, "NoStake");
+        require(arbitrator.ethAmount > 0 || arbitrator.nftTokenIds.length > 0, "NoStake");
         
         uint256 amount = arbitrator.ethAmount;
         arbitrator.ethAmount = 0;
         
-        (bool success, ) = msg.sender.call{value: amount}("");
-        require(success, "TransferFailed");
+        // Transfer NFTs back to arbitrator if any
+        if (arbitrator.nftContract != address(0) && arbitrator.nftTokenIds.length > 0) {
+            for (uint256 i = 0; i < arbitrator.nftTokenIds.length; i++) {
+                nftContract.transferFrom(
+                    address(this),
+                    msg.sender,
+                    arbitrator.nftTokenIds[i]
+                );
+            }
+            arbitrator.nftTokenIds = new uint256[](0);
+            arbitrator.nftContract = address(0);
+        }
+
+        if (amount > 0) {
+            (bool success, ) = msg.sender.call{value: amount}("");
+            require(success, "TransferFailed");
+        }
         
         emit StakeWithdrawn(msg.sender, zeroAddress, amount);
     }
@@ -242,7 +311,7 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
     }
 
     /**
-     * @notice Checks if an arbitrator is active and properly staked
+     * @notice Check if an arbitrator is active and meets minimum stake requirement
      * @param arbitratorAddress Address of the arbitrator to check
      * @return bool True if arbitrator is active and meets minimum stake
      */
@@ -253,17 +322,24 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
         returns (bool) 
     {
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[arbitratorAddress];
-        return arbitrator.status == DataTypes.ArbitratorStatus.Active &&
-            arbitrator.ethAmount >= configManager.getConfig(configManager.MIN_STAKE());
+        if (arbitrator.status != DataTypes.ArbitratorStatus.Active) {
+            return false;
+        }
+
+        uint256 totalNftValue = getTotalNFTStakeValue(arbitratorAddress);
+        uint256 totalStakeValue = arbitrator.ethAmount + totalNftValue;
+        return totalStakeValue >= configManager.getConfig(configManager.MIN_STAKE());
     }
 
     /**
-     * @notice Retrieves available stake for an arbitrator
+     * @notice Get available stake amount for an arbitrator
      * @param arbitrator Address of the arbitrator
-     * @return uint256 Available stake amount
+     * @return uint256 Available stake amount (ETH + NFT value)
      */
-    function getAvailableStake(address arbitrator) external view returns (uint256) {
-        return arbitrators[arbitrator].ethAmount;
+    function getAvailableStake(address arbitrator) external view override returns (uint256) {
+        DataTypes.ArbitratorInfo storage info = arbitrators[arbitrator];
+        uint256 totalNftValue = getTotalNFTStakeValue(arbitrator);
+        return info.ethAmount + totalNftValue;
     }
 
     /**
@@ -375,5 +451,25 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
         }
 
         emit ArbitratorStatusChanged(arbitrator, DataTypes.ArbitratorStatus.Terminated);
+    }
+
+    /**
+     * @notice Calculate total stake value in NFTs
+     * @param arbitrator Address of the arbitrator
+     * @return Total stake NFT value in ETH
+     */
+    function getTotalNFTStakeValue(address arbitrator) public view returns (uint256) {
+        DataTypes.ArbitratorInfo storage arbiInfo = arbitrators[arbitrator];
+        uint256 totalValue = 0;
+
+        // Add NFT values
+        for (uint256 i = 0; i < arbiInfo.nftTokenIds.length; i++) {
+            (,BNFTVoteInfo memory info) = nftInfo.getNftInfo(arbiInfo.nftTokenIds[i]);
+            for (uint256 j = 0; j < info.infos.length; j++) {
+                totalValue += info.infos[j].votes;
+            }
+        }
+
+        return totalValue;
     }
 }

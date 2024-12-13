@@ -7,6 +7,7 @@ import "../interfaces/ITransactionManager.sol";
 import "../interfaces/IConfigManager.sol";
 import "../interfaces/IArbitratorManager.sol";
 import "../libraries/Errors.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract CompensationManager is ICompensationManager {
 
@@ -21,7 +22,10 @@ contract CompensationManager is ICompensationManager {
     struct CompensationClaim {
         address dapp;
         address arbitrator;
-        uint256 amount;
+        uint256 ethAmount;
+        address nftContract;
+        uint256[] nftTokenIds;
+        uint256 totalAmount;
         bool withdrawn;
         CompensationType claimType;
     }
@@ -51,12 +55,11 @@ contract CompensationManager is ICompensationManager {
         bytes32 evidence
     ) external override returns (bytes32 claimId) {
         // Get ZK verification details
-        (bytes memory rawData, bytes memory pubKey, bytes32 txHash, bytes memory signature, bool verified) = zkService.getZkVerification(evidence);
+        (bytes memory rawData, bytes memory pubKey, bytes32 txHash, , bool verified) = zkService.getZkVerification(evidence);
         
         if (rawData.length == 0) revert Errors.EMPTY_RAW_DATA();
         if (pubKey.length == 0) revert Errors.EMPTY_PUBLIC_KEY();
         if (txHash == bytes32(0)) revert Errors.EMPTY_HASH();
-        if (signature.length == 0) revert Errors.EMPTY_SIGNATURE();
         if (!verified) revert Errors.INVALID_ZK_PROOF();
 
         // Check if transaction exists
@@ -80,7 +83,10 @@ contract CompensationManager is ICompensationManager {
         claims[claimId] = CompensationClaim({
             dapp: msg.sender,
             arbitrator: arbitrator,
-            amount: stakeAmount,
+            ethAmount: stakeAmount,
+            nftContract: arbitratorInfo.nftContract,
+            nftTokenIds: arbitratorInfo.nftTokenIds,
+            totalAmount: arbitratorManager.getAvailableStake(arbitrator),
             withdrawn: false,
             claimType: CompensationType.IllegalSignature
         });
@@ -111,7 +117,10 @@ contract CompensationManager is ICompensationManager {
         claims[claimId] = CompensationClaim({
             dapp: msg.sender,
             arbitrator: transaction.arbitrator,
-            amount: stakeAmount,
+            ethAmount: stakeAmount,
+            nftContract: arbitratorInfo.nftContract,
+            nftTokenIds: arbitratorInfo.nftTokenIds,
+            totalAmount: arbitratorManager.getAvailableStake(transaction.arbitrator),
             withdrawn: false,
             claimType: CompensationType.Timeout
         });
@@ -156,7 +165,10 @@ contract CompensationManager is ICompensationManager {
         claims[claimId] = CompensationClaim({
             dapp: msg.sender,
             arbitrator: transaction.arbitrator,
-            amount: stakeAmount,
+            ethAmount: stakeAmount,
+            nftContract: arbitratorInfo.nftContract,
+            nftTokenIds: arbitratorInfo.nftTokenIds,
+            totalAmount: arbitratorManager.getAvailableStake(transaction.arbitrator),
             withdrawn: false,
             claimType: CompensationType.FailedArbitration
         });
@@ -185,7 +197,10 @@ contract CompensationManager is ICompensationManager {
         claims[claimId] = CompensationClaim({
             dapp: transaction.dapp,
             arbitrator: transaction.arbitrator,
-            amount: arbitratorFee,
+            ethAmount: arbitratorFee,
+            nftContract: address(0),
+            nftTokenIds: new uint256[](0),
+            totalAmount: arbitratorFee,
             withdrawn: true,
             claimType: CompensationType.ArbitratorFee
         });
@@ -197,18 +212,25 @@ contract CompensationManager is ICompensationManager {
     function withdrawCompensation(bytes32 claimId) external override payable {
         CompensationClaim storage claim = claims[claimId];
         if (claim.withdrawn) revert Errors.COMPENSATION_WITHDRAWN();
-        if (claim.amount == 0) revert Errors.NO_COMPENSATION_AVAILABLE();
+        if (claim.ethAmount == 0 && claim.nftTokenIds.length == 0) revert Errors.NO_COMPENSATION_AVAILABLE();
 
         uint256 systemFeeRate = configManager.getSystemCompensationFeeRate();
-        uint256 systemFee = claim.amount * systemFeeRate / 10000;
+        uint256 systemFee = claim.totalAmount * systemFeeRate / 10000;
         if (msg.value < systemFee) revert Errors.INSUFFICIENT_SYSTEM_FEE();
 
-        uint256 ethAmount = claim.amount;
+        uint256 ethAmount = claim.ethAmount;
         // Mark as withdrawn
         claim.withdrawn = true;
-        claim.amount = 0;
+        if (claim.ethAmount > 0) {
+            claim.ethAmount = 0;
+            (bool success, ) = claim.dapp.call{value: ethAmount}("");
+            require(success, "TransferFailed");
+        }
 
-        payable(claim.dapp).transfer(ethAmount);
+        // Transfer NFT compensation
+        for (uint256 i = 0; i < claim.nftTokenIds.length; i++) {
+            IERC721(claim.nftContract).transferFrom(address(this), msg.sender, claim.nftTokenIds[i]);
+        }
 
         // Transfer system fee to fee collector
         address payable feeCollector = payable(address(uint160(configManager.getSystemFeeCollector())));
@@ -216,7 +238,8 @@ contract CompensationManager is ICompensationManager {
 
         // Refund excess payment
         if (msg.value > systemFee) {
-            payable(msg.sender).transfer(msg.value - systemFee);
+            (bool success, ) = msg.sender.call{value: msg.value - systemFee}("");
+            require(success, "TransferFailed");
         }
 
         emit CompensationWithdrawn(claimId);
@@ -227,6 +250,6 @@ contract CompensationManager is ICompensationManager {
         if (claim.withdrawn) {
             return 0;
         }
-        return claim.amount;
+        return claim.totalAmount;
     }
 }
