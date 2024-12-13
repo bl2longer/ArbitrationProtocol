@@ -48,6 +48,13 @@ interface IArbitratorManager {
      */
     function releaseArbitrator(address arbitrator, bytes32 transactionId) external;
 
+    /**
+     * @notice Terminate an arbitrator and clear their stake
+     * @dev Only callable by authorized compensation manager
+     * @param arbitrator The address of the arbitrator to terminate
+     */
+    function terminateArbitratorWithSlash(address arbitrator) external;
+
     // Query interfaces
     function getArbitratorInfo(address arbitrator) external view returns (DataTypes.ArbitratorInfo memory);
 
@@ -89,7 +96,7 @@ interface IArbitratorManager {
     
     // Events
     event ArbitratorStatusChanged(address indexed arbitrator, DataTypes.ArbitratorStatus status);
-    event Initialized(address indexed transactionManager);
+    event Initialized(address indexed transactionManager, address indexed compensationManager);
     event StakeAdded(
         address indexed arbitrator, 
         address indexed assetAddress,  // 0x0 for ETH

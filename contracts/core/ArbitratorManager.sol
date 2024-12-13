@@ -7,6 +7,7 @@ import "../interfaces/IArbitratorManager.sol";
 import "./ConfigManager.sol";
 import "../libraries/DataTypes.sol";
 import "../libraries/Errors.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 /**
  * @title ArbitratorManager
@@ -36,6 +37,7 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
     
     // State variables
     address public transactionManager;
+    address public compensationManager;
     bool private initialized;
     
     /**
@@ -56,6 +58,14 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
         _;
     }
 
+    modifier onlyCompensationManager() {
+        if (msg.sender != compensationManager) 
+            revert Errors.NOT_COMPENSATION_MANAGER();
+        if (!initialized)
+            revert Errors.NOT_INITIALIZED();
+        _;
+    }
+
     /**
      * @notice Initializes the contract with config manager
      * @param _configManager Address of the ConfigManager contract
@@ -71,15 +81,18 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
     /**
      * @notice Initialize the contract with transaction manager address
      * @param _transactionManager Address of the TransactionManager contract
+     * @param _compensationManager Address of the CompensationManager contract
      */
-    function initialize(address _transactionManager) external onlyOwner {
+    function initialize(address _transactionManager, address _compensationManager) external onlyOwner {
         if (initialized) revert Errors.ALREADY_INITIALIZED();
         if (_transactionManager == address(0)) revert Errors.ZERO_ADDRESS();
+        if (_compensationManager == address(0)) revert Errors.ZERO_ADDRESS();
         
         transactionManager = _transactionManager;
+        compensationManager = _compensationManager;
         initialized = true;
         
-        emit Initialized(_transactionManager);
+        emit Initialized(_transactionManager, _compensationManager);
     }
 
     /**
@@ -327,5 +340,40 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
         arbitratorInfo.activeTransactionId = bytes32(0);
         
         emit ArbitratorStatusChanged(arbitrator, DataTypes.ArbitratorStatus.Active);
+    }
+
+    /**
+     * @notice Terminate an arbitrator and clear their stake
+     * @dev Only callable by compensation manager, transfers all stake to compensation manager
+     * @param arbitrator The address of the arbitrator to terminate
+     */
+    function terminateArbitratorWithSlash(address arbitrator) external override onlyCompensationManager {
+        DataTypes.ArbitratorInfo storage info = arbitrators[arbitrator];
+        if (info.arbitrator == address(0)) revert Errors.ARBITRATOR_NOT_REGISTERED();
+
+        // Set status to terminated
+        info.status = DataTypes.ArbitratorStatus.Terminated;
+        
+        // Transfer ETH stake to compensation manager
+        uint256 ethAmount = info.ethAmount;
+        if (ethAmount > 0) {
+            info.ethAmount = 0;
+            (bool success, ) = compensationManager.call{value: ethAmount}("");
+            if (!success) revert Errors.TRANSFER_FAILED();
+        }
+
+        // Transfer NFTs to compensation manager if any
+        if (info.nftContract != address(0) && info.nftTokenIds.length > 0) {
+            for (uint256 i = 0; i < info.nftTokenIds.length; i++) {
+                IERC721(info.nftContract).transferFrom(
+                    address(this),
+                    compensationManager,
+                    info.nftTokenIds[i]
+                );
+            }
+            info.nftTokenIds = new uint256[](0);
+        }
+
+        emit ArbitratorStatusChanged(arbitrator, DataTypes.ArbitratorStatus.Terminated);
     }
 }

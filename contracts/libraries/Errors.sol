@@ -30,6 +30,7 @@ library Errors {
     error INVALID_FEE();
     error INSUFFICIENT_FEE();
     error INVALID_TRANSACTION_ID();
+    error INVALID_BTC_TX();
     
     // Arbitrator related errors
     error ARBITRATOR_ALREADY_REGISTERED();
@@ -56,4 +57,30 @@ library Errors {
     error OPERATOR_ALREADY_REGISTERED();
     error OPERATOR_NOT_REGISTERED();
     error OPERATOR_NOT_AUTHORIZED();
+    error NOT_COMPENSATION_MANAGER();
+
+    // Compensation related errors
+    error EMPTY_RAW_DATA();
+    error EMPTY_PUBLIC_KEY();
+    error EMPTY_HASH();
+    error EMPTY_SIGNATURE();
+    error EMPTY_OPERATOR_PUBLIC_KEY();
+    error INVALID_ZK_PROOF();
+    error TRANSACTION_EXISTS();
+    error PUBLIC_KEY_MISMATCH();
+    error BTC_TRANSACTION_MISMATCH();
+    error NO_STAKE_AVAILABLE();
+    error NOT_TRANSACTION_OWNER();
+    error NOT_TRANSACTION_ARBITRATOR();
+    error TRANSACTION_COMPLETED();
+    error DEADLINE_NOT_REACHED();
+    error SIGNATURE_ALREADY_SUBMITTED();
+    error SIGNATURE_NOT_SUBMITTED();
+    error SIGNATURE_MISMATCH();
+    error STILL_IN_FROZEN_PERIOD();
+    error NO_FEE_AVAILABLE();
+    error COMPENSATION_WITHDRAWN();
+    error NO_COMPENSATION_AVAILABLE();
+    error INSUFFICIENT_SYSTEM_FEE();
+    error TRANSACTION_NOT_COMPLETED();
 }

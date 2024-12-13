@@ -24,6 +24,7 @@ contract ConfigManager is IConfigManager, Ownable {
     bytes32 public constant ARBITRATION_TIMEOUT = keccak256("ARBITRATION_TIMEOUT");
     bytes32 public constant ARBITRATION_FROZEN_PERIOD = keccak256("arbitrationFrozenPeriod");
     bytes32 public constant SYSTEM_FEE_RATE = keccak256("systemFeeRate");
+    bytes32 public constant SYSTEM_COMPENSATION_FEE_RATE = keccak256("SYSTEM_COMPENSATION_FEE_RATE");
     bytes32 public constant SYSTEM_FEE_COLLECTOR = keccak256("SYSTEM_FEE_COLLECTOR");
 
     /**
@@ -41,6 +42,7 @@ contract ConfigManager is IConfigManager, Ownable {
         configs[ARBITRATION_TIMEOUT] = 24 hours;
         configs[ARBITRATION_FROZEN_PERIOD] = 30 minutes;
         configs[SYSTEM_FEE_RATE] = 500; // 5% in basis points
+        configs[SYSTEM_COMPENSATION_FEE_RATE] = 200; // 2% in basis points
     }
 
     /**
@@ -114,7 +116,7 @@ contract ConfigManager is IConfigManager, Ownable {
     function setArbitrationTimeout(uint256 timeout) external onlyOwner {
         uint256 oldValue = configs[ARBITRATION_TIMEOUT];
         configs[ARBITRATION_TIMEOUT] = timeout;
-        emit ArbitrationTimeoutUpdated(oldValue, timeout);
+        emit ConfigUpdated(ARBITRATION_TIMEOUT, oldValue, timeout);
     }
 
     /**
@@ -124,7 +126,7 @@ contract ConfigManager is IConfigManager, Ownable {
     function setArbitrationFrozenPeriod(uint256 period) external onlyOwner {
         uint256 oldValue = configs[ARBITRATION_FROZEN_PERIOD];
         configs[ARBITRATION_FROZEN_PERIOD] = period;
-        emit ArbitrationFrozenPeriodUpdated(oldValue, period);
+        emit ConfigUpdated(ARBITRATION_FROZEN_PERIOD, oldValue, period);
     }
 
     /**
@@ -134,7 +136,17 @@ contract ConfigManager is IConfigManager, Ownable {
     function setSystemFeeRate(uint256 rate) external override onlyOwner {
         uint256 oldValue = configs[SYSTEM_FEE_RATE];
         configs[SYSTEM_FEE_RATE] = rate;
-        emit SystemFeeRateUpdated(oldValue, rate);
+        emit ConfigUpdated(SYSTEM_FEE_RATE, oldValue, rate);
+    }
+
+    /**
+     * @notice Set system compensation fee rate
+     * @param rate New system compensation fee rate in basis points
+     */
+    function setSystemCompensationFeeRate(uint256 rate) external override onlyOwner {
+        uint256 oldValue = configs[SYSTEM_COMPENSATION_FEE_RATE];
+        configs[SYSTEM_COMPENSATION_FEE_RATE] = rate;
+        emit ConfigUpdated(SYSTEM_COMPENSATION_FEE_RATE, oldValue, rate);
     }
 
     /**
@@ -178,8 +190,8 @@ contract ConfigManager is IConfigManager, Ownable {
      * @return values Array of config values
      */
     function getAllConfigs() external view returns (bytes32[] memory keys, uint256[] memory values) {
-        keys = new bytes32[](10);
-        values = new uint256[](10);
+        keys = new bytes32[](11);
+        values = new uint256[](11);
 
         keys[0] = MIN_STAKE;
         keys[1] = MAX_STAKE;
@@ -190,7 +202,8 @@ contract ConfigManager is IConfigManager, Ownable {
         keys[6] = ARBITRATION_TIMEOUT;
         keys[7] = ARBITRATION_FROZEN_PERIOD;
         keys[8] = SYSTEM_FEE_RATE;
-        keys[9] = SYSTEM_FEE_COLLECTOR;
+        keys[9] = SYSTEM_COMPENSATION_FEE_RATE;
+        keys[10] = SYSTEM_FEE_COLLECTOR;
 
         for (uint256 i = 0; i < keys.length; i++) {
             values[i] = configs[keys[i]];
@@ -213,6 +226,14 @@ contract ConfigManager is IConfigManager, Ownable {
      */
     function getSystemFeeRate() external view override returns (uint256) {
         return configs[SYSTEM_FEE_RATE];
+    }
+
+    /**
+     * @notice Get system compensation fee rate
+     * @return System compensation fee rate in basis points
+     */
+    function getSystemCompensationFeeRate() external view override returns (uint256) {
+        return configs[SYSTEM_COMPENSATION_FEE_RATE];
     }
 
     /**

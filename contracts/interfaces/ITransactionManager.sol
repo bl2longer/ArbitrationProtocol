@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 import "../libraries/DataTypes.sol";
 
-interface ITransactionManager {    
+interface ITransactionManager {   
     // Register transaction
     function registerTransaction(
         address arbitrator,
@@ -28,9 +28,21 @@ interface ITransactionManager {
     ) external;
     
     // Query transaction
-    function getTransaction(bytes32 id) external view returns (DataTypes.Transaction memory);
-    
-    function getTransaction(bytes calldata btcTx) external view returns (DataTypes.Transaction memory);
+    function getTransactionById(bytes32 id) external view returns (DataTypes.Transaction memory);
+    function getTransaction(bytes32 txHash) external view returns (DataTypes.Transaction memory);
+
+    function txHashToId(bytes32 txHash) external view returns (bytes32);
+
+    /**
+     * @notice Transfer arbitration fee to arbitrator and system fee address
+     * @dev Only callable by compensation manager
+     * @param id Transaction ID
+     * @return arbitratorFee The fee amount for arbitrator
+     * @return systemFee The fee amount for system
+     */
+    function transferArbitrationFee(
+        bytes32 id
+    ) external returns (uint256 arbitratorFee, uint256 systemFee);
 
     event TransactionRegistered(address indexed dapp, bytes32 indexed txId);
     event TransactionCompleted(address indexed dapp, bytes32 indexed txId);

@@ -10,6 +10,7 @@ import "../interfaces/IConfigManager.sol";
 import "../core/ConfigManager.sol";
 import "../libraries/DataTypes.sol";
 import "../libraries/Errors.sol";
+import "../libraries/BTCUtils.sol";
 
 /**
  * @title TransactionManager
@@ -26,8 +27,18 @@ contract TransactionManager is ITransactionManager, ReentrancyGuard, Ownable {
     ConfigManager public immutable configManager;
 
     // Transaction storage
-    mapping(bytes32 => DataTypes.Transaction) private transactions;
+    mapping(bytes32 => DataTypes.Transaction) public transactions;
+    mapping(bytes32 => bytes32) public txHashToId;
     uint256 private _transactionIdCounter;
+
+    // State variables
+    address public compensationManager;
+    bool private initialized;
+
+    modifier onlyCompensationManager() {
+        if (msg.sender != compensationManager) revert Errors.NOT_COMPENSATION_MANAGER();
+        _;
+    }
 
     // Events
     event TransactionRegistered(bytes32 indexed id, address indexed dapp, address indexed arbitrator);
@@ -57,6 +68,20 @@ contract TransactionManager is ITransactionManager, ReentrancyGuard, Ownable {
         arbitratorManager = IArbitratorManager(_arbitratorManager);
         dappRegistry = IDAppRegistry(_dappRegistry);
         configManager = ConfigManager(_configManager);
+    }
+
+    /**
+     * @notice Initialize the contract
+     * @param _compensationManager Address of the compensation manager contract
+     */
+    function initialize(
+        address _compensationManager
+    ) external onlyOwner {
+        if (initialized) revert Errors.ALREADY_INITIALIZED();
+        if (_compensationManager == address(0)) revert Errors.ZERO_ADDRESS();
+
+        compensationManager = _compensationManager;
+        initialized = true;
     }
 
     /**
@@ -128,6 +153,7 @@ contract TransactionManager is ITransactionManager, ReentrancyGuard, Ownable {
             status: DataTypes.TransactionStatus.Active,
             btcTx: new bytes(0),
             signature: new bytes(0),
+            btcTxHash: bytes32(0),
             compensationReceiver: compensationReceiver,
             timeoutCompensationReceiver: compensationReceiver
         });
@@ -151,6 +177,10 @@ contract TransactionManager is ITransactionManager, ReentrancyGuard, Ownable {
             revert Errors.NOT_AUTHORIZED();
         }
 
+        _completeTransaction(id, transaction);
+    }
+
+    function _completeTransaction(bytes32 id, DataTypes.Transaction storage transaction) internal returns(uint256, uint256) {
         // Get arbitrator info and calculate duration-based fee
         DataTypes.ArbitratorInfo memory arbitratorInfo = arbitratorManager.getArbitratorInfo(transaction.arbitrator);
         uint256 duration = block.timestamp - transaction.startTime;
@@ -181,6 +211,8 @@ contract TransactionManager is ITransactionManager, ReentrancyGuard, Ownable {
 
         transaction.status = DataTypes.TransactionStatus.Completed;
         emit TransactionCompleted(id);
+
+        return (finalArbitratorFee, systemFee);
     }
 
     /**
@@ -193,7 +225,7 @@ contract TransactionManager is ITransactionManager, ReentrancyGuard, Ownable {
         bytes32 id,
         bytes calldata btcTx,
         address timeoutCompensationReceiver
-    ) external nonReentrant {
+    ) external override nonReentrant {
         if (timeoutCompensationReceiver == address(0)) {
             revert Errors.ZERO_ADDRESS();
         }
@@ -208,11 +240,22 @@ contract TransactionManager is ITransactionManager, ReentrancyGuard, Ownable {
             revert Errors.NOT_AUTHORIZED();
         }
 
+        // Parse and validate Bitcoin transaction
+        BTCUtils.BTCTransaction memory parsedTx = BTCUtils.parseBTCTransaction(btcTx);
+
+        // Calculate transaction hash with empty input scripts
+        bytes memory serializedTx = BTCUtils.serializeBTCTransaction(parsedTx);
+        bytes32 txHash = sha256(serializedTx);
+
         transaction.status = DataTypes.TransactionStatus.Arbitrated;
         transaction.btcTx = btcTx;
+        transaction.btcTxHash = txHash;
         transaction.timeoutCompensationReceiver = timeoutCompensationReceiver;
 
-        emit ArbitrationRequested(id);
+        // Store txHash to id mapping
+        txHashToId[txHash] = id;
+
+        emit ArbitrationRequested(transaction.dapp, id);
     }
 
     /**
@@ -226,7 +269,7 @@ contract TransactionManager is ITransactionManager, ReentrancyGuard, Ownable {
     ) external {
         DataTypes.Transaction storage transaction = transactions[id];
 
-        if (transaction.status != DataTypes.TransactionStatus.Arbitrated) {
+        if (transaction.status != DataTypes.TransactionStatus.Active) {
             revert Errors.INVALID_TRANSACTION_STATUS();
         }
 
@@ -241,27 +284,38 @@ contract TransactionManager is ITransactionManager, ReentrancyGuard, Ownable {
     }
 
     /**
-     * @notice Get transaction by Bitcoin transaction
-     * @param btcTx Bitcoin transaction data
+     * @notice Get transaction by ID
+     * @param id Transaction ID
      * @return Transaction struct
      */
-    function getTransaction(bytes calldata btcTx) external view returns (DataTypes.Transaction memory) {
-        for (uint256 i = 0; i < _transactionIdCounter; i++) {
-            bytes32 id = keccak256(abi.encodePacked(i));
-            DataTypes.Transaction memory transaction = transactions[id];
-            if (keccak256(transaction.btcTx) == keccak256(btcTx)) {
-                return transaction;
-            }
-        }
-        revert Errors.TRANSACTION_NOT_FOUND();
+    function getTransactionById(bytes32 id) external view override returns (DataTypes.Transaction memory) {
+        return transactions[id];
     }
 
     /**
-     * @notice Get transaction details
-     * @param id Transaction ID
-     * @return Transaction details
+     * @notice Get transaction by transaction hash
+     * @param txHash Transaction hash
+     * @return Transaction struct
      */
-    function getTransaction(bytes32 id) external view override returns (DataTypes.Transaction memory) {
+    function getTransaction(bytes32 txHash) external view override returns (DataTypes.Transaction memory) {
+        bytes32 id = txHashToId[txHash];
+        if (id == bytes32(0)) {
+            revert Errors.TRANSACTION_NOT_FOUND();
+        }
         return transactions[id];
+    }
+
+    /**
+     * @notice Transfer arbitration fee to arbitrator and system fee address
+     * @dev Only callable by compensation manager
+     * @param id Transaction ID
+     * @return arbitratorFee The fee amount for arbitrator
+     * @return systemFee The fee amount for system
+     */
+    function transferArbitrationFee(
+        bytes32 id
+    ) external override onlyCompensationManager returns (uint256 arbitratorFee, uint256 systemFee) {
+        DataTypes.Transaction storage transaction = transactions[id];
+        return _completeTransaction(id, transaction);
     }
 }

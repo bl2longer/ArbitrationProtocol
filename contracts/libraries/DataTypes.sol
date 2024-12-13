@@ -38,7 +38,6 @@ library DataTypes {
         bytes32 activeTransactionId; // Current transaction ID
         uint256 ethAmount;         // ETH stake amount
         address erc20Token;        // ERC20 token address
-        uint256 erc20Amount;       // ERC20 stake amount
         address nftContract;       // NFT contract address
         uint256[] nftTokenIds;     // NFT token IDs
         address operator;          // Operator address
@@ -53,6 +52,7 @@ library DataTypes {
         uint256 startTime;
         uint256 deadline;
         bytes btcTx;               // Unsigned Bitcoin transaction
+        bytes32 btcTxHash;         // Hash of the Bitcoin transaction with empty input scripts
         TransactionStatus status;
         uint256 depositedFee;
         bytes signature;           // Arbitrator's signature

@@ -45,16 +45,15 @@ interface IConfigManager {
      */
     function setConfigs(bytes32[] calldata keys, uint256[] calldata values) external;
     
+    // System compensation fee rate
+    function getSystemCompensationFeeRate() external view returns (uint256);
+    function setSystemCompensationFeeRate(uint256 rate) external;
+    
+    /**
+     * @notice Emitted when a config value is updated
+     * @param key Config key
+     * @param oldValue Old config value
+     * @param newValue New config value
+     */
     event ConfigUpdated(bytes32 indexed key, uint256 oldValue, uint256 newValue);
-    event ArbitrationFrozenPeriodUpdated(uint256 oldPeriod, uint256 newPeriod);
-    event ArbitrationTimeoutUpdated(uint256 oldTimeout, uint256 newTimeout);
-    event SystemFeeRateUpdated(uint256 oldRate, uint256 newRate);
-    event SystemRevenueAddressesUpdated(
-        address oldEthAddress,
-        address newEthAddress,
-        bytes oldBtcPubKey,
-        bytes newBtcPubKey,
-        string oldBtcAddress,
-        string newBtcAddress
-    );
 }
