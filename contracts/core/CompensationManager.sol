@@ -252,4 +252,7 @@ contract CompensationManager is ICompensationManager {
         }
         return claim.totalAmount;
     }
+
+    receive() external payable {
+    }
 }

@@ -113,7 +113,11 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
      */
     function stakeETH() external payable override {
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
-        if (arbitrator.arbitrator == address(0)) revert Errors.ARBITRATOR_NOT_REGISTERED();
+        
+        // If first time staking, set arbitrator address
+        if (arbitrator.arbitrator == address(0)) {
+            arbitrator.arbitrator = msg.sender;
+        }
 
         // Calculate total NFT value
         uint256 totalNftValue = getTotalNFTStakeValue(msg.sender);
@@ -141,7 +145,11 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
         if (tokenIds.length == 0) revert Errors.EMPTY_TOKEN_IDS();
 
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
-        if (arbitrator.arbitrator == address(0)) revert Errors.ARBITRATOR_NOT_REGISTERED();
+        
+        // If first time staking, set arbitrator address
+        if (arbitrator.arbitrator == address(0)) {
+            arbitrator.arbitrator = msg.sender;
+        }
 
         // Calculate total ETH value of NFTs
         uint256 totalNftValue = 0;
@@ -150,14 +158,16 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
             for (uint256 j = 0; j < info.infos.length; j++) {
                 totalNftValue += info.infos[j].votes;
             }
+        }
 
-            // Transfer NFT to contract
+        // Transfer NFTs to this contract
+        for (uint256 i = 0; i < tokenIds.length; i++) {
             nftContract.transferFrom(msg.sender, address(this), tokenIds[i]);
             arbitrator.nftTokenIds.push(tokenIds[i]);
         }
 
-        // Check total stake (ETH + NFT) is within limits
-        uint256 totalStakeValue = totalNftValue + arbitrator.ethAmount;
+        // Check total stake is within limits
+        uint256 totalStakeValue = arbitrator.ethAmount + totalNftValue;
         uint256 minStake = configManager.getConfig(configManager.MIN_STAKE());
         uint256 maxStake = configManager.getConfig(configManager.MAX_STAKE());
         
@@ -222,6 +232,8 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
         require(operator != address(0), "InvalidOperator");
         
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
+        if (arbitrator.arbitrator == address(0)) revert Errors.ARBITRATOR_NOT_REGISTERED();
+        
         arbitrator.operator = operator;
         arbitrator.operatorBtcPubKey = btcPubKey;
         arbitrator.operatorBtcAddress = btcAddress;
@@ -230,21 +242,18 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
     }
 
     /**
-     * @notice Sets or updates arbitrator's revenue addresses
-     * @param ethAddress Ethereum address for receiving revenue
+     * @notice Sets or updates arbitrator's revenue addresses for Bitcoin
      * @param btcPubKey Bitcoin public key for receiving revenue
      * @param btcAddress Bitcoin address for receiving revenue
-     * @dev Ethereum address cannot be zero address
      */
     function setRevenueAddresses(
         address ethAddress,
         bytes calldata btcPubKey,
         string calldata btcAddress
     ) external override {
-        require(ethAddress != address(0), "InvalidEthAddress");
-        
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
-        arbitrator.arbitrator = ethAddress;
+        if (arbitrator.arbitrator == address(0)) revert Errors.ARBITRATOR_NOT_REGISTERED();
+        
         arbitrator.operatorBtcPubKey = btcPubKey;
         arbitrator.operatorBtcAddress = btcAddress;
         
@@ -266,6 +275,7 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
         require(deadline == 0 || deadline > block.timestamp, "InvalidDeadline");
         
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
+        if (arbitrator.arbitrator == address(0)) revert Errors.ARBITRATOR_NOT_REGISTERED();
         arbitrator.currentFeeRate = feeRate;
         arbitrator.lastArbitrationTime = deadline;
         
@@ -278,6 +288,7 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
      */
     function pause() external override notWorking {
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
+        if (arbitrator.arbitrator == address(0)) revert Errors.ARBITRATOR_NOT_REGISTERED();
         require(arbitrator.status == DataTypes.ArbitratorStatus.Active, "Not active");
         arbitrator.status = DataTypes.ArbitratorStatus.Paused;
         
@@ -290,6 +301,7 @@ contract ArbitratorManager is IArbitratorManager, ReentrancyGuard, Ownable {
      */
     function unpause() external override notWorking {
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
+        if (arbitrator.arbitrator == address(0)) revert Errors.ARBITRATOR_NOT_REGISTERED();
         require(arbitrator.status == DataTypes.ArbitratorStatus.Paused, "not paused");
         arbitrator.status = DataTypes.ArbitratorStatus.Active;
         
