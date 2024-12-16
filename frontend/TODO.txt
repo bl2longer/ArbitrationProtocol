@@ -1,0 +1,19 @@
+- Target release date: dec 30
+
+- Install zustand for state management
+- Check https://ui.shadcn.com/ for components
+- Install react-router-dom for routing
+- Install wagmi
+- Wallet management:
+  - Reuse wallet components from loan project, plug to wagmi/viem
+- Setup and code subgraph
+
+- Features:
+  - Arbitrator registration (incl staking)
+  - Registered arbitrator dashboard (incl editing)
+  - Compensations: 
+    - TBD: who is the actor that received compensations? end user?
+  - Transaction list  
+    - TBD what transactions are we talking about? 
+  - Register dapp
+    - TBD: what is a "dapp" in this context? register for what?
