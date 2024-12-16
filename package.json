@@ -6,7 +6,9 @@
   "scripts": {
     "test": "hardhat test",
     "compile": "hardhat compile",
-    "clean": "hardhat clean"
+    "clean": "hardhat clean",
+    "node": "hardhat node",
+    "deploy:local": "hardhat run scripts/0_deployConfigManager.js --network localhost"
   },
   "keywords": [
     "blockchain",
@@ -16,7 +18,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@openzeppelin/contracts": "^5.1.0"
+    "@openzeppelin/contracts": "^5.1.0",
+    "hardhat": "^2.19.3"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
@@ -30,11 +33,16 @@
     "@types/mocha": ">=9.1.0",
     "chai": "^4.5.0",
     "ethers": "^6.4.0",
-    "hardhat": "^2.22.17",
     "hardhat-gas-reporter": "^1.0.8",
     "solidity-coverage": "^0.8.1",
     "ts-node": ">=8.0.0",
     "typechain": "^8.3.0",
     "typescript": ">=4.5.0"
+    "@openzeppelin/hardhat-upgrades": "^3.0.0",
+    "dotenv": "^16.3.1",
+    "hardhat-deploy": "^0.11.45"
+  },
+  "engines": {
+    "node": ">=18.0.0 <19.0.0"
   }
 }
