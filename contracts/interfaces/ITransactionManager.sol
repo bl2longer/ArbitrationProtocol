@@ -44,7 +44,7 @@ interface ITransactionManager {
         bytes32 id
     ) external returns (uint256 arbitratorFee, uint256 systemFee);
 
-    event TransactionRegistered(address indexed dapp, bytes32 indexed txId);
+    event TransactionRegistered(bytes32 indexed id, address indexed dapp, address indexed arbitrator);
     event TransactionCompleted(address indexed dapp, bytes32 indexed txId);
     event ArbitrationRequested(address indexed dapp, bytes32 indexed txId);
     event ArbitrationSubmitted(address indexed dapp, bytes32 indexed txId);

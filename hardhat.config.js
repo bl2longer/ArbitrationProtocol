@@ -3,7 +3,7 @@ require("@openzeppelin/hardhat-upgrades");
 require("hardhat-deploy");
 require("dotenv").config();
 
-const { staging_key, prod_key } = process.env;
+const { staging_key, prod_key, operator_key } = process.env;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -19,15 +19,15 @@ module.exports = {
   networks: {
     prod: {
       url: "https://api.elastos.io/esc",
-      accounts: [...(prod_key ? [prod_key] : [])]
+      accounts: [...(prod_key ? [prod_key, operator_key] : [])]
     },
     stage: {
       url: "https://api.elastos.io/esc",
-      accounts: [...(staging_key ? [staging_key] : [])]
+      accounts: [...(staging_key ? [staging_key, operator_key] : [])]
     },
     testnet: {
       url: "https://api-testnet.elastos.io/esc",
-      accounts: [...(staging_key ? [staging_key] : [])]
+      accounts: [...(staging_key ? [staging_key, operator_key] : [])]
     },
     hardhat: {
       chainId: 100,

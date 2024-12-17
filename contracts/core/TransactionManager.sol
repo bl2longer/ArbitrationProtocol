@@ -40,13 +40,6 @@ contract TransactionManager is ITransactionManager, ReentrancyGuard, Ownable {
         _;
     }
 
-    // Events
-    event TransactionRegistered(bytes32 indexed id, address indexed dapp, address indexed arbitrator);
-    event TransactionCompleted(bytes32 indexed id);
-    event ArbitrationRequested(bytes32 indexed id);
-    event ArbitrationCompleted(bytes32 indexed id);
-    event TransactionExpired(bytes32 indexed id);
-
     /**
      * @notice Constructor to set contract references and initial owner
      * @param _arbitratorManager Address of the arbitrator manager contract
@@ -210,7 +203,7 @@ contract TransactionManager is ITransactionManager, ReentrancyGuard, Ownable {
         arbitratorManager.releaseArbitrator(transaction.arbitrator, id);
 
         transaction.status = DataTypes.TransactionStatus.Completed;
-        emit TransactionCompleted(id);
+        emit TransactionCompleted(transaction.dapp, id);
 
         return (finalArbitratorFee, systemFee);
     }
@@ -280,7 +273,7 @@ contract TransactionManager is ITransactionManager, ReentrancyGuard, Ownable {
         transaction.status = DataTypes.TransactionStatus.Completed;
         transaction.signature = btcTxSignature;
 
-        emit ArbitrationCompleted(id);
+        emit ArbitrationSubmitted(transaction.dapp, id);
     }
 
     /**
