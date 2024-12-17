@@ -60,8 +60,12 @@ export const tokenToContractValue = (humanReadableValue: BigNumber | string | nu
 /**
  * Converts a token contract value (wei) to readable value (eth)
  */
-export const tokenToReadableValue = (contractValue: BigNumber | string | number, decimals: number): BigNumber => {
+export const tokenToReadableValue = (contractValue: BigNumber | BigInt | string | number, decimals: number): BigNumber => {
   if (contractValue === undefined)
     return undefined;
-  return new BigNumber(contractValue).dividedBy((new BigNumber(10)).pow(decimals));
+
+  if (typeof contractValue === "bigint")
+    return new BigNumber(contractValue.toString()).dividedBy((new BigNumber(10)).pow(decimals));
+  else
+    return new BigNumber(contractValue as (BigNumber | string | number)).dividedBy((new BigNumber(10)).pow(decimals));
 }

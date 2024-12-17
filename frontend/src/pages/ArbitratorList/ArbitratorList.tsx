@@ -39,7 +39,7 @@ export default function ArbitratorList() {
       case "stake":
         return filtered.sort((a, b) => Number(a.ethAmount - b.ethAmount) * directionFactor);
     }
-  }, [rawArbitrators]);
+  }, [rawArbitrators, searchTerm, sortConfig]);
 
   const loading = useMemo(() => !rawArbitrators, [rawArbitrators]);
 

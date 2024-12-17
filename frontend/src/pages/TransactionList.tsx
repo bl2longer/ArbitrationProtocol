@@ -56,7 +56,7 @@ export default function TransactionList() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadData = () => {
       try {
         setLoading(true);
         setError(null);
@@ -71,10 +71,10 @@ export default function TransactionList() {
       }
     };
 
-    loadData();
+    void loadData();
   }, []);
 
-  const handleSubmitArbitration = async () => {
+  const handleSubmitArbitration = () => {
     if (!selectedTransaction || !signature) return;
     try {
       // 这里需要根据实际合约方法调整

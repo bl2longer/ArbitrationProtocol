@@ -141,7 +141,7 @@ export default function ArbitratorDashboard() {
         </button>
       </div>
 
-      <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="space-y-6">
+      <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }} className="space-y-6">
         <div className="bg-white rounded-lg shadow divide-y">
           <div className="p-4 space-y-2">
             <label className="block text-sm text-gray-500">Operator Address</label>

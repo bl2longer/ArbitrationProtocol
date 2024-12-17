@@ -42,7 +42,7 @@ export default function CompensationList() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadData = () => {
       try {
         setLoading(true);
         setError(null);
@@ -61,7 +61,7 @@ export default function CompensationList() {
     loadData();
   }, []);
 
-  const handleClaimCompensation = async (compensation: Compensation) => {
+  const handleClaimCompensation = (compensation: Compensation) => {
     try {
       // 这里需要根据实际合约方法调整
       // TODO await contract.claimCompensation(compensation.id);
@@ -213,7 +213,7 @@ export default function CompensationList() {
                     Cancel
                   </button>
                   <button
-                    onClick={() => handleClaimCompensation(selectedCompensation)}
+                    onClick={() => void handleClaimCompensation(selectedCompensation)}
                     className="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-lg"
                   >
                     Confirm Claim
