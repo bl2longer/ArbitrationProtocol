@@ -2,14 +2,16 @@ import { Link, useLocation } from 'react-router-dom';
 import { Fragment } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import { useWeb3 } from '@/contexts/Web3Context';
+import { useEVMContext } from '@/contexts/EVMContext/EVMContext';
+import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
 export default function Navbar() {
-  const { account, connect } = useWeb3();
+  const { evmAccount: account } = useWalletContext();
+  const { connect } = useEVMContext();
   const location = useLocation();
 
   const navigation = [

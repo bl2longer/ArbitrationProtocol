@@ -1,15 +1,18 @@
+import 'reflect-metadata';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Web3Provider } from './contexts/Web3Context';
+import { EVMProvider } from './contexts/EVMContext/EVMContext';
 import Layout from './components/Layout';
-import ArbitratorList from './pages/ArbitratorList';
+import ArbitratorList from './pages/ArbitratorList/ArbitratorList';
 import ArbitratorDashboard from './pages/ArbitratorDashboard';
 import TransactionList from './pages/TransactionList';
 import CompensationList from './pages/CompensationList';
 import React from 'react';
+import { useArbitrators } from './services/arbitrators/hooks/useArbitrators';
+import { WalletProvider } from './contexts/WalletContext/WalletContext';
 
 function App() {
   return (
-    <Web3Provider>
+    <WalletProvider>
       <Router>
         <Layout>
           <Routes>
@@ -21,7 +24,7 @@ function App() {
           </Routes>
         </Layout>
       </Router>
-    </Web3Provider>
+    </WalletProvider>
   );
 }
 

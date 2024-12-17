@@ -1,8 +1,7 @@
-import { WalletContext } from "@contexts/WalletContext";
-import { useContext } from "react";
+import { useWalletContext } from "@/contexts/WalletContext/WalletContext";
 
 export const useNetworkMode = () => {
-  const { networkMode } = useContext(WalletContext);
+  const { networkMode } = useWalletContext();
 
   return {
     isMainnet: networkMode === "mainnet"

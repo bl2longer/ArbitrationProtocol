@@ -1,10 +1,12 @@
-import BTCIcon from "@assets/tokens/btc.svg";
-import USDCIcon from "@assets/tokens/usdc.svg";
-import USDTIcon from "@assets/tokens/usdt.svg";
-import { isDevelopmentEnv } from "@config/env";
-import { ChainConfig } from "@services/chains/chain-config";
+import BTCIcon from "@/assets/tokens/btc.svg";
+import USDCIcon from "@/assets/tokens/usdc.svg";
+import USDTIcon from "@/assets/tokens/usdt.svg";
+import { isDevelopmentEnv } from "@/config/env";
+import { ChainConfig } from "@/services/chains/chain-config";
 import BigNumber from "bignumber.js";
 import { TokenOrNative } from "./token-or-native";
+
+console.log("BTCIcon", BTCIcon)
 
 export const nativeCoin = (symbol: string, wrappedAddress: string, icon: string, displayDecimals: number, canPlaceOrders = true): TokenOrNative => {
   return { symbol, isNative: true, icon, displayDecimals, wrappedAddress, canPlaceOrders };

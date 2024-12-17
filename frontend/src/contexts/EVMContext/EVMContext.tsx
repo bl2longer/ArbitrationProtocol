@@ -1,5 +1,5 @@
 import React, { createContext, useContext, ReactNode, useCallback } from 'react';
-import { useAccount, useConnect, useDisconnect, WagmiProvider } from 'wagmi';
+import { useAccount, useChainId, useConnect, useDisconnect, WagmiProvider } from 'wagmi';
 import { http, createConfig } from 'wagmi';
 import { mainnet, sepolia } from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -20,21 +20,23 @@ export const config = createConfig({
 
 const queryClient = new QueryClient();
 
-interface Web3ContextProps {
+interface EVMContextProps {
   connect: () => void;
   disconnect: ReturnType<typeof useDisconnect>['disconnect'];
   isConnected: boolean;
   account: string | undefined;
+  chainId: number;
 }
 
-const Web3Context = createContext<Web3ContextProps | null>(null);
+const EVMContext = createContext<EVMContextProps | null>(null);
 
-interface Web3ProviderProps {
+interface EVMProviderProps {
   children: ReactNode;
 }
 
-export const Web3ProviderInternal: React.FC<Web3ProviderProps> = ({ children }) => {
+export const EVMProviderInternal: React.FC<EVMProviderProps> = ({ children }) => {
   const { connect: wagmiConnect } = useConnect();
+  const chainId = useChainId();
   const { disconnect } = useDisconnect();
   const { isConnected, address } = useAccount();
 
@@ -46,30 +48,30 @@ export const Web3ProviderInternal: React.FC<Web3ProviderProps> = ({ children }) 
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <Web3Context.Provider value={{ connect, disconnect, isConnected, account: address }}>
+        <EVMContext.Provider value={{ connect, disconnect, isConnected, account: address, chainId }}>
           {children}
-        </Web3Context.Provider>
+        </EVMContext.Provider>
       </QueryClientProvider>
     </WagmiProvider>
   );
 };
 
-export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, ...props }) => {
+export const EVMProvider: React.FC<EVMProviderProps> = ({ children, ...props }) => {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <Web3ProviderInternal {...props}>
+        <EVMProviderInternal {...props}>
           {children}
-        </Web3ProviderInternal>
+        </EVMProviderInternal>
       </QueryClientProvider>
     </WagmiProvider>
   );
 };
 
-export const useWeb3 = (): Web3ContextProps => {
-  const context = useContext(Web3Context);
+export const useEVMContext = (): EVMContextProps => {
+  const context = useContext(EVMContext);
   if (!context) {
-    throw new Error('useWeb3 must be used within a Web3Provider');
+    throw new Error('useEVMContext must be used within a Web3Provider');
   }
   return context;
 };

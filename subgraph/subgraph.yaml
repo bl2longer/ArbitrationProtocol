@@ -1,0 +1,42 @@
+specVersion: 0.0.4
+repository: https://github.com/BeL2Labs/ArbitrationProtocol/subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - name: ArbitratorManager
+    kind: ethereum/contract
+    network: esc-testnet
+    source:
+      abi: ArbitratorManager
+      address: "0x4c8623d575DbfF760Ac54DA4b8BB1148829FcaaB"
+      startBlock: 20984943
+    mapping:
+      file: ./src/event-handlers/ArbitratorManager.ts
+      language: wasm/assemblyscript
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      entities:
+        - Arbitrator
+        - User
+      abis:
+        - name: ArbitratorManager
+          file: ./src/abis/ArbitratorManager.json
+      eventHandlers:
+        - event: ArbitratorStatusChanged(indexed address,uint8)
+          handler: handleArbitratorStatusChanged
+        - event: ArbitratorParamsSet(indexed address,uint256,uint256)
+          handler: handleArbitratorParamsSet
+        - event: ArbitratorPaused(indexed address)
+          handler: handleArbitratorPaused
+        - event: ArbitratorUnpaused(indexed address)
+          handler: handleArbitratorUnpaused
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: RevenueAddressesSet(indexed address,address,bytes,string)
+          handler: handleRevenueAddressesSet
+        - event: StakeAdded(indexed address,indexed address,uint256)
+          handler: handleStakeAdded
+        - event: StakeWithdrawn(indexed address,indexed address,uint256)
+          handler: handleStakeWithdrawn
+        - event: OperatorSet(indexed address,indexed address,bytes,string)
+          handler: handleOperatorSet

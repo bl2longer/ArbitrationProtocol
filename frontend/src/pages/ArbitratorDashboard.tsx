@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useWeb3 } from '../contexts/Web3Context';
 import { ArbitratorInfo } from '../types';
 import { PencilIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
+import { useEVMContext } from '@/contexts/EVMContext/EVMContext';
 
 export default function ArbitratorDashboard() {
-  const { account, signer, connectWallet, connectBtcWallet } = useWeb3();
+  const { evmAccount: account } = useWalletContext();
+  const { connect: connectWallet } = useEVMContext();
   const [arbitratorInfo, setArbitratorInfo] = useState<ArbitratorInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -44,7 +46,7 @@ export default function ArbitratorDashboard() {
   }, [account]);
 
   const handleSubmit = async () => {
-    if (!signer || !account) {
+    if (!account) {
       await connectWallet();
       return;
     }
@@ -115,8 +117,8 @@ export default function ArbitratorDashboard() {
           <div className="text-sm text-gray-500">Status</div>
           <div>
             <span className={`px-2 py-1 rounded text-sm ${arbitratorInfo.isPaused
-                ? 'bg-red-100 text-red-800'
-                : 'bg-green-100 text-green-800'
+              ? 'bg-red-100 text-red-800'
+              : 'bg-green-100 text-green-800'
               }`}>
               {arbitratorInfo.isPaused ? 'Paused' : 'Active'}
             </span>
@@ -225,7 +227,7 @@ export default function ArbitratorDashboard() {
             {account ? `Connected: ${account.slice(0, 6)}...${account.slice(-4)}` : 'Connect MetaMask'}
           </button>
           <button
-            onClick={connectBtcWallet}
+            // onClick={connectBtcWallet}
             className="flex-1 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 min-w-[200px]"
           >
             Connect BTC Wallet

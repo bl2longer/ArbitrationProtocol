@@ -1,0 +1,20 @@
+{
+  "esc-prod": {
+    "ArbitratorManager": {
+      "address": "0x60Ff693e5b900d62437d160764bC9D703A93F4ab",
+      "startBlock": 25002242
+    }
+  },
+  "esc-staging": {
+    "ArbitratorManager": {
+      "address": "todo",
+      "startBlock": 20983803
+    }
+  },
+  "esc-testnet": {
+    "ArbitratorManager": {
+      "address": "0x4c8623d575DbfF760Ac54DA4b8BB1148829FcaaB",
+      "startBlock": 20984943
+    }
+  }
+}

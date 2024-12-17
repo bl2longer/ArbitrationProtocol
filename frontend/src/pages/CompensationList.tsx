@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
-import { useWeb3 } from '../contexts/Web3Context';
-import { ethers } from 'ethers';
 import { mockCompensations } from '../mock/data';
+import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 
 // Utility function to safely format ether values
 const formatEther = (value: string): string => {
@@ -35,7 +34,7 @@ const compensationTypeMap = {
 };
 
 export default function CompensationList() {
-  const { account } = useWeb3();
+  const { evmAccount: account } = useWalletContext();
   const [compensations, setCompensations] = useState<Compensation[]>([]);
   const [selectedCompensation, setSelectedCompensation] = useState<Compensation | null>(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);

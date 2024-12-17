@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Dialog, RadioGroup } from '@headlessui/react';
-import { useWeb3 } from '../contexts/Web3Context';
 import { ethers } from 'ethers';
 import { WalletIcon } from '@heroicons/react/24/outline';
+import { useEVMContext } from '@/contexts/EVMContext/EVMContext';
 
 // Utility function to safely format ether values
 const formatEther = (value: string): string => {
@@ -17,7 +17,7 @@ const formatEther = (value: string): string => {
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { account, connect } = useWeb3();
+  const { account, connect } = useEVMContext();
   const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false);
   const [isArbitratorDialogOpen, setIsArbitratorDialogOpen] = useState(false);
   const [dappAddress, setDappAddress] = useState('');

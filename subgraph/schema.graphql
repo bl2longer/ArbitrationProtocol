@@ -1,0 +1,105 @@
+enum ArbitratorStatus {
+    Active     # Arbitrator is available for new transactions
+    Working    # Arbitrator is currently working on a transaction
+    Paused     # Arbitrator is temporarily paused
+    Terminated  # Arbitrator has been terminated
+}
+
+enum DAppStatus {
+    None
+    Pending
+    Active
+    Suspended
+    Terminated
+}
+
+enum TransactionStatus {
+    Active
+    Completed
+    Arbitrated
+    Expired
+    Disputed
+}
+
+enum CompensationType {
+    IllegalSignature
+    TimeoutPenalty
+}
+
+type ArbitratorInfo @entity {
+    id: ID! # required by thegraph
+    createdAt: BigInt! # Timestamp, DB side only, not on chain - block time at which the arbitrator info was first found (first event)
+    lastArbitrationTime: BigInt # Timestamp at which this arbitrator term ends
+    address: String! @id # Arbitrator Ethereum address
+    currentFeeRate: BigInt # Current fee rate
+    pendingFeeRate: BigInt # Pending new fee rate
+    status: ArbitratorStatus! # Arbitrator status
+    activeTransactionId: Bytes # ID of the transaction that made the arbitrator "working". 0 address if not working.
+    ethAmount: BigInt! # Native token stake amount
+    erc20Token: String # ERC20 token address
+    nftContract: String # NFT contract address
+    nftTokenIds: [BigInt!] # NFT token IDs
+    operatorEvmAddress: String # Operator EVM address
+    operatorBtcPubKey: String # Bitcoin public key
+    operatorBtcAddress: String # Bitcoin address
+}
+
+type Transaction @entity {
+    id: ID! # required by thegraph
+    "DApp address"
+    dapp: String!
+    "Arbitrator address"
+    arbitrator: String!
+    "Start time of the transaction"
+    startTime: BigInt!
+    "Deadline for the transaction"
+    deadline: BigInt!
+    "Unsigned Bitcoin transaction"
+    btcTx: Bytes!
+    "Hash of the Bitcoin transaction with empty input scripts"
+    btcTxHash: Bytes!
+    "Transaction status"
+    status: TransactionStatus!
+    "Deposited fee amount"
+    depositedFee: BigInt!
+    "Arbitrator's signature"
+    signature: Bytes
+    "Compensation receiver address"
+    compensationReceiver: String
+    "Timeout compensation receiver address"
+    timeoutCompensationReceiver: String
+}
+
+type ArbitrationRequest @entity {
+    "Unique identifier for the arbitration request"
+    id: ID!
+    "Transaction ID"
+    txId: BigInt!
+    "Address of the requester"
+    requester: String!
+    "Time when the request was made"
+    requestTime: BigInt!
+    "Deadline for the arbitration"
+    deadline: BigInt!
+    "Timeout compensation receiver address"
+    timeoutCompensationReceiver: String!
+    "Whether the request has been fulfilled"
+    fulfilled: Boolean!
+}
+
+type CompensationClaim @entity {
+    "Unique identifier for the compensation claim"
+    id: ID!
+    "Arbitrator address"
+    arbitrator: String!
+    "Claimer address"
+    claimer: String!
+    "Amount claimed"
+    amount: BigInt!
+    "Type of compensation claim"
+    claimType: CompensationType!
+    "Whether the claim has been processed"
+    claimed: Boolean!
+    "Evidence for the claim"
+    evidence: Bytes!
+}

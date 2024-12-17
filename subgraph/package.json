@@ -1,0 +1,19 @@
+{
+  "name": "subgraph",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "contracts:build": "yarn --cwd .. compile && ./scripts/extract_abis.sh",
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "create-local": "graph create --node http://localhost:8020/ arbitrators",
+    "remove-local": "graph remove --node http://localhost:8020/ arbitrators",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 arbitrators",
+    "test": "graph test",
+    "graph-version": "graph --version"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "^0.91.1",
+    "@graphprotocol/graph-ts": "^0.36.0"
+  }
+}

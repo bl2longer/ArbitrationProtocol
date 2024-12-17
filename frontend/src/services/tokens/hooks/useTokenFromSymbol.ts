@@ -1,4 +1,4 @@
-import { useActiveEVMChainConfig } from "@services/chains/hooks/useActiveEVMChainConfig";
+import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
 
 /**
  * Returns the TokenOrNative object matching the given symbol on the current active chain

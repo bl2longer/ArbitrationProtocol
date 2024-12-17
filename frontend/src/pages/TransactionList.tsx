@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
-import { useWeb3 } from '../contexts/Web3Context';
 import { ethers } from 'ethers';
 import { mockTransactions } from '../mock/data';
+import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 
 // Utility function to safely format ether values
-const formatEther = (value: string): string => {
-  try {
-    return ethers.utils.formatEther(value);
-  } catch (error) {
-    console.error('Error formatting ether value:', error);
-    return '0';
-  }
-};
+// const formatEther = (value: string): string => {
+//   try {
+//     return ethers.utils.formatEther(value);
+//   } catch (error) {
+//     console.error('Error formatting ether value:', error);
+//     return '0';
+//   }
+// };
 
 interface Transaction {
   dapp: string;
@@ -45,7 +45,7 @@ const fieldLabels = {
 };
 
 export default function TransactionList() {
-  const { account, contract } = useWeb3();
+  const { evmAccount: account } = useWalletContext();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFields, setSelectedFields] = useState<string[]>(Object.keys(fieldLabels));
@@ -72,13 +72,13 @@ export default function TransactionList() {
     };
 
     loadData();
-  }, [contract]);
+  }, []);
 
   const handleSubmitArbitration = async () => {
-    if (!contract || !selectedTransaction || !signature) return;
+    if (!selectedTransaction || !signature) return;
     try {
       // 这里需要根据实际合约方法调整
-      await contract.submitArbitration(selectedTransaction.dapp, signature);
+      // TODO await contract.submitArbitration(selectedTransaction.dapp, signature);
       setIsSignDialogOpen(false);
       setSignature('');
     } catch (error) {
@@ -106,9 +106,9 @@ export default function TransactionList() {
     if (key === 'status') {
       return statusMap[value as keyof typeof statusMap];
     }
-    if (key === 'depositedFee') {
-      return `${formatEther(value)} ETH`;
-    }
+    // if (key === 'depositedFee') {
+    //   return `${formatEther(value)} ETH`;
+    // }
     if (key === 'dapp' || key === 'arbitrator') {
       return value.slice(0, 10) + '...';
     }

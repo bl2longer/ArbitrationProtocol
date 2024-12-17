@@ -1,4 +1,4 @@
-import { TokenOrNative } from "@services/tokens/token-or-native";
+import { TokenOrNative } from "@/services/tokens/token-or-native";
 import { useActiveEVMChainConfig } from "./useActiveEVMChainConfig";
 
 /**

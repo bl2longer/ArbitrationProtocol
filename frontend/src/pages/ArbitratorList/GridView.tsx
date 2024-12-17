@@ -1,0 +1,48 @@
+import { ArbitratorInfo } from "@/services/arbitrators/model/arbitrator-info";
+import { FC } from "react";
+
+export const GridView: FC<{
+  arbitrators: ArbitratorInfo[],
+}> = ({ arbitrators }) => {
+  return (
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {arbitrators.map((arbitrator) => (
+        <div key={arbitrator.address} className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+          <div className="flex justify-between items-start mb-4">
+            <h3 className="text-lg font-semibold">
+              {arbitrator.address.slice(0, 6)}...{arbitrator.address.slice(-4)}
+            </h3>
+            <span className={`px-2 py-1 rounded text-sm ${arbitrator.isPaused()
+              ? 'bg-red-100 text-red-800'
+              : 'bg-green-100 text-green-800'
+              }`}>
+              {arbitrator.isPaused() ? 'Paused' : 'Active'}
+            </span>
+          </div>
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Operator</span>
+              {/* <span className="font-mono">{arbitrator.info.operator.slice(0, 6)}...{arbitrator.info.operator.slice(-4)}</span> */}
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Fee Rate</span>
+              {/* <span>{Number(arbitrator.info.feeRate) / 100}%</span> */}
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Term Duration</span>
+              {/* <span>{Number(arbitrator.info.termDuration) / 86400} days</span> */}
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Stake</span>
+              <span>{Number(arbitrator.ethAmount)} ETH</span>
+            </div>
+            <div className="mt-4 pt-4 border-t">
+              <div className="text-gray-600 mb-1">BTC Address</div>
+              {/* <div className="font-mono text-xs break-all">{arbitrator.info.btcAddress}</div> */}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}

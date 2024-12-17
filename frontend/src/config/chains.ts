@@ -1,11 +1,11 @@
 import { ChainConfig } from "@/services/chains/chain-config";
 import { escBtcToken, escUSDCToken, escUSDTToken } from "@/services/tokens/tokens";
 
-const productionBuild = process.env.REACT_APP_ENV === "production"
+const productionBuild = import.meta.env.VITE_APP_ENV === "production"
 
-const hasCustomLocalSubgraphEndpoint = process.env.REACT_APP_LOCAL_SUBGRAPH_ENDPOINT!.length > 0;
-const escMainnetStagingSubgraph = hasCustomLocalSubgraphEndpoint ? process.env.REACT_APP_LOCAL_SUBGRAPH_ENDPOINT! : "https://graph.bel2.org/subgraphs/name/bel2-loan-esc-staging";
-const escTestnetSubgraph = hasCustomLocalSubgraphEndpoint ? process.env.REACT_APP_LOCAL_SUBGRAPH_ENDPOINT! : "https://graph.bel2.org/subgraphs/name/bel2-loan-esc-testnet";
+const hasCustomLocalSubgraphEndpoint = import.meta.env.VITE_APP_LOCAL_SUBGRAPH_ENDPOINT!.length > 0;
+const escMainnetStagingSubgraph = hasCustomLocalSubgraphEndpoint ? import.meta.env.VITE_APP_LOCAL_SUBGRAPH_ENDPOINT! : "https://graph.bel2.org/subgraphs/name/bel2-loan-esc-staging";
+const escTestnetSubgraph = hasCustomLocalSubgraphEndpoint ? import.meta.env.VITE_APP_LOCAL_SUBGRAPH_ENDPOINT! : "https://graph.bel2.org/subgraphs/name/bel2-loan-esc-testnet";
 
 /**
  * List of supported EVMs the work can run on.

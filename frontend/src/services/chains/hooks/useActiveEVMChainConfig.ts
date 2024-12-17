@@ -1,6 +1,6 @@
-import { defaultChainConfig } from "@config/chains";
+import { defaultChainConfig } from "@/config/chains";
+import { useWalletContext } from "@/contexts/WalletContext/WalletContext";
 import { getChainConfigById } from "../chains";
-import { useStarknetWallet } from "@services/starknet/hooks/useStarknetWallet";
 
 /**
  * Returns the currently active chain in the connected EVM wallet.
@@ -8,8 +8,8 @@ import { useStarknetWallet } from "@services/starknet/hooks/useStarknetWallet";
  * chain config (elastos)
  */
 export const useActiveEVMChainConfig = (useDefaultIfNeeded = true) => {
-  const { chainId } = useStarknetWallet();
-  const chainConfig = getChainConfigById(chainId);
+  const { evmChainId } = useWalletContext();
+  const chainConfig = getChainConfigById(evmChainId);
   if (chainConfig)
     return chainConfig;
 

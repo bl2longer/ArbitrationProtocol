@@ -1,8 +1,8 @@
-import { chainList } from "@config/chains";
-import { TokenOrNative } from "@services/tokens/token-or-native";
+import { chainList } from "@/config/chains";
+import { TokenOrNative } from "@/services/tokens/token-or-native";
 import { ChainConfig } from "./chain-config";
 
-export const getChainConfigById = (chainId: bigint | undefined): ChainConfig | undefined => {
+export const getChainConfigById = (chainId: bigint | number | undefined): ChainConfig | undefined => {
   if (!chainId)
     return undefined;
 
