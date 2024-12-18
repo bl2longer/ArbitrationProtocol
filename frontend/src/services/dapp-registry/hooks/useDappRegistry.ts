@@ -19,6 +19,8 @@ export const useDappRegistration = (dappAddress: string, registrationFee: string
       functionName: 'registerDApp',
       args: [dappAddress],
       value: parseEther(registrationFee),
+      chain: null, // TODO
+      account: null // TODO
       //enabled: Boolean(contractAddress && dappAddress)
     });
   }, [contractAddress, dappAddress, registrationFee, writeContract]);

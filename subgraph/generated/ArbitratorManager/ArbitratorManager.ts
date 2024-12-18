@@ -94,6 +94,28 @@ export class ArbitratorUnpaused__Params {
   }
 }
 
+export class CompensationManagerUpdated extends ethereum.Event {
+  get params(): CompensationManagerUpdated__Params {
+    return new CompensationManagerUpdated__Params(this);
+  }
+}
+
+export class CompensationManagerUpdated__Params {
+  _event: CompensationManagerUpdated;
+
+  constructor(event: CompensationManagerUpdated) {
+    this._event = event;
+  }
+
+  get oldManager(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get newManager(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+}
+
 export class Initialized extends ethereum.Event {
   get params(): Initialized__Params {
     return new Initialized__Params(this);
@@ -104,6 +126,24 @@ export class Initialized__Params {
   _event: Initialized;
 
   constructor(event: Initialized) {
+    this._event = event;
+  }
+
+  get version(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+}
+
+export class Initialized1 extends ethereum.Event {
+  get params(): Initialized1__Params {
+    return new Initialized1__Params(this);
+  }
+}
+
+export class Initialized1__Params {
+  _event: Initialized1;
+
+  constructor(event: Initialized1) {
     this._event = event;
   }
 
@@ -250,6 +290,28 @@ export class StakeWithdrawn__Params {
   }
 }
 
+export class TransactionManagerUpdated extends ethereum.Event {
+  get params(): TransactionManagerUpdated__Params {
+    return new TransactionManagerUpdated__Params(this);
+  }
+}
+
+export class TransactionManagerUpdated__Params {
+  _event: TransactionManagerUpdated;
+
+  constructor(event: TransactionManagerUpdated) {
+    this._event = event;
+  }
+
+  get oldManager(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get newManager(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+}
+
 export class ArbitratorManager__getArbitratorInfoResultValue0Struct extends ethereum.Tuple {
   get arbitrator(): Address {
     return this[0].toAddress();
@@ -354,6 +416,25 @@ export class ArbitratorManager extends ethereum.SmartContract {
     let result = super.tryCall(
       "compensationManager",
       "compensationManager():(address)",
+      [],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  configManager(): Address {
+    let result = super.call("configManager", "configManager():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_configManager(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "configManager",
+      "configManager():(address)",
       [],
     );
     if (result.reverted) {
@@ -618,28 +699,46 @@ export class ConstructorCall__Inputs {
   constructor(call: ConstructorCall) {
     this._call = call;
   }
-
-  get _configManager(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get initialOwner(): Address {
-    return this._call.inputValues[1].value.toAddress();
-  }
-
-  get _nftContract(): Address {
-    return this._call.inputValues[2].value.toAddress();
-  }
-
-  get _nftInfo(): Address {
-    return this._call.inputValues[3].value.toAddress();
-  }
 }
 
 export class ConstructorCall__Outputs {
   _call: ConstructorCall;
 
   constructor(call: ConstructorCall) {
+    this._call = call;
+  }
+}
+
+export class InitTransactionAndCompensationManagerCall extends ethereum.Call {
+  get inputs(): InitTransactionAndCompensationManagerCall__Inputs {
+    return new InitTransactionAndCompensationManagerCall__Inputs(this);
+  }
+
+  get outputs(): InitTransactionAndCompensationManagerCall__Outputs {
+    return new InitTransactionAndCompensationManagerCall__Outputs(this);
+  }
+}
+
+export class InitTransactionAndCompensationManagerCall__Inputs {
+  _call: InitTransactionAndCompensationManagerCall;
+
+  constructor(call: InitTransactionAndCompensationManagerCall) {
+    this._call = call;
+  }
+
+  get _transactionManager(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get _compensationManager(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class InitTransactionAndCompensationManagerCall__Outputs {
+  _call: InitTransactionAndCompensationManagerCall;
+
+  constructor(call: InitTransactionAndCompensationManagerCall) {
     this._call = call;
   }
 }
@@ -661,12 +760,16 @@ export class InitializeCall__Inputs {
     this._call = call;
   }
 
-  get _transactionManager(): Address {
+  get _configManager(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
 
-  get _compensationManager(): Address {
+  get _nftContract(): Address {
     return this._call.inputValues[1].value.toAddress();
+  }
+
+  get _nftInfo(): Address {
+    return this._call.inputValues[2].value.toAddress();
   }
 }
 
@@ -832,6 +935,36 @@ export class SetArbitratorWorkingCall__Outputs {
   }
 }
 
+export class SetCompensationManagerCall extends ethereum.Call {
+  get inputs(): SetCompensationManagerCall__Inputs {
+    return new SetCompensationManagerCall__Inputs(this);
+  }
+
+  get outputs(): SetCompensationManagerCall__Outputs {
+    return new SetCompensationManagerCall__Outputs(this);
+  }
+}
+
+export class SetCompensationManagerCall__Inputs {
+  _call: SetCompensationManagerCall;
+
+  constructor(call: SetCompensationManagerCall) {
+    this._call = call;
+  }
+
+  get _compensationManager(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetCompensationManagerCall__Outputs {
+  _call: SetCompensationManagerCall;
+
+  constructor(call: SetCompensationManagerCall) {
+    this._call = call;
+  }
+}
+
 export class SetOperatorCall extends ethereum.Call {
   get inputs(): SetOperatorCall__Inputs {
     return new SetOperatorCall__Inputs(this);
@@ -904,6 +1037,36 @@ export class SetRevenueAddressesCall__Outputs {
   _call: SetRevenueAddressesCall;
 
   constructor(call: SetRevenueAddressesCall) {
+    this._call = call;
+  }
+}
+
+export class SetTransactionManagerCall extends ethereum.Call {
+  get inputs(): SetTransactionManagerCall__Inputs {
+    return new SetTransactionManagerCall__Inputs(this);
+  }
+
+  get outputs(): SetTransactionManagerCall__Outputs {
+    return new SetTransactionManagerCall__Outputs(this);
+  }
+}
+
+export class SetTransactionManagerCall__Inputs {
+  _call: SetTransactionManagerCall;
+
+  constructor(call: SetTransactionManagerCall) {
+    this._call = call;
+  }
+
+  get _transactionManager(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetTransactionManagerCall__Outputs {
+  _call: SetTransactionManagerCall;
+
+  constructor(call: SetTransactionManagerCall) {
     this._call = call;
   }
 }

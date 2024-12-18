@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
-import { Loading } from '@/components/Loading';
+import { Loading } from '@/components/base/Loading';
 import { useCompensations } from '@/services/compensations/hooks/useCompensations';
 import { CompensationClaim } from '@/services/compensations/model/compensation-claim';
 import { CompensationDetailsDialog } from './CompensationDetailsDialog';

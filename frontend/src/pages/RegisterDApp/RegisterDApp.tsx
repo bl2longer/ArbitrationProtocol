@@ -1,8 +1,10 @@
 import { useState, FC } from 'react';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
-import { PageTitle } from '@/components/PageTitle';
+import { PageTitle } from '@/components/base/PageTitle';
 import { useDappRegistration } from '@/services/dapp-registry/hooks/useDappRegistry';
 import { isAddress } from 'viem';
+import { EnsureWalletNetwork } from '@/components/EnsureWalletNetwork/EnsureWalletNetwork';
+import { Button } from '@/components/ui/button';
 
 const RegisterDApp: FC = () => {
   const { evmAccount } = useWalletContext();
@@ -65,14 +67,16 @@ const RegisterDApp: FC = () => {
             )}
           </div>
           <div className="mt-6 flex justify-end space-x-3">
-            <button
-              onClick={() => void handleRegisterDApp()}
-              disabled={isPending || !dappAddress}
-              className={`inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${(isPending || !dappAddress) ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-            >
-              {isPending ? 'Registering...' : 'Register'}
-            </button>
+            <EnsureWalletNetwork continuesTo='Register'>
+              <Button
+                onClick={() => void handleRegisterDApp()}
+                disabled={isPending || !dappAddress}
+                className={`inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${(isPending || !dappAddress) ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+              >
+                {isPending ? 'Registering...' : 'Register'}
+              </Button>
+            </EnsureWalletNetwork>
           </div>
         </div>
       </div>

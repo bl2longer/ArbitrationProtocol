@@ -1,6 +1,7 @@
 ===> Target release date: dec 30
 
 - navbar: wallet connect status
+- use Button from chadcn and update to the right blue color
 - write contract: practice with register dapp page
 
 - arbitrator dashboard

@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { EVMProvider } from './contexts/EVMContext/EVMContext';
-import Layout from './components/Layout';
+import Layout from './components/layout/Layout';
 import ArbitratorList from './pages/ArbitratorList/ArbitratorList';
 import ArbitratorDashboard from './pages/ArbitratorDashboard/ArbitratorDashboard';
 import TransactionList from './pages/TransactionList/TransactionList';

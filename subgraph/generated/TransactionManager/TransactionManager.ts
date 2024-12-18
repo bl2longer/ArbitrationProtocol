@@ -54,6 +54,42 @@ export class ArbitrationSubmitted__Params {
   }
 }
 
+export class Initialized extends ethereum.Event {
+  get params(): Initialized__Params {
+    return new Initialized__Params(this);
+  }
+}
+
+export class Initialized__Params {
+  _event: Initialized;
+
+  constructor(event: Initialized) {
+    this._event = event;
+  }
+
+  get version(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+}
+
+export class Initialized1 extends ethereum.Event {
+  get params(): Initialized1__Params {
+    return new Initialized1__Params(this);
+  }
+}
+
+export class Initialized1__Params {
+  _event: Initialized1;
+
+  constructor(event: Initialized1) {
+    this._event = event;
+  }
+
+  get compensationManager(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
 export class OwnershipTransferred extends ethereum.Event {
   get params(): OwnershipTransferred__Params {
     return new OwnershipTransferred__Params(this);
@@ -76,6 +112,24 @@ export class OwnershipTransferred__Params {
   }
 }
 
+export class TransactionCancelled extends ethereum.Event {
+  get params(): TransactionCancelled__Params {
+    return new TransactionCancelled__Params(this);
+  }
+}
+
+export class TransactionCancelled__Params {
+  _event: TransactionCancelled;
+
+  constructor(event: TransactionCancelled) {
+    this._event = event;
+  }
+
+  get id(): Bytes {
+    return this._event.parameters[0].value.toBytes();
+  }
+}
+
 export class TransactionCompleted extends ethereum.Event {
   get params(): TransactionCompleted__Params {
     return new TransactionCompleted__Params(this);
@@ -95,6 +149,58 @@ export class TransactionCompleted__Params {
 
   get txId(): Bytes {
     return this._event.parameters[1].value.toBytes();
+  }
+}
+
+export class TransactionCompleted1 extends ethereum.Event {
+  get params(): TransactionCompleted1__Params {
+    return new TransactionCompleted1__Params(this);
+  }
+}
+
+export class TransactionCompleted1__Params {
+  _event: TransactionCompleted1;
+
+  constructor(event: TransactionCompleted1) {
+    this._event = event;
+  }
+
+  get id(): Bytes {
+    return this._event.parameters[0].value.toBytes();
+  }
+
+  get arbitratorFee(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get systemFee(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+}
+
+export class TransactionCreated extends ethereum.Event {
+  get params(): TransactionCreated__Params {
+    return new TransactionCreated__Params(this);
+  }
+}
+
+export class TransactionCreated__Params {
+  _event: TransactionCreated;
+
+  constructor(event: TransactionCreated) {
+    this._event = event;
+  }
+
+  get id(): Bytes {
+    return this._event.parameters[0].value.toBytes();
+  }
+
+  get sender(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get arbitrator(): Address {
+    return this._event.parameters[2].value.toAddress();
   }
 }
 
@@ -632,22 +738,6 @@ export class ConstructorCall__Inputs {
   constructor(call: ConstructorCall) {
     this._call = call;
   }
-
-  get _arbitratorManager(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get _dappRegistry(): Address {
-    return this._call.inputValues[1].value.toAddress();
-  }
-
-  get _configManager(): Address {
-    return this._call.inputValues[2].value.toAddress();
-  }
-
-  get initialOwner(): Address {
-    return this._call.inputValues[3].value.toAddress();
-  }
 }
 
 export class ConstructorCall__Outputs {
@@ -688,6 +778,36 @@ export class CompleteTransactionCall__Outputs {
   }
 }
 
+export class InitCompensationManagerCall extends ethereum.Call {
+  get inputs(): InitCompensationManagerCall__Inputs {
+    return new InitCompensationManagerCall__Inputs(this);
+  }
+
+  get outputs(): InitCompensationManagerCall__Outputs {
+    return new InitCompensationManagerCall__Outputs(this);
+  }
+}
+
+export class InitCompensationManagerCall__Inputs {
+  _call: InitCompensationManagerCall;
+
+  constructor(call: InitCompensationManagerCall) {
+    this._call = call;
+  }
+
+  get _compensationManager(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class InitCompensationManagerCall__Outputs {
+  _call: InitCompensationManagerCall;
+
+  constructor(call: InitCompensationManagerCall) {
+    this._call = call;
+  }
+}
+
 export class InitializeCall extends ethereum.Call {
   get inputs(): InitializeCall__Inputs {
     return new InitializeCall__Inputs(this);
@@ -705,8 +825,16 @@ export class InitializeCall__Inputs {
     this._call = call;
   }
 
-  get _compensationManager(): Address {
+  get _arbitratorManager(): Address {
     return this._call.inputValues[0].value.toAddress();
+  }
+
+  get _dappRegistry(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
+  get _configManager(): Address {
+    return this._call.inputValues[2].value.toAddress();
   }
 }
 

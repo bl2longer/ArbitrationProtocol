@@ -9,6 +9,25 @@
         {
           "indexed": true,
           "internalType": "address",
+          "name": "oldConfigManager",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newConfigManager",
+          "type": "address"
+        }
+      ],
+      "name": "ConfigManagerUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
           "name": "dapp",
           "type": "address"
         }

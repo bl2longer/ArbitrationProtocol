@@ -154,6 +154,34 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "_zkService",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_transactionManager",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_configManager",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_arbitratorManager",
+          "type": "address"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "bytes32",
           "name": "claimId",
           "type": "bytes32"

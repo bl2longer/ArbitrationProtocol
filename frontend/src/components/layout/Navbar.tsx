@@ -4,6 +4,7 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useEVMContext } from '@/contexts/EVMContext/EVMContext';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 import { WalletIcon } from '@heroicons/react/24/outline';
+import { Button } from '../ui/button';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -22,8 +23,6 @@ export default function Navbar() {
     { name: 'Register DApp', href: '/register-dapp' },
     { name: 'Register Arbitrator', href: '/register-arbitrator' },
   ];
-
-  console.log("evmAccount", evmAccount)
 
   return (
     <Disclosure as="nav" className="bg-white shadow">
@@ -44,7 +43,7 @@ export default function Navbar() {
                       to={item.href}
                       className={classNames(
                         item.href === location.pathname
-                          ? 'border-blue-500 text-gray-900'
+                          ? 'border-primary text-gray-900'
                           : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
                         'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium'
                       )}
@@ -55,14 +54,11 @@ export default function Navbar() {
                 </div>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:items-center">
-                <button
-                  onClick={connect}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
+                <Button onClick={connect}>
                   {evmAccount
                     ? `${evmAccount.slice(0, 6)}...${evmAccount.slice(-4)}`
                     : 'Connect Wallet'}
-                </button>
+                </Button>
               </div>
               <div className="-mr-2 flex items-center sm:hidden">
                 {/* Mobile menu button */}
@@ -104,13 +100,10 @@ export default function Navbar() {
                   {evmAccount.slice(0, 6)}...{evmAccount.slice(-4)}
                 </span>
               ) : (
-                <button
-                  onClick={connect}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
+                <Button onClick={connect}>
                   <WalletIcon className="h-5 w-5 mr-2" />
                   Connect Wallet
-                </button>
+                </Button>
               )}
             </div>
           </Disclosure.Panel>

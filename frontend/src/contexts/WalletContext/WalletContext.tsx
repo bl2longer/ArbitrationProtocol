@@ -2,6 +2,7 @@ import { NetworkMode, networkMode$ } from "@/services/network/network";
 import { createContext, FC, memo, ReactNode, useContext, useEffect, useState } from "react";
 import { BehaviorSubject } from "rxjs";
 import { EVMProvider, useEVMContext } from "../EVMContext/EVMContext";
+import { BitcoinWalletChooserProvider } from "@/components/dialogs/BitcoinWalletChooser/BitcoinWalletChooser";
 
 const EVM_ACCOUNT_STORAGE_KEY = "evm-account";
 const EVM_CHAIN_ID_STORAGE_KEY = "evm-chain-id";
@@ -36,7 +37,6 @@ const AutoReconnect: FC<{ children: ReactNode }> = ({ children }) => {
     if (connecting || !evmAccount || !window.ethereum)
       return;
 
-    console.log("Reconnecting to the injected wallet provider");
     setConnecting(true);
     handleConnect();
   }, [evmAccount, handleConnect, connecting]);
@@ -105,9 +105,11 @@ export const WalletProvider = memo(({ children }: Web3ProviderProps) => {
   return (
     <WalletContext.Provider value={{ evmAccount, setEvmAccount, evmChainId, setEvmChainId, bitcoinAccount, setBitcoinAccount, bitcoinProvider, setBitcoinProvider, networkMode, setNetworkMode }}>
       <EVMProvider>
-        <AutoReconnect>
-          {children}
-        </AutoReconnect>
+        <BitcoinWalletChooserProvider>
+          <AutoReconnect>
+            {children}
+          </AutoReconnect>
+        </BitcoinWalletChooserProvider>
       </EVMProvider>
     </WalletContext.Provider>
   );

@@ -1,12 +1,5 @@
 import { useState, useEffect, useMemo, FC } from 'react';
-import { Dialog } from '@headlessui/react';
-import { mockTransactions } from '../../mock/data';
-import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
-import { Transaction } from '@/services/transactions/model/transaction';
-import { useTransactions } from '@/services/transactions/hooks/useTransactions';
-import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
-import { PageTitle } from '@/components/PageTitle';
-import { SearchInput } from '@/components/SearchInput';
+import { PageTitle } from '@/components/base/PageTitle';
 import { RadioGroup } from '@headlessui/react';
 
 const RegisterArbitrator: FC = () => {

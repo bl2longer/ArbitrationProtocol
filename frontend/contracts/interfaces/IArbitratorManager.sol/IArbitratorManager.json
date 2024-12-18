@@ -79,6 +79,25 @@
         {
           "indexed": true,
           "internalType": "address",
+          "name": "oldManager",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newManager",
+          "type": "address"
+        }
+      ],
+      "name": "CompensationManagerUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
           "name": "transactionManager",
           "type": "address"
         },
@@ -205,6 +224,25 @@
       "type": "event"
     },
     {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "oldManager",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newManager",
+          "type": "address"
+        }
+      ],
+      "name": "TransactionManagerUpdated",
+      "type": "event"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -299,6 +337,21 @@
               "internalType": "uint256",
               "name": "lastArbitrationTime",
               "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "revenueBtcPubKey",
+              "type": "bytes"
+            },
+            {
+              "internalType": "string",
+              "name": "revenueBtcAddress",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "revenueETHAddress",
+              "type": "address"
             }
           ],
           "internalType": "struct DataTypes.ArbitratorInfo",
@@ -345,6 +398,24 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_transactionManager",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_compensationManager",
+          "type": "address"
+        }
+      ],
+      "name": "initTransactionAndCompensationManager",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -474,6 +545,19 @@
       "inputs": [
         {
           "internalType": "address",
+          "name": "_compensationManager",
+          "type": "address"
+        }
+      ],
+      "name": "setCompensationManager",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
           "name": "operator",
           "type": "address"
         },
@@ -512,6 +596,19 @@
         }
       ],
       "name": "setRevenueAddresses",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_transactionManager",
+          "type": "address"
+        }
+      ],
+      "name": "setTransactionManager",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

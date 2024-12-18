@@ -11,9 +11,9 @@ import { useArbitrators } from '@/services/arbitrators/hooks/useArbitrators';
 import { ArbitratorInfo } from '@/services/arbitrators/model/arbitrator-info';
 import { ListView } from './ListView';
 import { GridView } from './GridView';
-import { PageTitle } from '@/components/PageTitle';
-import { SearchInput } from '@/components/SearchInput';
-import { Loading } from '@/components/Loading';
+import { PageTitle } from '@/components/base/PageTitle';
+import { SearchInput } from '@/components/base/SearchInput';
+import { Loading } from '@/components/base/Loading';
 
 export type SortConfig = {
   key: 'stake' | 'address';
@@ -60,13 +60,13 @@ export default function ArbitratorList() {
           <div className="flex rounded-lg shadow-sm">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-2 ${viewMode === 'grid' ? 'bg-blue-500 text-white' : 'bg-white text-gray-600'} rounded-l-lg border`}
+              className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-white' : 'bg-white text-gray-600'} rounded-l-lg border`}
             >
               <Squares2X2Icon className="h-5 w-5" />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-2 ${viewMode === 'list' ? 'bg-blue-500 text-white' : 'bg-white text-gray-600'} rounded-r-lg border-t border-r border-b`}
+              className={`p-2 ${viewMode === 'list' ? 'bg-primary text-white' : 'bg-white text-gray-600'} rounded-r-lg border-t border-r border-b`}
             >
               <ListBulletIcon className="h-5 w-5" />
             </button>

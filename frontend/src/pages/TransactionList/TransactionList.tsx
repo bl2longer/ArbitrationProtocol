@@ -1,14 +1,13 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Dialog } from '@headlessui/react';
-import { ethers } from 'ethers';
-import { mockTransactions } from '../../mock/data';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 import { Transaction } from '@/services/transactions/model/transaction';
 import { useTransactions } from '@/services/transactions/hooks/useTransactions';
 import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
-import { PageTitle } from '@/components/PageTitle';
-import { SearchInput } from '@/components/SearchInput';
-import { Loading } from '@/components/Loading';
+import { PageTitle } from '@/components/base/PageTitle';
+import { SearchInput } from '@/components/base/SearchInput';
+import { Loading } from '@/components/base/Loading';
+import { Button } from '@/components/ui/button';
 
 // Utility function to safely format ether values
 // const formatEther = (value: string): string => {
@@ -138,7 +137,7 @@ export default function TransactionList() {
                     setSelectedFields(selectedFields.filter(f => f !== key));
                   }
                 }}
-                className="form-checkbox h-4 w-4 text-blue-600"
+                className="h-4 w-4 text-primary focus:ring-1 focus:ring-primary"
               />
               <span className="ml-2">{label}</span>
             </label>
@@ -170,15 +169,13 @@ export default function TransactionList() {
                 ))}
                 <td className="px-6 py-4 text-sm">
                   {tx.status === "Active" && (
-                    <button
+                    <Button
                       onClick={() => {
                         setSelectedTransaction(tx);
                         setIsSignDialogOpen(true);
-                      }}
-                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    >
+                      }} >
                       Submit Arbitration
-                    </button>
+                    </Button>
                   )}
                 </td>
               </tr>
