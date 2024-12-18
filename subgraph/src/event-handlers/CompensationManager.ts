@@ -2,6 +2,8 @@ import { ethereum } from "@graphprotocol/graph-ts";
 import { CompensationClaimed, CompensationWithdrawn } from "../../generated/CompensationManager/CompensationManager";
 import { CompensationClaim } from "../../generated/schema";
 
+const compensationManagerAddress = "0x1234567890abcdef1234567890abcdef12345678"; // Update with new address
+
 export function handleCompensationClaimed(event: CompensationClaimed): void {
   const compensationClaim = getCompensationClaim(event.block, event.params.claimId.toHexString());
   compensationClaim.claimer = event.params.claimer.toHexString();

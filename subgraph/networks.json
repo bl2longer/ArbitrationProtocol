@@ -13,16 +13,16 @@
   },
   "esc-testnet": {
     "ArbitratorManager": {
-      "address": "0x4c8623d575DbfF760Ac54DA4b8BB1148829FcaaB",
-      "startBlock": 20984943
+      "address": "0xa63339B2e236F6A1830A3DB35D73b64BE8CF2E6A",
+      "startBlock": 21014842
     },
     "TransactionManager": {
-      "address": "0x9A776ADa61772f54569d73774d836b3c2BaFD223",
-      "startBlock": 20983863
+      "address": "0x1637106Eb7638Dd987715C8aF133F399bba862f2",
+      "startBlock": 21014855
     },
     "CompensationManager": {
-      "address": "0x82788B3CF0349dF42378ADaCfdfAdb1C316D5D29",
-      "startBlock": 20983914
+      "address": "0xd39a816F8b6c298aF8efd14cB260F07bAB8386aF",
+      "startBlock": 21014464
     }
   }
 }

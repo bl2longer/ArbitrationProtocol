@@ -27,11 +27,11 @@ export const chainList: ChainConfig[] = [
       wrappedAddress: "0x517E9e5d46C1EA8aB6f78677d6114Ef47F71f6c4"
     },
     contracts: {
-      arbitratorManager: "",
-      compensationManager: "",
-      configManager: "",
-      dappRegistry: "",
-      transactionManager: ""
+      arbitratorManager: "0xa63339B2e236F6A1830A3DB35D73b64BE8CF2E6A",
+      compensationManager: "0xd39a816F8b6c298aF8efd14cB260F07bAB8386aF",
+      configManager: "0xc9D4AA52c345Efe835A207aADAE8575CC086632c",
+      dappRegistry: "0x308c2fD094E2f1356a0843d197a29A6DaedBA023",
+      transactionManager: "0x1637106Eb7638Dd987715C8aF133F399bba862f2",
     },
     tokens: [
       escBtcToken,
