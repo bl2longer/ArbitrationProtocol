@@ -1,4 +1,3 @@
-// Renamed file to .eslintrc.cjs
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',

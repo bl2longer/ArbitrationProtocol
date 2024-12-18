@@ -46,27 +46,17 @@ type ArbitratorInfo @entity {
 
 type Transaction @entity {
     id: ID! # required by thegraph
-    "DApp address"
-    dapp: String!
-    "Arbitrator address"
-    arbitrator: String!
-    "Start time of the transaction"
-    startTime: BigInt!
-    "Deadline for the transaction"
-    deadline: BigInt!
-    "Unsigned Bitcoin transaction"
-    btcTx: Bytes!
-    "Hash of the Bitcoin transaction with empty input scripts"
-    btcTxHash: Bytes!
-    "Transaction status"
+    txId: String! # Transaction ID, same as ID
+    dapp: String # DApp address
+    arbitrator: String
+    startTime: BigInt
+    deadline: BigInt
+    btcTx: Bytes # Unsigned Bitcoin transaction
+    btcTxHash: Bytes # Hash of the Bitcoin transaction with empty input scripts
     status: TransactionStatus!
-    "Deposited fee amount"
-    depositedFee: BigInt!
-    "Arbitrator's signature"
-    signature: Bytes
-    "Compensation receiver address"
+    depositedFee: BigInt
+    signature: Bytes # Arbitrator's signature
     compensationReceiver: String
-    "Timeout compensation receiver address"
     timeoutCompensationReceiver: String
 }
 

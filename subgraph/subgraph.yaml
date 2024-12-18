@@ -16,7 +16,7 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.6
       entities:
-        - Arbitrator
+        - ArbitratorInfo
         - User
       abis:
         - name: ArbitratorManager
@@ -40,3 +40,32 @@ dataSources:
           handler: handleStakeWithdrawn
         - event: OperatorSet(indexed address,indexed address,bytes,string)
           handler: handleOperatorSet
+  - name: TransactionManager
+    kind: ethereum/contract
+    network: esc-testnet
+    source:
+      abi: TransactionManager
+      address: "0x9A776ADa61772f54569d73774d836b3c2BaFD223"
+      startBlock: 20983863
+    mapping:
+      file: ./src/event-handlers/TransactionManager.ts
+      language: wasm/assemblyscript
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      entities:
+        - Transaction
+        - User
+      abis:
+        - name: TransactionManager
+          file: ./src/abis/TransactionManager.json
+      eventHandlers:
+        - event: ArbitrationRequested(indexed address,indexed bytes32)
+          handler: handleArbitrationRequested
+        - event: ArbitrationSubmitted(indexed address,indexed bytes32)
+          handler: handleArbitrationSubmitted
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: TransactionCompleted(indexed address,indexed bytes32)
+          handler: handleTransactionCompleted
+        - event: TransactionRegistered(indexed bytes32,indexed address,indexed address)
+          handler: handleTransactionRegistered

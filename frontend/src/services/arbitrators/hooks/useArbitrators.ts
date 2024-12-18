@@ -1,6 +1,6 @@
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
-import { fetchArbitrators } from "@/services/subgraph/subgraph";
 import { useCallback, useEffect, useState } from "react";
+import { fetchArbitrators } from "../arbitrators.service";
 import { ArbitratorInfo } from "../model/arbitrator-info";
 
 export const useArbitrators = (): { arbitrators: ArbitratorInfo[] } => {
@@ -9,8 +9,8 @@ export const useArbitrators = (): { arbitrators: ArbitratorInfo[] } => {
 
   const refreshArbitrators = useCallback(() => {
     if (activeChain) {
-      fetchArbitrators(activeChain, 0, 100).then(({ arbitrators }) => {
-        setArbitrators(arbitrators);
+      void fetchArbitrators(activeChain, 0, 100).then(({ arbitrators: _arbitrators }) => {
+        setArbitrators(_arbitrators);
       });
     }
   }, [activeChain]);

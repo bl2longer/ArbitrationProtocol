@@ -1,16 +1,16 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Fragment } from 'react';
-import { Disclosure, Menu, Transition } from '@headlessui/react';
+import { Disclosure } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useEVMContext } from '@/contexts/EVMContext/EVMContext';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
+import { WalletIcon } from '@heroicons/react/24/outline';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
 export default function Navbar() {
-  const { evmAccount: account } = useWalletContext();
+  const { evmAccount } = useWalletContext();
   const { connect } = useEVMContext();
   const location = useLocation();
 
@@ -19,7 +19,11 @@ export default function Navbar() {
     { name: 'Dashboard', href: '/dashboard' },
     { name: 'Transactions', href: '/transactions' },
     { name: 'Compensations', href: '/compensations' },
+    { name: 'Register DApp', href: '/register-dapp' },
+    { name: 'Register Arbitrator', href: '/register-arbitrator' },
   ];
+
+  console.log("evmAccount", evmAccount)
 
   return (
     <Disclosure as="nav" className="bg-white shadow">
@@ -55,8 +59,8 @@ export default function Navbar() {
                   onClick={connect}
                   className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
-                  {account
-                    ? `${account.slice(0, 6)}...${account.slice(-4)}`
+                  {evmAccount
+                    ? `${evmAccount.slice(0, 6)}...${evmAccount.slice(-4)}`
                     : 'Connect Wallet'}
                 </button>
               </div>
@@ -92,17 +96,22 @@ export default function Navbar() {
                 </Disclosure.Button>
               ))}
             </div>
-            <div className="border-t border-gray-200 pb-3 pt-4">
-              <div className="flex items-center px-4">
+
+            {/* Wallet status/connection */}
+            <div className="flex items-center">
+              {evmAccount ? (
+                <span className="text-sm text-gray-500 bg-gray-100 px-4 py-2 rounded-lg">
+                  {evmAccount.slice(0, 6)}...{evmAccount.slice(-4)}
+                </span>
+              ) : (
                 <button
-                  onClick={() => connect()}
-                  className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  onClick={connect}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  {account
-                    ? `${account.slice(0, 6)}...${account.slice(-4)}`
-                    : 'Connect Wallet'}
+                  <WalletIcon className="h-5 w-5 mr-2" />
+                  Connect Wallet
                 </button>
-              </div>
+              )}
             </div>
           </Disclosure.Panel>
         </>

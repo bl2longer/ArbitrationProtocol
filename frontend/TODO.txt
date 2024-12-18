@@ -1,19 +1,20 @@
-- Target release date: dec 30
+===> Target release date: dec 30
 
-- Setup zustand for state management
-- Replace template components with https://ui.shadcn.com/
-- Setup and code subgraph
-
-- Features:
-  - Arbitrator registration (incl staking)
-  - Registered arbitrator dashboard (incl editing)
+- transaction list
+- navbar: wallet connect status
+- Arbitrator registration (incl staking)
+- Registered arbitrator dashboard / edit
+    
   - Compensations: 
     - TBD: who is the actor that received compensations? end user?
-  - Transaction list  
-    - TBD what transactions are we talking about? 
   - Register dapp
     - TBD: what is a "dapp" in this context? register for what?
+    - intro about what a dapp is
 
+P2:
+- Try zustand for state management instead of rxjs
+- Handle subgraph api errors, forward to hooks and pages
+- Replace headless UI components with https://ui.shadcn.com/
 
 elastos testnet contract address: {
     "CONFIG_MANAGER": "0xB864dc2Ec7A3A72182b7F01c7bda6c1ec9336621",

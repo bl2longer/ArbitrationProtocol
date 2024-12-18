@@ -2,7 +2,7 @@ import { ArbitratorInfo as ArbitratorInfoDTO } from "@/services/subgraph/dto/arb
 import { tokenToReadableValue } from "@/services/tokens/tokens";
 import { Expose, Transform } from "class-transformer";
 
-export class ArbitratorInfo implements Omit<ArbitratorInfoDTO, "ethAmount" | "createdAt" | "arbitrator"> {
+export class ArbitratorInfo implements Omit<ArbitratorInfoDTO, "ethAmount" | "createdAt"> {
   @Expose() public id: string;
   @Expose() public address: string;
   @Expose() @Transform(({ value }) => tokenToReadableValue(value, 18)) public ethAmount: bigint;

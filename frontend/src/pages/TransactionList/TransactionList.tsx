@@ -1,8 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Dialog } from '@headlessui/react';
 import { ethers } from 'ethers';
-import { mockTransactions } from '../mock/data';
+import { mockTransactions } from '../../mock/data';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
+import { Transaction } from '@/services/transactions/model/transaction';
+import { useTransactions } from '@/services/transactions/hooks/useTransactions';
+import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
+import { PageTitle } from '@/components/PageTitle';
+import { SearchInput } from '@/components/SearchInput';
 
 // Utility function to safely format ether values
 // const formatEther = (value: string): string => {
@@ -14,16 +19,16 @@ import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 //   }
 // };
 
-interface Transaction {
-  dapp: string;
-  arbitrator: string;
-  startTime: number;
-  deadline: number;
-  btcTx: string;
-  status: number;
-  depositedFee: string;
-  signature: string;
-}
+// interface Transaction {
+//   dapp: string;
+//   arbitrator: string;
+//   startTime: number;
+//   deadline: number;
+//   btcTx: string;
+//   status: number;
+//   depositedFee: string;
+//   signature: string;
+// }
 
 const statusMap = {
   0: 'Active',
@@ -46,33 +51,13 @@ const fieldLabels = {
 
 export default function TransactionList() {
   const { evmAccount: account } = useWalletContext();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const { transactions: rawTransactions } = useTransactions();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFields, setSelectedFields] = useState<string[]>(Object.keys(fieldLabels));
   const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [signature, setSignature] = useState('');
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadData = () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        // Always use mock data for now since we're in development
-        setTransactions(mockTransactions);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error loading transactions:', err);
-        setError('Failed to load transactions');
-        setLoading(false);
-      }
-    };
-
-    void loadData();
-  }, []);
 
   const handleSubmitArbitration = () => {
     if (!selectedTransaction || !signature) return;
@@ -86,18 +71,18 @@ export default function TransactionList() {
     }
   };
 
-  const filteredTransactions = transactions.filter(tx => {
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      tx.dapp.toLowerCase().includes(searchLower) ||
-      tx.arbitrator.toLowerCase().includes(searchLower) ||
-      tx.btcTx.toLowerCase().includes(searchLower)
-    );
-  });
+  const transactions = useMemo(() => {
+    return rawTransactions.filter(tx => {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        tx.dapp.toLowerCase().includes(searchLower) ||
+        tx.arbitrator.toLowerCase().includes(searchLower) ||
+        tx.btcTx.toLowerCase().includes(searchLower)
+      );
+    });
+  }, [rawTransactions, searchTerm]);
 
-  const formatDate = (timestamp: number) => {
-    return new Date(timestamp * 1000).toLocaleString();
-  };
+  const loading = useMemo(() => isNullOrUndefined(transactions), [transactions]);
 
   const formatValue = (key: string, value: any) => {
     if (key === 'startTime' || key === 'deadline') {
@@ -135,19 +120,17 @@ export default function TransactionList() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="Search transactions..."
-          className="w-full px-4 py-2 border rounded-lg"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+    <div className="container space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+        <PageTitle className="flex flex-grow sm:flex-grow-0">Transaction List</PageTitle>
+        <div>
+          <SearchInput placeholder="Search transactions..."
+            value={searchTerm}
+            onChange={(newValue) => setSearchTerm(newValue)} />
+        </div>
       </div>
 
       <div className="mb-6">
-        <h3 className="text-lg font-medium mb-2">Display Fields</h3>
         <div className="flex flex-wrap gap-2">
           {Object.entries(fieldLabels).map(([key, label]) => (
             <label key={key} className="inline-flex items-center">
@@ -161,7 +144,7 @@ export default function TransactionList() {
                     setSelectedFields(selectedFields.filter(f => f !== key));
                   }
                 }}
-                className="form-checkbox h-5 w-5 text-blue-600"
+                className="form-checkbox h-4 w-4 text-blue-600"
               />
               <span className="ml-2">{label}</span>
             </label>
@@ -184,7 +167,7 @@ export default function TransactionList() {
             </tr>
           </thead>
           <tbody>
-            {filteredTransactions.map((tx, index) => (
+            {transactions.map((tx, index) => (
               <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
                 {selectedFields.map(field => (
                   <td key={field} className="px-6 py-4 text-sm text-gray-900">
@@ -192,7 +175,7 @@ export default function TransactionList() {
                   </td>
                 ))}
                 <td className="px-6 py-4 text-sm">
-                  {tx.status === 0 && (
+                  {tx.status === "Active" && (
                     <button
                       onClick={() => {
                         setSelectedTransaction(tx);

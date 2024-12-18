@@ -4,11 +4,11 @@ import { EVMProvider } from './contexts/EVMContext/EVMContext';
 import Layout from './components/Layout';
 import ArbitratorList from './pages/ArbitratorList/ArbitratorList';
 import ArbitratorDashboard from './pages/ArbitratorDashboard';
-import TransactionList from './pages/TransactionList';
+import TransactionList from './pages/TransactionList/TransactionList';
 import CompensationList from './pages/CompensationList';
-import React from 'react';
-import { useArbitrators } from './services/arbitrators/hooks/useArbitrators';
 import { WalletProvider } from './contexts/WalletContext/WalletContext';
+import RegisterDApp from './pages/RegisterDApp/RegisterDApp';
+import RegisterArbitrator from './pages/RegisterArbitrator/RegisterArbitrator';
 
 function App() {
   return (
@@ -21,6 +21,8 @@ function App() {
             <Route path="/dashboard" element={<ArbitratorDashboard />} />
             <Route path="/transactions" element={<TransactionList />} />
             <Route path="/compensations" element={<CompensationList />} />
+            <Route path="/register-dapp" element={<RegisterDApp />} />
+            <Route path="/register-arbitrator" element={<RegisterArbitrator />} />
           </Routes>
         </Layout>
       </Router>
