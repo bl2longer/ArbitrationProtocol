@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArbitratorInfo } from '../types';
+import { ArbitratorInfo } from '../../types';
 import { PencilIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 import { useEVMContext } from '@/contexts/EVMContext/EVMContext';

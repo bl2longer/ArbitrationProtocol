@@ -302,6 +302,18 @@ export class ArbitratorManager__getArbitratorInfoResultValue0Struct extends ethe
   get lastArbitrationTime(): BigInt {
     return this[12].toBigInt();
   }
+
+  get revenueBtcPubKey(): Bytes {
+    return this[13].toBytes();
+  }
+
+  get revenueBtcAddress(): string {
+    return this[14].toString();
+  }
+
+  get revenueETHAddress(): Address {
+    return this[15].toAddress();
+  }
 }
 
 export class ArbitratorManager extends ethereum.SmartContract {
@@ -356,7 +368,7 @@ export class ArbitratorManager extends ethereum.SmartContract {
   ): ArbitratorManager__getArbitratorInfoResultValue0Struct {
     let result = super.call(
       "getArbitratorInfo",
-      "getArbitratorInfo(address):((address,uint256,uint256,uint8,bytes32,uint256,address,address,uint256[],address,bytes,string,uint256))",
+      "getArbitratorInfo(address):((address,uint256,uint256,uint8,bytes32,uint256,address,address,uint256[],address,bytes,string,uint256,bytes,string,address))",
       [ethereum.Value.fromAddress(arbitratorAddress)],
     );
 
@@ -370,7 +382,7 @@ export class ArbitratorManager extends ethereum.SmartContract {
   ): ethereum.CallResult<ArbitratorManager__getArbitratorInfoResultValue0Struct> {
     let result = super.tryCall(
       "getArbitratorInfo",
-      "getArbitratorInfo(address):((address,uint256,uint256,uint8,bytes32,uint256,address,address,uint256[],address,bytes,string,uint256))",
+      "getArbitratorInfo(address):((address,uint256,uint256,uint8,bytes32,uint256,address,address,uint256[],address,bytes,string,uint256,bytes,string,address))",
       [ethereum.Value.fromAddress(arbitratorAddress)],
     );
     if (result.reverted) {

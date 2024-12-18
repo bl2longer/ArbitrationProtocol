@@ -743,16 +743,20 @@ export class CompensationClaim extends Entity {
     this.set("claimed", Value.fromBoolean(value));
   }
 
-  get evidence(): Bytes {
+  get evidence(): Bytes | null {
     let value = this.get("evidence");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return null;
     } else {
       return value.toBytes();
     }
   }
 
-  set evidence(value: Bytes) {
-    this.set("evidence", Value.fromBytes(value));
+  set evidence(value: Bytes | null) {
+    if (!value) {
+      this.unset("evidence");
+    } else {
+      this.set("evidence", Value.fromBytes(<Bytes>value));
+    }
   }
 }

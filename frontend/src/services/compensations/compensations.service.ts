@@ -1,21 +1,21 @@
 import { ChainConfig } from '@/services/chains/chain-config';
-import { ArbitratorInfo } from '../arbitrators/model/arbitrator-info';
 import { dtoToClass } from "../class-transformer/class-transformer-utils";
-import { ArbitratorInfo as ArbitratorInfoDTO } from '../subgraph/dto/arbitrator-info';
+import { CompensationClaim } from '../compensations/model/compensation-claim';
+import { CompensationClaim as CompensationClaimDTO } from '../subgraph/dto/compensation-claim';
 import { SubgraphGQLResponse } from '../subgraph/gql-response';
 
-type FetchArbitratorsResponse = SubgraphGQLResponse<{
-  arbitratorInfos: ArbitratorInfoDTO[];
+type FetchCompensationsResponse = SubgraphGQLResponse<{
+  compensations: CompensationClaimDTO[];
 }>;
 
 /**
- * Fetch all arbitrators from the subsgraph.
+ * Fetch all arbitrators from the subgraph.
  */
-export const fetchArbitrators = async (chain: ChainConfig, start = 0, limit = 100): Promise<{ arbitrators: ArbitratorInfo[], total: number }> => {
+export const fetchCompensations = async (chain: ChainConfig, start = 0, limit = 100): Promise<{ compensations: CompensationClaim[], total: number }> => {
   try {
     const resultsPerPage = 1000;
     let startAt = 0;
-    let pageArbitrators: ArbitratorInfoDTO[] = [];
+    let pageCompensations: CompensationClaimDTO[] = [];
     let total = 0;
 
     // eslint-disable-next-line no-constant-condition
@@ -48,7 +48,7 @@ export const fetchArbitrators = async (chain: ChainConfig, start = 0, limit = 10
         headers: new Headers({ 'Content-Type': 'application/json' })
       });
 
-      const gqlResponse: FetchArbitratorsResponse = await response.json();
+      const gqlResponse: FetchCompensationsResponse = await response.json();
 
       if (gqlResponse.errors?.length > 0) {
         for (const error of gqlResponse.errors)
@@ -56,10 +56,10 @@ export const fetchArbitrators = async (chain: ChainConfig, start = 0, limit = 10
       }
 
       const data = gqlResponse?.data;
-      pageArbitrators.push(...(data?.arbitratorInfos || []));
-      total += pageArbitrators?.length || 0;
+      pageCompensations.push(...(data?.compensations || []));
+      total += pageCompensations?.length || 0;
 
-      if (pageArbitrators.length < resultsPerPage) {
+      if (pageCompensations.length < resultsPerPage) {
         // No more page to fetch
         break;
       }
@@ -67,12 +67,12 @@ export const fetchArbitrators = async (chain: ChainConfig, start = 0, limit = 10
       startAt += resultsPerPage;
     }
 
-    const arbitratorInfos = pageArbitrators.slice(start, start + limit);
+    const compensations = pageCompensations.slice(start, start + limit);
 
-    console.log("Fetched arbitrators:", arbitratorInfos);
+    console.log("Fetched compensations:", compensations);
 
     return {
-      arbitrators: arbitratorInfos.map(a => dtoToClass(a, ArbitratorInfo)),
+      compensations: compensations.map(c => dtoToClass(c, CompensationClaim)),
       total
     };
   } catch (error) {

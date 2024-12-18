@@ -19,6 +19,10 @@
     "TransactionManager": {
       "address": "0x9A776ADa61772f54569d73774d836b3c2BaFD223",
       "startBlock": 20983863
+    },
+    "CompensationManager": {
+      "address": "0x82788B3CF0349dF42378ADaCfdfAdb1C316D5D29",
+      "startBlock": 20983914
     }
   }
 }

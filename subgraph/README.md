@@ -38,4 +38,4 @@ or
 - `docker ps`
 - `docker exec -it <containerid> bash`
 - `psql -U graph-node`
-- `SELECT * FROM "sgd10"."order" order by "created_at" desc;`
+- `SELECT * FROM "sgd10"."transactions" order by "created_at" desc;`

@@ -13,6 +13,7 @@ import { ListView } from './ListView';
 import { GridView } from './GridView';
 import { PageTitle } from '@/components/PageTitle';
 import { SearchInput } from '@/components/SearchInput';
+import { Loading } from '@/components/Loading';
 
 export type SortConfig = {
   key: 'stake' | 'address';
@@ -46,7 +47,7 @@ export default function ArbitratorList() {
   const loading = useMemo(() => !rawArbitrators, [rawArbitrators]);
 
   if (loading)
-    return <div className="flex justify-center items-center h-64">Loading...</div>;
+    return <Loading />
 
   return (
     <div className="container space-y-6">

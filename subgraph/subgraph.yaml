@@ -69,3 +69,26 @@ dataSources:
           handler: handleTransactionCompleted
         - event: TransactionRegistered(indexed bytes32,indexed address,indexed address)
           handler: handleTransactionRegistered
+  - name: CompensationManager
+    kind: ethereum/contract
+    network: esc-testnet
+    source:
+      abi: CompensationManager
+      address: "0x82788B3CF0349dF42378ADaCfdfAdb1C316D5D29"
+      startBlock: 20983914
+    mapping:
+      file: ./src/event-handlers/CompensationManager.ts
+      language: wasm/assemblyscript
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      entities:
+        - CompensationClaim
+        - User
+      abis:
+        - name: CompensationManager
+          file: ./src/abis/CompensationManager.json
+      eventHandlers:
+        - event: CompensationClaimed(indexed bytes32,indexed address,uint8)
+          handler: handleCompensationClaimed
+        - event: CompensationWithdrawn(indexed bytes32)
+          handler: handleCompensationWithdrawn

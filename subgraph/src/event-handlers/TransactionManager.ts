@@ -45,6 +45,7 @@ function getTransaction(block: ethereum.Block, id: string): Transaction {
 
   const transaction = new Transaction(id);
   transaction.status = "Active";
+  transaction.txId = id;
 
   return transaction;
 }

@@ -2,7 +2,7 @@ import { ChainConfig } from '@/services/chains/chain-config';
 import { dtoToClass } from "../class-transformer/class-transformer-utils";
 import { Transaction } from '../transactions/model/transaction';
 import { Transaction as TransactionDTO } from './dto/transaction';
-import { SubgraphGQLResponse } from './subgraph';
+import { SubgraphGQLResponse } from './gql-response';
 
 type FetchTransactionsResponse = SubgraphGQLResponse<{
   transactions: TransactionDTO[];

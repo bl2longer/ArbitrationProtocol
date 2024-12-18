@@ -8,6 +8,7 @@ import { useTransactions } from '@/services/transactions/hooks/useTransactions';
 import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
 import { PageTitle } from '@/components/PageTitle';
 import { SearchInput } from '@/components/SearchInput';
+import { Loading } from '@/components/Loading';
 
 // Utility function to safely format ether values
 // const formatEther = (value: string): string => {
@@ -103,13 +104,8 @@ export default function TransactionList() {
     return value;
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
+  if (loading)
+    return <Loading />
 
   if (error) {
     return (
@@ -123,11 +119,9 @@ export default function TransactionList() {
     <div className="container space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
         <PageTitle className="flex flex-grow sm:flex-grow-0">Transaction List</PageTitle>
-        <div>
-          <SearchInput placeholder="Search transactions..."
-            value={searchTerm}
-            onChange={(newValue) => setSearchTerm(newValue)} />
-        </div>
+        <SearchInput placeholder="Search transactions..."
+          value={searchTerm}
+          onChange={(newValue) => setSearchTerm(newValue)} />
       </div>
 
       <div className="mb-6">

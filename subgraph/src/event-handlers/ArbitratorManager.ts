@@ -8,7 +8,7 @@ export function handleArbitratorStatusChanged(event: ArbitratorStatusChanged): v
     const status = event.params.status;
 
     const arbitratorInfo = getArbitratorInfo(event.block, arbitratorAddress);
-    arbitratorInfo.status = status.toString(); // TODO: enum
+    arbitratorInfo.status = contractArbitratorStatusToString(status);
 
     arbitratorInfo.save();
 }
@@ -122,16 +122,13 @@ function getArbitratorInfo(block: ethereum.Block, arbitratorAddress: string): Ar
     return arbitratorInfo;
 }
 
-/**
- * Block-flexible mapping that adjust potential changes in contract enums (order change, deletions...) into
- * more stable graphql values.
- *
- * TODO: check block height to know when contract gets breaking changes in order to handle changing order type values differently.
- */
-// function contractToGqlOrderType(contractOrderType: i32, blockHeight: number): GqlOrderType {
-//   switch (contractOrderType) {
-//     case 0: return "BORROW";
-//     case 1: return "LENDING";
-//     default: throw new Error(`Unhandled contract order type value ${contractOrderType}`)
-//   }
-// }
+function contractArbitratorStatusToString(status: i32): string {
+    switch (status) {
+        case 0: return "Active";
+        case 1: return "Working";
+        case 2: return "Paused";
+        case 3: return "Terminated";
+        default:
+            return "Unknown";
+    }
+}

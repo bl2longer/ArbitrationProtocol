@@ -1,20 +1,25 @@
 ===> Target release date: dec 30
 
-- transaction list
 - navbar: wallet connect status
+- write contract: practice with register dapp page
+
+- arbitrator dashboard
+  - method to check/fetch connected wallet's arbitrator
+  - update with real arbitrator info
+  - ability to edit value + write contract
+- arbitrator list:
+  - wrong "term duration" value
+- transaction list
+  - improve with real transactions from subgraph  
+  - refresh icon next to title to get latest transactions
 - Arbitrator registration (incl staking)
 - Registered arbitrator dashboard / edit
-    
-  - Compensations: 
-    - TBD: who is the actor that received compensations? end user?
-  - Register dapp
-    - TBD: what is a "dapp" in this context? register for what?
-    - intro about what a dapp is
 
 P2:
 - Try zustand for state management instead of rxjs
 - Handle subgraph api errors, forward to hooks and pages
 - Replace headless UI components with https://ui.shadcn.com/
+- register dapp: intro about what a dapp is
 
 elastos testnet contract address: {
     "CONFIG_MANAGER": "0xB864dc2Ec7A3A72182b7F01c7bda6c1ec9336621",

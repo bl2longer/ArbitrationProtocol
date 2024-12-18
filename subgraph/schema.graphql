@@ -61,35 +61,21 @@ type Transaction @entity {
 }
 
 type ArbitrationRequest @entity {
-    "Unique identifier for the arbitration request"
     id: ID!
-    "Transaction ID"
     txId: BigInt!
-    "Address of the requester"
     requester: String!
-    "Time when the request was made"
     requestTime: BigInt!
-    "Deadline for the arbitration"
     deadline: BigInt!
-    "Timeout compensation receiver address"
     timeoutCompensationReceiver: String!
-    "Whether the request has been fulfilled"
     fulfilled: Boolean!
 }
 
 type CompensationClaim @entity {
-    "Unique identifier for the compensation claim"
     id: ID!
-    "Arbitrator address"
     arbitrator: String!
-    "Claimer address"
     claimer: String!
-    "Amount claimed"
     amount: BigInt!
-    "Type of compensation claim"
     claimType: CompensationType!
-    "Whether the claim has been processed"
     claimed: Boolean!
-    "Evidence for the claim"
-    evidence: Bytes!
+    evidence: Bytes
 }
