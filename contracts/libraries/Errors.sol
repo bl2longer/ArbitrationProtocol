@@ -32,6 +32,7 @@ library Errors {
     string constant INVALID_TRANSACTION_ID = "Invalid transaction ID";
     string constant INVALID_BTC_TX = "Invalid BTC transaction";
     string constant CANNOT_COMPLETE_TRANSACTION = "Cannot complete transaction";
+    string constant SUBMITTED_SIGNATURES_OUTTIME = "Out submitted signatures time";
 
     // Arbitrator related errors
     string constant ARBITRATOR_ALREADY_REGISTERED = "Arbitrator already registered";

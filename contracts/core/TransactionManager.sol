@@ -308,6 +308,10 @@ contract TransactionManager is
             revert(Errors.INVALID_TRANSACTION_STATUS);
         }
 
+        if (isSubmitArbitrationOutTime(transaction)) {
+            revert(Errors.SUBMITTED_SIGNATURES_OUTTIME);
+        }
+
         if (!arbitratorManager.isOperatorOf(transaction.arbitrator, msg.sender)) {
             revert(Errors.NOT_AUTHORIZED);
         }
