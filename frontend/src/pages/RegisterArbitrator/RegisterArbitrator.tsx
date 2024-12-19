@@ -1,26 +1,57 @@
-import { useState, useEffect, useMemo, FC } from 'react';
+import { useState, useEffect, useMemo, FC, useCallback } from 'react';
 import { PageTitle } from '@/components/base/PageTitle';
 import { RadioGroup } from '@headlessui/react';
 import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
+import { StakeType, StakeTypePicker } from './StakeTypePicker';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useActiveChainNativeCoin } from '@/services/chains/hooks/useActiveChainNativeCoin';
+import { useActiveEVMChainConfig } from '@/services/chains/hooks/useActiveEVMChainConfig';
+import { useConfigManagerSettings } from '@/services/config-manager/hooks/contract/useConfigManagerSettings';
+import { useArbitratorRegister } from '@/services/arbitrators/hooks/contract/useArbitratorRegister';
+import { useToasts } from '@/services/ui/hooks/useToasts';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterArbitrator: FC = () => {
-  const [dappAddress, setDappAddress] = useState('');
-  const [registrationFee] = useState('1000000000000000000'); // 1 E
-  const [stakeType, setStakeType] = useState<'ETH' | 'NFT'>('ETH');
+  const activeChain = useActiveEVMChainConfig();
+  const { successToast } = useToasts();
+  const navigate = useNavigate();
+  const [stakeType, setStakeType] = useState<StakeType>("coin");
   const [nftAddress, setNftAddress] = useState('');
   const [tokenIds, setTokenIds] = useState('');
-  const [ethAmount, setEthAmount] = useState('1'); // Default 1 ETH
+  const { fetchAllSettings, configManagerSettings, isSuccess: configManagerSettingFetched } = useConfigManagerSettings();
+  const { stakeETH, isPending: isRegistering } = useArbitratorRegister();
 
-  const handleArbitratorRegistration = () => {
-    // TODO if (!account || !contract) return;
+  // Forms
+  const stakeCoinFormSchema = useMemo(() => z.object({
+    coinAmount: z.coerce.number()
+      .min(Number(configManagerSettings?.minStake))
+      .max(Number(configManagerSettings?.maxStake))
+  }), [configManagerSettings]);
+  const nativeCoinForm = useForm<z.infer<typeof stakeCoinFormSchema>>({
+    resolver: zodResolver(stakeCoinFormSchema),
+    defaultValues: {
+      coinAmount: 1,
+    }
+  });
 
+  useEffect(() => {
+    fetchAllSettings();
+  }, [fetchAllSettings]);
+
+  const handleArbitratorRegistration = useCallback(async (values: z.infer<typeof stakeCoinFormSchema>) => {
     try {
-      if (stakeType === 'ETH') {
-        // Call stakeETH with the specified amount
-        // await contract.stakeETH({
-        //   value: ethers.parseEther(ethAmount)
-        // });
+      if (stakeType === 'coin') {
+        if (await stakeETH(BigInt(values.coinAmount))) {
+          successToast(`Arbitrator successfully registered!`);
+          // Back to arbitrators list.
+          navigate("/arbitrators");
+        }
       } else {
         // For NFT staking
         // const nftContract = new ethers.Contract(
@@ -43,111 +74,74 @@ const RegisterArbitrator: FC = () => {
     } catch (error) {
       console.error('Error during arbitrator registration:', error);
     }
-  };
+  }, []);
 
   return (
     <PageContainer>
       <PageTitleRow>
-        <PageTitle className="flex flex-grow sm:flex-grow-0">Register as Arbitrator</PageTitle>
+        <PageTitle>Register as Arbitrator</PageTitle>
       </PageTitleRow>
 
-      {/* Arbitrator Registration Dialog */}
       <div className="flex items-center justify-center">
         <div className="relative bg-white rounded-lg p-8 max-w-md w-full mx-4">
-          <RadioGroup value={stakeType} onChange={setStakeType} className="mb-4">
-            <RadioGroup.Label className="text-sm font-medium text-gray-700">
-              Select Stake Type
-            </RadioGroup.Label>
-            <div className="mt-2 space-y-2">
-              <RadioGroup.Option value="ETH" className="flex items-center">
-                {({ checked }) => (
-                  <div className={`${checked ? 'bg-blue-50' : ''} p-2 rounded-lg flex items-center w-full`}>
-                    <input type="radio" checked={checked} className="mr-2" readOnly />
-                    <span>Stake ETH</span>
-                  </div>
-                )}
-              </RadioGroup.Option>
-              <RadioGroup.Option value="NFT" className="flex items-center">
-                {({ checked }) => (
-                  <div className={`${checked ? 'bg-blue-50' : ''} p-2 rounded-lg flex items-center w-full`}>
-                    <input type="radio" checked={checked} className="mr-2" readOnly />
-                    <span>Stake NFT</span>
-                  </div>
-                )}
-              </RadioGroup.Option>
-            </div>
-          </RadioGroup>
+          <StakeTypePicker value={stakeType} onChange={setStakeType} />
 
-          {stakeType === 'ETH' ? (
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">
-                ETH Amount
-              </label>
-              <input
-                type="number"
-                value={ethAmount}
-                onChange={(e) => setEthAmount(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                placeholder="Enter ETH amount"
-              />
-            </div>
-          ) : (
-            <>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  NFT Contract Address
-                </label>
-                <input
-                  type="text"
-                  value={nftAddress}
-                  onChange={(e) => setNftAddress(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Enter NFT contract address"
+          <Form {...nativeCoinForm}>
+            <form onSubmit={nativeCoinForm.handleSubmit(handleArbitratorRegistration)}>
+              {stakeType === "coin" ? (
+                <FormField
+                  control={nativeCoinForm.control}
+                  name="coinAmount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Number of {activeChain.nativeCurrency.symbol}</FormLabel>
+                      <Input type='number' step="1" {...field} />
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
+              ) : (
+                <>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      NFT Contract Address
+                    </label>
+                    <input
+                      type="text"
+                      value={nftAddress}
+                      onChange={(e) => setNftAddress(e.target.value)}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      placeholder="Enter NFT contract address"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Token IDs (comma-separated)
+                    </label>
+                    <input
+                      type="text"
+                      value={tokenIds}
+                      onChange={(e) => setTokenIds(e.target.value)}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      placeholder="e.g., 1,2,3"
+                    />
+                  </div>
+                </>
+              )}
+              <div className="mt-6 flex justify-end space-x-3">
+                <Button
+                  type="submit"
+                  disabled={!configManagerSettingFetched || isRegistering}
+                  className={!nativeCoinForm.formState.isValid && "opacity-30"}>
+                  Register
+                </Button>
               </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Token IDs (comma-separated)
-                </label>
-                <input
-                  type="text"
-                  value={tokenIds}
-                  onChange={(e) => setTokenIds(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="e.g., 1,2,3"
-                />
-              </div>
-            </>
-          )}
+            </form>
+          </Form>
 
-          <div className="mt-6 flex justify-end space-x-3">
-            <button
-              onClick={void handleArbitratorRegistration}
-              className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Register
-            </button>
-          </div>
         </div>
       </div>
-
-      <div className="flex items-center justify-center">
-        <div className="relative bg-white rounded-lg max-w-md w-full mx-4 p-6">
-          <div className="mb-4">
-            <p className="text-sm text-gray-500 mb-2">
-              Registration Fee: {registrationFee} ETH
-            </p>
-            <input
-              type="text"
-              placeholder="DApp Address (0x...)"
-              value={dappAddress}
-              onChange={(e) => setDappAddress(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        </div>
-      </div>
-    </PageContainer>
+    </PageContainer >
   );
 }
 

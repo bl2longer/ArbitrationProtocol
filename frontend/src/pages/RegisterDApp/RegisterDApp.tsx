@@ -1,7 +1,7 @@
 import { useState, FC, useEffect } from 'react';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 import { PageTitle } from '@/components/base/PageTitle';
-import { useDappRegistryRegister } from '@/services/dapp-registry/hooks/useDAppRegistryRegister';
+import { useDappRegistryRegister } from '@/services/dapp-registry/hooks/contract/useDAppRegistryRegister';
 import { isAddress } from 'viem';
 import { EnsureWalletNetwork } from '@/components/EnsureWalletNetwork/EnsureWalletNetwork';
 import { Button } from '@/components/ui/button';
@@ -9,8 +9,9 @@ import { useToasts } from '@/services/ui/hooks/useToasts';
 import { Input } from '@/components/ui/input';
 import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
-import { useDAppRegistryRegistrationFee } from '@/services/dapp-registry/hooks/useDAppRegistryRegistrationFee';
+import { useDAppRegistryRegistrationFee } from '@/services/dapp-registry/hooks/contract/useDAppRegistryRegistrationFee';
 import { useNavigate } from 'react-router-dom';
+import { useConfigManagerSettings } from '@/services/config-manager/hooks/contract/useConfigManagerSettings';
 
 const RegisterDApp: FC = () => {
   const { evmAccount } = useWalletContext();
@@ -18,7 +19,7 @@ const RegisterDApp: FC = () => {
   const [dappAddress, setDappAddress] = useState('');
   const { errorToast, successToast } = useToasts();
   const { fetchRegistrationFee, registrationFee, isSuccess: registrationFeeKnown } = useDAppRegistryRegistrationFee();
-  const { register, isPending, isSuccess, error } = useDappRegistryRegister();
+  const { register, isPending: isRegistering, isSuccess, error } = useDappRegistryRegister();
 
   const handleRegisterDApp = async () => {
     if (!evmAccount) {
@@ -81,9 +82,9 @@ const RegisterDApp: FC = () => {
             <EnsureWalletNetwork continuesTo='Register'>
               <Button
                 onClick={() => void handleRegisterDApp()}
-                disabled={isPending || !dappAddress || !registrationFeeKnown}
+                disabled={isRegistering || !dappAddress || !registrationFeeKnown}
               >
-                {isPending ? 'Registering...' : 'Register'}
+                {isRegistering ? 'Registering...' : 'Register'}
               </Button>
             </EnsureWalletNetwork>
           </div>

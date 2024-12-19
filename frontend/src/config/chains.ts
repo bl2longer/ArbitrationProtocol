@@ -52,9 +52,9 @@ const escTestnet: ChainConfig = {
     wrappedAddress: null
   },
   contracts: {
-    arbitratorManager: "0x941796c51443493d2F5C03D3c40d3ff0F0B0BD30",
+    arbitratorManager: "0x42FcB0c75D3FE234EFD1d529Cd31c9A8Ab1EB4C6",
     compensationManager: "0x7c31A7185660d5c40B1A02D60dbcCfd221d40787",
-    configManager: "0xc9D4AA52c345Efe835A207aADAE8575CC086632c",
+    configManager: "0x941796c51443493d2F5C03D3c40d3ff0F0B0BD30",
     dappRegistry: "0xC9B498e769e1A7670f747beBB3A3b5172DD122D1",
     transactionManager: "0xD206be45b53Fa5C2065049c7a70B1aa1755a9475",
   },

@@ -54,6 +54,24 @@ export class ArbitrationSubmitted__Params {
   }
 }
 
+export class CompensationManagerInitialized extends ethereum.Event {
+  get params(): CompensationManagerInitialized__Params {
+    return new CompensationManagerInitialized__Params(this);
+  }
+}
+
+export class CompensationManagerInitialized__Params {
+  _event: CompensationManagerInitialized;
+
+  constructor(event: CompensationManagerInitialized) {
+    this._event = event;
+  }
+
+  get compensationManager(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
 export class Initialized extends ethereum.Event {
   get params(): Initialized__Params {
     return new Initialized__Params(this);
@@ -69,24 +87,6 @@ export class Initialized__Params {
 
   get version(): BigInt {
     return this._event.parameters[0].value.toBigInt();
-  }
-}
-
-export class Initialized1 extends ethereum.Event {
-  get params(): Initialized1__Params {
-    return new Initialized1__Params(this);
-  }
-}
-
-export class Initialized1__Params {
-  _event: Initialized1;
-
-  constructor(event: Initialized1) {
-    this._event = event;
-  }
-
-  get compensationManager(): Address {
-    return this._event.parameters[0].value.toAddress();
   }
 }
 
@@ -149,32 +149,6 @@ export class TransactionCompleted__Params {
 
   get txId(): Bytes {
     return this._event.parameters[1].value.toBytes();
-  }
-}
-
-export class TransactionCompleted1 extends ethereum.Event {
-  get params(): TransactionCompleted1__Params {
-    return new TransactionCompleted1__Params(this);
-  }
-}
-
-export class TransactionCompleted1__Params {
-  _event: TransactionCompleted1;
-
-  constructor(event: TransactionCompleted1) {
-    this._event = event;
-  }
-
-  get id(): Bytes {
-    return this._event.parameters[0].value.toBytes();
-  }
-
-  get arbitratorFee(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-
-  get systemFee(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
   }
 }
 

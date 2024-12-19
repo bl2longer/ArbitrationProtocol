@@ -8,31 +8,9 @@ import { PageTitle } from '@/components/base/PageTitle';
 import { SearchInput } from '@/components/base/SearchInput';
 import { Loading } from '@/components/base/Loading';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
-import { MultiStringSelector } from '@/components/base/MultiStringSelector';
-
-// Utility function to safely format ether values
-// const formatEther = (value: string): string => {
-//   try {
-//     return ethers.utils.formatEther(value);
-//   } catch (error) {
-//     console.error('Error formatting ether value:', error);
-//     return '0';
-//   }
-// };
-
-// interface Transaction {
-//   dapp: string;
-//   arbitrator: string;
-//   startTime: number;
-//   deadline: number;
-//   btcTx: string;
-//   status: number;
-//   depositedFee: string;
-//   signature: string;
-// }
+import { RefreshCwIcon } from 'lucide-react';
 
 const statusMap = {
   0: 'Active',
@@ -54,10 +32,9 @@ const fieldLabels = {
 };
 
 export default function TransactionList() {
-  const { evmAccount: account } = useWalletContext();
-  const { transactions: rawTransactions } = useTransactions();
+  const { transactions: rawTransactions, refreshTransactions } = useTransactions();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedFields, setSelectedFields] = useState<string[]>(Object.keys(fieldLabels));
+  const [selectedFields] = useState<string[]>(Object.keys(fieldLabels));
   const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [signature, setSignature] = useState('');
@@ -66,7 +43,6 @@ export default function TransactionList() {
   const handleSubmitArbitration = () => {
     if (!selectedTransaction || !signature) return;
     try {
-      // 这里需要根据实际合约方法调整
       // TODO await contract.submitArbitration(selectedTransaction.dapp, signature);
       setIsSignDialogOpen(false);
       setSignature('');
@@ -107,9 +83,6 @@ export default function TransactionList() {
     return value;
   };
 
-  if (loading)
-    return <Loading />
-
   if (error) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -122,9 +95,14 @@ export default function TransactionList() {
     <PageContainer>
       <PageTitleRow>
         <PageTitle className="flex flex-grow sm:flex-grow-0">Transaction List</PageTitle>
-        <SearchInput placeholder="Search transactions..."
-          value={searchTerm}
-          onChange={(newValue) => setSearchTerm(newValue)} />
+        <div className="flex gap-2">
+          <Button variant="outline" size="icon" onClick={refreshTransactions}>
+            <RefreshCwIcon />
+          </Button>
+          <SearchInput placeholder="Search transactions..."
+            value={searchTerm}
+            onChange={(newValue) => setSearchTerm(newValue)} />
+        </div>
       </PageTitleRow>
 
       <div className="overflow-x-auto">
@@ -142,7 +120,7 @@ export default function TransactionList() {
             </tr>
           </thead>
           <tbody>
-            {transactions.map((tx, index) => (
+            {transactions?.map((tx, index) => (
               <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
                 {selectedFields.map(field => (
                   <td key={field} className="px-6 py-4 text-sm text-gray-900">
@@ -165,6 +143,8 @@ export default function TransactionList() {
           </tbody>
         </table>
       </div>
+
+      {loading && <Loading />}
 
       <Dialog
         open={isSignDialogOpen}

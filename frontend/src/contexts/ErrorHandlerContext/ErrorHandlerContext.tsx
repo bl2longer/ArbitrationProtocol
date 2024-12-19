@@ -74,11 +74,11 @@ const getErrorMessage = (code: ErrorCode, data: any) => {
 
 const mapToErrorMessage = (error: any) => {
   return (
-    getErrorMessage(error.code as ErrorCode, error.error?.data) ||
+    getErrorMessage(error?.code as ErrorCode, error.error?.data) ||
     getErrorMessage(error.cause?.code as ErrorCode, error.error?.data) ||
     getErrorMessage(error.cause?.cause?.code as ErrorCode, error.error?.data) ||
-    error.message ||
-    error.error?.message ||
+    error?.message ||
+    error?.error?.message ||
     "Unknown error happened when sending request."
   );
 };
@@ -96,13 +96,7 @@ export const ErrorHandlerProvider = memo(
         const errorMessage = mapToErrorMessage(error);
 
         // Print to console before showing to user
-        console.error("COUCOU", error, error?.code);
-        if (error instanceof BaseError) {
-          console.log("cause", error.cause, typeof error.cause, (error.cause as any).code)
-          if (error.cause instanceof TransactionExecutionError) {
-            console.log("transaction error", error.cause.cause, (error.cause.cause as any)?.code);
-          }
-        }
+        console.error("Error handled:", error);
 
         // Send manually to sentry
         Sentry.captureException(error);

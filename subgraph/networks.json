@@ -13,20 +13,20 @@
   },
   "esc-testnet": {
     "ArbitratorManager": {
-      "address": "0x941796c51443493d2F5C03D3c40d3ff0F0B0BD30",
-      "startBlock": 21014842
+      "address": "0x42FcB0c75D3FE234EFD1d529Cd31c9A8Ab1EB4C6",
+      "startBlock": 21033337
     },
     "TransactionManager": {
       "address": "0xD206be45b53Fa5C2065049c7a70B1aa1755a9475",
-      "startBlock": 21014855
+      "startBlock": 21033174
     },
     "CompensationManager": {
       "address": "0x7c31A7185660d5c40B1A02D60dbcCfd221d40787",
-      "startBlock": 21014464
+      "startBlock": 21033067
     },
     "DAppRegistry": {
       "address": "0xC9B498e769e1A7670f747beBB3A3b5172DD122D1",
-      "startBlock": 21014464
+      "startBlock": 21033337
     }
   }
 }

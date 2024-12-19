@@ -3,11 +3,12 @@ import { useCallback, useEffect, useState } from "react";
 import { Transaction } from "../model/transaction";
 import { fetchTransactions } from "../transactions.service";
 
-export const useTransactions = (): { transactions: Transaction[] } => {
+export const useTransactions = () => {
   const activeChain = useActiveEVMChainConfig();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const refreshTransactions = useCallback(() => {
+    setTransactions(undefined);
     if (activeChain) {
       void fetchTransactions(activeChain, 0, 100).then(({ transactions: txs }) => {
         setTransactions(txs);
@@ -19,5 +20,5 @@ export const useTransactions = (): { transactions: Transaction[] } => {
     refreshTransactions();
   }, [refreshTransactions]);
 
-  return { transactions }
+  return { transactions, refreshTransactions }
 }

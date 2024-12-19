@@ -1,8 +1,6 @@
 ===> Target release date: dec 30
 
 - Arbitrator registration (incl staking)
-  - orange styling
-  - register with native coin stake
   - register with NFT
 - transaction list
   - format table values

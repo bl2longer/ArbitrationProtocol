@@ -3,11 +3,12 @@ import { useCallback, useEffect, useState } from "react";
 import { fetchArbitrators } from "../arbitrators.service";
 import { ArbitratorInfo } from "../model/arbitrator-info";
 
-export const useArbitrators = (): { arbitrators: ArbitratorInfo[] } => {
+export const useArbitrators = () => {
   const activeChain = useActiveEVMChainConfig();
   const [arbitrators, setArbitrators] = useState<ArbitratorInfo[]>([]);
 
   const refreshArbitrators = useCallback(() => {
+    setArbitrators(undefined);
     if (activeChain) {
       void fetchArbitrators(activeChain, 0, 100).then(({ arbitrators: _arbitrators }) => {
         setArbitrators(_arbitrators);
@@ -19,5 +20,5 @@ export const useArbitrators = (): { arbitrators: ArbitratorInfo[] } => {
     refreshArbitrators();
   }, [refreshArbitrators]);
 
-  return { arbitrators }
+  return { arbitrators, refreshArbitrators }
 }

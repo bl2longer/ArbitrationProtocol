@@ -51,7 +51,7 @@
           "type": "address"
         }
       ],
-      "name": "Initialized",
+      "name": "CompensationManagerInitialized",
       "type": "event"
     },
     {
@@ -81,31 +81,6 @@
           "internalType": "bytes32",
           "name": "txId",
           "type": "bytes32"
-        }
-      ],
-      "name": "TransactionCompleted",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "bytes32",
-          "name": "id",
-          "type": "bytes32"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "arbitratorFee",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "systemFee",
-          "type": "uint256"
         }
       ],
       "name": "TransactionCompleted",

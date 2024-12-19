@@ -2,7 +2,7 @@ import { useActiveEVMChainConfig } from '@/services/chains/hooks/useActiveEVMCha
 import { useContractCall } from '@/services/evm/hooks/useContractCall';
 import { useCallback, useState } from 'react';
 import { formatEther } from 'viem';
-import { abi } from "../../../../contracts/core/DAppRegistry.sol/DAppRegistry.json";
+import { abi } from "../../../../../contracts/core/DAppRegistry.sol/DAppRegistry.json";
 
 export const useDAppRegistryRegistrationFee = () => {
   const activeChain = useActiveEVMChainConfig();

@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
+import { RefreshCwIcon } from 'lucide-react';
 
 export type SortConfig = {
   key: 'stake' | 'address';
@@ -25,7 +26,7 @@ export type SortConfig = {
 };
 
 export default function ArbitratorList() {
-  const { arbitrators: rawArbitrators } = useArbitrators();
+  const { arbitrators: rawArbitrators, refreshArbitrators } = useArbitrators();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'stake', direction: 'desc' });
@@ -39,26 +40,26 @@ export default function ArbitratorList() {
   };
 
   const arbitrators = useMemo(() => {
-    const filtered = rawArbitrators.filter(arb => arb.address.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filtered = rawArbitrators?.filter(arb => arb.address.toLowerCase().includes(searchTerm.toLowerCase()));
     const directionFactor = sortConfig.direction === 'asc' ? 1 : -1;
     switch (sortConfig.key) {
       case "address":
-        return filtered.sort((a, b) => a.address.localeCompare(b.address) * directionFactor);
+        return filtered?.sort((a, b) => a.address.localeCompare(b.address) * directionFactor);
       case "stake":
-        return filtered.sort((a, b) => Number(a.ethAmount - b.ethAmount) * directionFactor);
+        return filtered?.sort((a, b) => Number(a.ethAmount - b.ethAmount) * directionFactor);
     }
   }, [rawArbitrators, searchTerm, sortConfig]);
 
   const loading = useMemo(() => !rawArbitrators, [rawArbitrators]);
-
-  if (loading)
-    return <Loading />
 
   return (
     <PageContainer>
       <PageTitleRow>
         <PageTitle>Arbitrator List</PageTitle>
         <div className="flex space-x-4 w-full sm:w-auto items-center">
+          <Button variant="outline" size="icon" onClick={refreshArbitrators}>
+            <RefreshCwIcon />
+          </Button>
           <SearchInput placeholder="Search arbitrators..."
             value={searchTerm}
             onChange={(newValue) => setSearchTerm(newValue)} />
@@ -80,8 +81,11 @@ export default function ArbitratorList() {
         </div>
       </PageTitleRow>
 
-      {viewMode === 'list' && <ListView arbitrators={arbitrators} sortConfig={sortConfig} handleSort={handleSort} />}
-      {viewMode === 'grid' && <GridView arbitrators={arbitrators} />}
+      {loading && <Loading />}
+      {!loading && <>
+        {viewMode === 'list' && <ListView arbitrators={arbitrators} sortConfig={sortConfig} handleSort={handleSort} />}
+        {viewMode === 'grid' && <GridView arbitrators={arbitrators} />}
+      </>}
     </PageContainer>
   );
 }

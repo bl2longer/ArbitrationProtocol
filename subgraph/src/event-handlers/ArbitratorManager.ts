@@ -1,4 +1,4 @@
-import { BigInt, ethereum, log } from "@graphprotocol/graph-ts";
+import { BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { ArbitratorParamsSet, ArbitratorPaused, ArbitratorStatusChanged, ArbitratorUnpaused, OperatorSet, OwnershipTransferred, RevenueAddressesSet, StakeAdded, StakeWithdrawn } from "../../generated/ArbitratorManager/ArbitratorManager";
 import { ArbitratorInfo } from "../../generated/schema";
 import { ZERO_ADDRESS } from "../constants";
@@ -106,17 +106,13 @@ export function handleOperatorSet(event: OperatorSet): void {
 function getArbitratorInfo(block: ethereum.Block, arbitratorAddress: string): ArbitratorInfo {
     let existingArbitrator = ArbitratorInfo.load(arbitratorAddress);
 
-    if (existingArbitrator) {
-        log.debug("USING EXISTING INFO {}", [arbitratorAddress]);
+    if (existingArbitrator)
         return existingArbitrator;
-    }
-
-    log.debug("CREATING NEW INFO {}", [arbitratorAddress]);
 
     const arbitratorInfo = new ArbitratorInfo(arbitratorAddress);
     arbitratorInfo.createdAt = block.timestamp;
     arbitratorInfo.address = arbitratorAddress;
-    arbitratorInfo.status = "Paused";
+    arbitratorInfo.status = "Active"; // Default state is active at creation
     arbitratorInfo.ethAmount = new BigInt(0);
 
     return arbitratorInfo;

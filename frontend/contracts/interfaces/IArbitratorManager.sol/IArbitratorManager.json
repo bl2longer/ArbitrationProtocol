@@ -108,7 +108,7 @@
           "type": "address"
         }
       ],
-      "name": "Initialized",
+      "name": "InitializedManager",
       "type": "event"
     },
     {

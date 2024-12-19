@@ -38,9 +38,13 @@ function contractClaimTypeToString(claimType: i32): string {
     case 0:
       return "IllegalSignature";
     case 1:
-      return "TimeoutPenalty";
+      return "Timeout";
+    case 2:
+      return "FailedArbitration";
+    case 3:
+      return "ArbitratorFee";
     default:
-      log.error(`Unknown claim type: ${claimType}`, []);
+      log.error(`Unknown compensation claim type: ${claimType}`, []);
       return "Unknown";
   }
 }

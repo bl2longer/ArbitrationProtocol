@@ -134,16 +134,16 @@ export class Initialized__Params {
   }
 }
 
-export class Initialized1 extends ethereum.Event {
-  get params(): Initialized1__Params {
-    return new Initialized1__Params(this);
+export class InitializedManager extends ethereum.Event {
+  get params(): InitializedManager__Params {
+    return new InitializedManager__Params(this);
   }
 }
 
-export class Initialized1__Params {
-  _event: Initialized1;
+export class InitializedManager__Params {
+  _event: InitializedManager;
 
-  constructor(event: Initialized1) {
+  constructor(event: InitializedManager) {
     this._event = event;
   }
 
