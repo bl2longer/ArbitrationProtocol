@@ -6,13 +6,14 @@ import { SearchInput } from '@/components/base/SearchInput';
 import { Loading } from '@/components/base/Loading';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useDApps } from '@/services/dapp-registry/hooks/useDApps';
-import { DApp } from '@/services/dapp-registry/model/dapp';
+import { DApp, DAppStatus } from '@/services/dapp-registry/model/dapp';
 import { formatAddress } from '@/utils/formatAddress';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
 import { RefreshCwIcon } from 'lucide-react';
+import { StatusLabel, StatusLabelColor } from '@/components/base/StatusLabel';
 
 const statusMap = {
   0: 'Active',
@@ -96,6 +97,16 @@ const DAppRow: FC<{
     if (key === 'address' || key === 'owner') {
       return formatAddress(value);
     }
+    else if (key === 'status') {
+      const colors: { [status in keyof typeof DAppStatus]: StatusLabelColor } = {
+        None: 'none',
+        Pending: "yellow",
+        Active: "green",
+        Terminated: "yellow",
+        Suspended: "red",
+      };
+      return <StatusLabel title={value} color={colors[value]} />
+    }
     return value;
   }, []);
 
@@ -106,11 +117,9 @@ const DAppRow: FC<{
       </td>
     ))}
     {/* Actions */}
-    <tr className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-      <td className="px-6 py-4 text-sm text-gray-900">
-        {/* TODO */}
-      </td>
-    </tr>
+    <td className="px-6 py-4 text-sm text-gray-900">
+      {/* TODO */}
+    </td>
   </tr>
 }
 

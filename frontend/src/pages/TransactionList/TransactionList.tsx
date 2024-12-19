@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
+import { MultiStringSelector } from '@/components/base/MultiStringSelector';
 
 // Utility function to safely format ether values
 // const formatEther = (value: string): string => {
@@ -125,27 +126,6 @@ export default function TransactionList() {
           value={searchTerm}
           onChange={(newValue) => setSearchTerm(newValue)} />
       </PageTitleRow>
-
-      <div className="mb-6">
-        <div className="flex flex-wrap gap-2">
-          {Object.entries(fieldLabels).map(([key, label]) => (
-            <label key={key} className="inline-flex items-center">
-              <Checkbox
-                checked={selectedFields.includes(key)}
-                onCheckedChange={(checked) => {
-                  if (checked) {
-                    setSelectedFields([...selectedFields, key]);
-                  } else {
-                    setSelectedFields(selectedFields.filter(f => f !== key));
-                  }
-                }}
-                className="h-4 w-4 text-primary focus:ring-1 focus:ring-primary"
-              />
-              <span className="ml-2">{label}</span>
-            </label>
-          ))}
-        </div>
-      </div>
 
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border rounded-lg">

@@ -52,11 +52,11 @@ const escTestnet: ChainConfig = {
     wrappedAddress: null
   },
   contracts: {
-    arbitratorManager: "0xa63339B2e236F6A1830A3DB35D73b64BE8CF2E6A",
-    compensationManager: "0xd39a816F8b6c298aF8efd14cB260F07bAB8386aF",
+    arbitratorManager: "0x941796c51443493d2F5C03D3c40d3ff0F0B0BD30",
+    compensationManager: "0x7c31A7185660d5c40B1A02D60dbcCfd221d40787",
     configManager: "0xc9D4AA52c345Efe835A207aADAE8575CC086632c",
-    dappRegistry: "0x308c2fD094E2f1356a0843d197a29A6DaedBA023",
-    transactionManager: "0x1637106Eb7638Dd987715C8aF133F399bba862f2",
+    dappRegistry: "0xC9B498e769e1A7670f747beBB3A3b5172DD122D1",
+    transactionManager: "0xD206be45b53Fa5C2065049c7a70B1aa1755a9475",
   },
   tokens: [
     escTestnetBtcToken,
