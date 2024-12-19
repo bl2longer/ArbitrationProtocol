@@ -1,20 +1,18 @@
-import { ethereum } from "@graphprotocol/graph-ts";
+import { ethereum, log } from "@graphprotocol/graph-ts";
 import { CompensationClaimed, CompensationWithdrawn } from "../../generated/CompensationManager/CompensationManager";
 import { CompensationClaim } from "../../generated/schema";
-
-const compensationManagerAddress = "0x1234567890abcdef1234567890abcdef12345678"; // Update with new address
 
 export function handleCompensationClaimed(event: CompensationClaimed): void {
   const compensationClaim = getCompensationClaim(event.block, event.params.claimId.toHexString());
   compensationClaim.claimer = event.params.claimer.toHexString();
   compensationClaim.claimType = contractClaimTypeToString(event.params.claimType);
-  // TODO: need way more info
+  compensationClaim.withdrawn = false;
   compensationClaim.save();
 }
 
 export function handleCompensationWithdrawn(event: CompensationWithdrawn): void {
   const compensationClaim = getCompensationClaim(event.block, event.params.claimId.toHexString());
-  // TODO: withdrawn, etc
+  compensationClaim.withdrawn = true;
   compensationClaim.save();
 }
 
@@ -29,6 +27,9 @@ function getCompensationClaim(block: ethereum.Block, id: string): CompensationCl
   }
 
   const compensationClaim = new CompensationClaim(id);
+  compensationClaim.claimType = "Unknown";
+  compensationClaim.createdAt = block.timestamp;
+
   return compensationClaim;
 }
 
@@ -39,6 +40,7 @@ function contractClaimTypeToString(claimType: i32): string {
     case 1:
       return "TimeoutPenalty";
     default:
+      log.error(`Unknown claim type: ${claimType}`, []);
       return "Unknown";
   }
 }

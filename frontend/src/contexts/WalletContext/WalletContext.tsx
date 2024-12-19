@@ -50,7 +50,7 @@ export const WalletProvider = memo(({ children }: Web3ProviderProps) => {
   const [evmAccount, setEvmAccount] = useState<string>(localStorage.getItem(EVM_ACCOUNT_STORAGE_KEY));
   const [bitcoinAccount, setBitcoinAccount] = useState<string>(localStorage.getItem(BITCOIN_ACCOUNT_STORAGE_KEY));
   const [bitcoinProvider, setBitcoinProvider] = useState<BitcoinWalletProvider>(localStorage.getItem(BITCOIN_PROVIDER_STORAGE_KEY) as BitcoinWalletProvider);
-  const [networkMode, setNetworkMode] = useState<NetworkMode>(localStorage.getItem(NETWORK_MODE_STORAGE_KEY) as NetworkMode || "mainnet");
+  const [networkMode, setNetworkMode] = useState<NetworkMode>(localStorage.getItem(NETWORK_MODE_STORAGE_KEY) as NetworkMode || import.meta.env.VITE_APP_DEFAULT_NETWORK_MODE || "mainnet");
 
   const rawChainID = localStorage.getItem(EVM_CHAIN_ID_STORAGE_KEY);
   const [evmChainId, setEvmChainId] = useState<number>(rawChainID ? parseInt(rawChainID) : undefined);

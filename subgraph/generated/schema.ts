@@ -316,6 +316,19 @@ export class Transaction extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get createdAt(): BigInt {
+    let value = this.get("createdAt");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set createdAt(value: BigInt) {
+    this.set("createdAt", Value.fromBigInt(value));
+  }
+
   get txId(): string {
     let value = this.get("txId");
     if (!value || value.kind == ValueKind.NULL) {
@@ -678,34 +691,8 @@ export class CompensationClaim extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get arbitrator(): string {
-    let value = this.get("arbitrator");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toString();
-    }
-  }
-
-  set arbitrator(value: string) {
-    this.set("arbitrator", Value.fromString(value));
-  }
-
-  get claimer(): string {
-    let value = this.get("claimer");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toString();
-    }
-  }
-
-  set claimer(value: string) {
-    this.set("claimer", Value.fromString(value));
-  }
-
-  get amount(): BigInt {
-    let value = this.get("amount");
+  get createdAt(): BigInt {
+    let value = this.get("createdAt");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -713,8 +700,25 @@ export class CompensationClaim extends Entity {
     }
   }
 
-  set amount(value: BigInt) {
-    this.set("amount", Value.fromBigInt(value));
+  set createdAt(value: BigInt) {
+    this.set("createdAt", Value.fromBigInt(value));
+  }
+
+  get claimer(): string | null {
+    let value = this.get("claimer");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set claimer(value: string | null) {
+    if (!value) {
+      this.unset("claimer");
+    } else {
+      this.set("claimer", Value.fromString(<string>value));
+    }
   }
 
   get claimType(): string {
@@ -730,8 +734,8 @@ export class CompensationClaim extends Entity {
     this.set("claimType", Value.fromString(value));
   }
 
-  get claimed(): boolean {
-    let value = this.get("claimed");
+  get withdrawn(): boolean {
+    let value = this.get("withdrawn");
     if (!value || value.kind == ValueKind.NULL) {
       return false;
     } else {
@@ -739,8 +743,42 @@ export class CompensationClaim extends Entity {
     }
   }
 
-  set claimed(value: boolean) {
-    this.set("claimed", Value.fromBoolean(value));
+  set withdrawn(value: boolean) {
+    this.set("withdrawn", Value.fromBoolean(value));
+  }
+
+  get arbitrator(): string | null {
+    let value = this.get("arbitrator");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set arbitrator(value: string | null) {
+    if (!value) {
+      this.unset("arbitrator");
+    } else {
+      this.set("arbitrator", Value.fromString(<string>value));
+    }
+  }
+
+  get amount(): BigInt | null {
+    let value = this.get("amount");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set amount(value: BigInt | null) {
+    if (!value) {
+      this.unset("amount");
+    } else {
+      this.set("amount", Value.fromBigInt(<BigInt>value));
+    }
   }
 
   get evidence(): Bytes | null {
@@ -758,5 +796,101 @@ export class CompensationClaim extends Entity {
     } else {
       this.set("evidence", Value.fromBytes(<Bytes>value));
     }
+  }
+}
+
+export class DApp extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save DApp entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type DApp must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("DApp", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): DApp | null {
+    return changetype<DApp | null>(store.get_in_block("DApp", id));
+  }
+
+  static load(id: string): DApp | null {
+    return changetype<DApp | null>(store.get("DApp", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get createdAt(): BigInt {
+    let value = this.get("createdAt");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set createdAt(value: BigInt) {
+    this.set("createdAt", Value.fromBigInt(value));
+  }
+
+  get address(): string {
+    let value = this.get("address");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set address(value: string) {
+    this.set("address", Value.fromString(value));
+  }
+
+  get owner(): string | null {
+    let value = this.get("owner");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set owner(value: string | null) {
+    if (!value) {
+      this.unset("owner");
+    } else {
+      this.set("owner", Value.fromString(<string>value));
+    }
+  }
+
+  get status(): string {
+    let value = this.get("status");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set status(value: string) {
+    this.set("status", Value.fromString(value));
   }
 }

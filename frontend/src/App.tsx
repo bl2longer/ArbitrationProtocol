@@ -9,24 +9,36 @@ import CompensationList from './pages/CompensationList/CompensationList';
 import { WalletProvider } from './contexts/WalletContext/WalletContext';
 import RegisterDApp from './pages/RegisterDApp/RegisterDApp';
 import RegisterArbitrator from './pages/RegisterArbitrator/RegisterArbitrator';
+import { SnackbarProvider } from 'notistack';
+import { ErrorHandlerProvider } from './contexts/ErrorHandlerContext';
 
 function App() {
   return (
-    <WalletProvider>
-      <Router>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<ArbitratorList />} />
-            <Route path="/arbitrators" element={<ArbitratorList />} />
-            <Route path="/dashboard" element={<ArbitratorDashboard />} />
-            <Route path="/transactions" element={<TransactionList />} />
-            <Route path="/compensations" element={<CompensationList />} />
-            <Route path="/register-dapp" element={<RegisterDApp />} />
-            <Route path="/register-arbitrator" element={<RegisterArbitrator />} />
-          </Routes>
-        </Layout>
-      </Router>
-    </WalletProvider>
+    <SnackbarProvider
+      maxSnack={1}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "center",
+      }}
+    >
+      <ErrorHandlerProvider>
+        <WalletProvider>
+          <Router>
+            <Layout>
+              <Routes>
+                <Route path="/" element={<ArbitratorList />} />
+                <Route path="/arbitrators" element={<ArbitratorList />} />
+                <Route path="/dashboard" element={<ArbitratorDashboard />} />
+                <Route path="/transactions" element={<TransactionList />} />
+                <Route path="/compensations" element={<CompensationList />} />
+                <Route path="/register-dapp" element={<RegisterDApp />} />
+                <Route path="/register-arbitrator" element={<RegisterArbitrator />} />
+              </Routes>
+            </Layout>
+          </Router>
+        </WalletProvider>
+      </ErrorHandlerProvider>
+    </SnackbarProvider>
   );
 }
 

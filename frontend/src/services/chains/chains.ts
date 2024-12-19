@@ -6,7 +6,7 @@ export const getChainConfigById = (chainId: bigint | number | undefined): ChainC
   if (!chainId)
     return undefined;
 
-  return chainList.find(config => config.chainId === chainId);
+  return chainList.find(config => config.chainId === BigInt(chainId));
 }
 
 export const getChainNativeToken = (chain: ChainConfig): TokenOrNative => {

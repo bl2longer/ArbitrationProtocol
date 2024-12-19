@@ -1,8 +1,8 @@
 import { ChainConfig } from '@/services/chains/chain-config';
 import { dtoToClass } from "../class-transformer/class-transformer-utils";
-import { Transaction } from '../transactions/model/transaction';
-import { Transaction as TransactionDTO } from './dto/transaction';
-import { SubgraphGQLResponse } from './gql-response';
+import { Transaction as TransactionDTO } from '../subgraph/dto/transaction';
+import { SubgraphGQLResponse } from '../subgraph/gql-response';
+import { Transaction } from './model/transaction';
 
 type FetchTransactionsResponse = SubgraphGQLResponse<{
   transactions: TransactionDTO[];
@@ -20,25 +20,15 @@ export const fetchTransactions = async (chain: ChainConfig, start: number, limit
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const query = `query FetchArbitrators {
-        arbitratorInfos (
+      const query = `query FetchTransactions {
+        transactions (
           skip: ${startAt}
           first:${resultsPerPage}
           orderBy: createdAt,
           orderDirection: desc
         ) { 
-          id 
-          createdAt 
-          status 
-          address 
-          ethAmount 
-          lastArbitrationTime 
-          currentFeeRate 
-          pendingFeeRate 
-          activeTransactionId 
-          operatorEvmAddress 
-          operatorBtcAddress 
-          operatorBtcPubKey
+          id txId dapp arbitrator startTime deadline btcTx btcTxHash 
+          status depositedFee signature compensationReceiver timeoutCompensationReceiver
         }
       }`;
 

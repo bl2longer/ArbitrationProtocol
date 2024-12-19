@@ -23,6 +23,10 @@
     "CompensationManager": {
       "address": "0xd39a816F8b6c298aF8efd14cB260F07bAB8386aF",
       "startBlock": 21014464
+    },
+    "DAppRegistry": {
+      "address": "0x308c2fD094E2f1356a0843d197a29A6DaedBA023",
+      "startBlock": 21014464
     }
   }
 }

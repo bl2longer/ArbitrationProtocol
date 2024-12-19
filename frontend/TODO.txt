@@ -1,9 +1,9 @@
 ===> Target release date: dec 30
 
-- navbar: wallet connect status
-- use Button from chadcn and update to the right blue color
-- write contract: practice with register dapp page
-
+- register dapp:
+  - fetch registration fee (10 ELA) first
+  - dapps subgraph
+  - replace register menu with dapps menu + list + register button
 - arbitrator dashboard
   - method to check/fetch connected wallet's arbitrator
   - update with real arbitrator info
@@ -14,7 +14,6 @@
   - improve with real transactions from subgraph  
   - refresh icon next to title to get latest transactions
 - Arbitrator registration (incl staking)
-- Registered arbitrator dashboard / edit
 
 P2:
 - Try zustand for state management instead of rxjs

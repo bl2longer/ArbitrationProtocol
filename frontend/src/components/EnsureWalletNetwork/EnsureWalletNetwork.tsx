@@ -1,6 +1,3 @@
-import { BitcoinWalletChooserContext } from "@/components/dialogs/BitcoinWalletChooser/BitcoinWalletChooser";
-import { useBitcoinAddressSupported } from "@/services/btc/hooks/useBitcoinAddressSupported";
-import { useBitcoinWalletCanSignData } from "@/services/btc/hooks/useBitcoinWalletCanSignData";
 import { getChainConfigById } from "@/services/chains/chains";
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
 import { useSnackbar } from "notistack";
@@ -8,6 +5,9 @@ import { FC, ReactNode, useCallback, useContext } from "react";
 import { PreStepButton } from "./PreStepButton/PreStepButton";
 import { useWalletContext, WalletContext } from "@/contexts/WalletContext/WalletContext";
 import { useEVMContext } from "@/contexts/EVMContext/EVMContext";
+import { useBitcoinAddressSupported } from "@/services/btc/hooks/useBitcoinAddressSupported";
+import { BitcoinWalletChooserContext } from "@/components/dialogs/BitcoinWalletChooser/BitcoinWalletChooser";
+import { useBitcoinWalletCanSignData } from "@/services/btc/hooks/useBitcoinWalletCanSignData";
 
 /**
  * Component that shows the given children if all required conditions are met (wallets connected,

@@ -60,7 +60,7 @@ export const tokenToContractValue = (humanReadableValue: BigNumber | string | nu
 /**
  * Converts a token contract value (wei) to readable value (eth)
  */
-export const tokenToReadableValue = (contractValue: BigNumber | BigInt | string | number, decimals: number): BigNumber => {
+export const tokenToReadableValue = (contractValue: BigNumber | bigint | string | number, decimals: number): BigNumber => {
   if (contractValue === undefined)
     return undefined;
 

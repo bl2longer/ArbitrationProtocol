@@ -1,7 +1,7 @@
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
-import { fetchTransactions } from "@/services/subgraph/transactions";
 import { useCallback, useEffect, useState } from "react";
 import { Transaction } from "../model/transaction";
+import { fetchTransactions } from "../transactions.service";
 
 export const useTransactions = (): { transactions: Transaction[] } => {
   const activeChain = useActiveEVMChainConfig();

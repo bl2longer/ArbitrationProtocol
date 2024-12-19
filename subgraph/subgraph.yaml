@@ -92,3 +92,30 @@ dataSources:
           handler: handleCompensationClaimed
         - event: CompensationWithdrawn(indexed bytes32)
           handler: handleCompensationWithdrawn
+  - name: DAppRegistry
+    kind: ethereum/contract
+    network: esc-testnet
+    source:
+      abi: DAppRegistry
+      address: "0x308c2fD094E2f1356a0843d197a29A6DaedBA023"
+      startBlock: 21014464
+    mapping:
+      file: ./src/event-handlers/DAppRegistry.ts
+      language: wasm/assemblyscript
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      entities:
+        - DApp
+        - User
+      abis:
+        - name: DAppRegistry
+          file: ./src/abis/DAppRegistry.json
+      eventHandlers:
+        - event: DAppAuthorized(indexed address)
+          handler: handleDAppAuthorized
+        - event: DAppDeregistered(indexed address)
+          handler: handleDAppDeregistered
+        - event: DAppRegistered(indexed address,indexed address)
+          handler: handleDAppRegistered
+        - event: DAppSuspended(indexed address)
+          handler: handleDAppSuspended

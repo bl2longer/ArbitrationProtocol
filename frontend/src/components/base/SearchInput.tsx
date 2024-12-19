@@ -1,5 +1,6 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { FC } from "react";
+import { Input } from "../ui/input";
 
 export const SearchInput: FC<{
   placeholder: string;
@@ -9,10 +10,10 @@ export const SearchInput: FC<{
 }> = ({ placeholder, value, onChange, className }) => {
   return (
     <div className="relative flex-grow sm:flex-grow-0">
-      <input
+      <Input
         type="text"
         placeholder={placeholder}
-        className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${className}`}
+        className={`w-full pl-10 pr-4 py-2 border ${className}`}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />

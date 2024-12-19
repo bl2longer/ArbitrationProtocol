@@ -8,6 +8,7 @@ import { PageTitle } from '@/components/base/PageTitle';
 import { SearchInput } from '@/components/base/SearchInput';
 import { Loading } from '@/components/base/Loading';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 
 // Utility function to safely format ether values
 // const formatEther = (value: string): string => {
@@ -72,12 +73,12 @@ export default function TransactionList() {
   };
 
   const transactions = useMemo(() => {
-    return rawTransactions.filter(tx => {
+    return rawTransactions?.filter(tx => {
       const searchLower = searchTerm.toLowerCase();
       return (
-        tx.dapp.toLowerCase().includes(searchLower) ||
-        tx.arbitrator.toLowerCase().includes(searchLower) ||
-        tx.btcTx.toLowerCase().includes(searchLower)
+        tx.dapp?.toLowerCase().includes(searchLower) ||
+        tx.arbitrator?.toLowerCase().includes(searchLower) ||
+        tx.btcTx?.toLowerCase().includes(searchLower)
       );
     });
   }, [rawTransactions, searchTerm]);
@@ -95,10 +96,10 @@ export default function TransactionList() {
     //   return `${formatEther(value)} ETH`;
     // }
     if (key === 'dapp' || key === 'arbitrator') {
-      return value.slice(0, 10) + '...';
+      return value?.slice(0, 10) + '...';
     }
     if (key === 'btcTx') {
-      return value.slice(0, 20) + '...';
+      return value?.slice(0, 20) + '...';
     }
     return value;
   };
@@ -127,11 +128,10 @@ export default function TransactionList() {
         <div className="flex flex-wrap gap-2">
           {Object.entries(fieldLabels).map(([key, label]) => (
             <label key={key} className="inline-flex items-center">
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={selectedFields.includes(key)}
-                onChange={(e) => {
-                  if (e.target.checked) {
+                onCheckedChange={(checked) => {
+                  if (checked) {
                     setSelectedFields([...selectedFields, key]);
                   } else {
                     setSelectedFields(selectedFields.filter(f => f !== key));

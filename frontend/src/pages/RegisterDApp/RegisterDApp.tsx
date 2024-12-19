@@ -1,38 +1,35 @@
 import { useState, FC } from 'react';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 import { PageTitle } from '@/components/base/PageTitle';
-import { useDappRegistration } from '@/services/dapp-registry/hooks/useDappRegistry';
+import { useDappRegistryContract } from '@/services/dapp-registry/hooks/useDappRegistryContract';
 import { isAddress } from 'viem';
 import { EnsureWalletNetwork } from '@/components/EnsureWalletNetwork/EnsureWalletNetwork';
 import { Button } from '@/components/ui/button';
+import { useToasts } from '@/services/ui/hooks/useToasts';
+import { Input } from '@/components/ui/input';
 
 const RegisterDApp: FC = () => {
   const { evmAccount } = useWalletContext();
   const [dappAddress, setDappAddress] = useState('');
   const [registrationFee] = useState('1'); // 1 ELA
-
-  const {
-    register,
-    isPending,
-    isSuccess,
-    error
-  } = useDappRegistration(dappAddress, registrationFee);
+  const { errorToast } = useToasts();
+  const { register, isPending, isSuccess, error } = useDappRegistryContract(dappAddress, registrationFee);
 
   const handleRegisterDApp = async () => {
     if (!evmAccount) {
-      console.error('Please connect your wallet first');
+      errorToast('Please connect your wallet first');
       return;
     }
 
     if (!dappAddress || !isAddress(dappAddress)) {
-      console.error('Please enter a valid DApp address');
+      errorToast('Please enter a valid DApp address');
       return;
     }
 
     try {
       await register();
     } catch (error) {
-      console.error('Error registering DApp:', error);
+      errorToast(`Error registering DApp: ${error}`);
     }
   };
 
@@ -48,12 +45,12 @@ const RegisterDApp: FC = () => {
             <p className="text-sm text-gray-500 mb-2">
               Registration Fee: {registrationFee} ELA
             </p>
-            <input
+            <Input
               type="text"
               placeholder="DApp Address (0x...)"
               value={dappAddress}
               onChange={(e) => setDappAddress(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            /* className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" */
             />
             {error && (
               <p className="mt-2 text-sm text-red-600">
@@ -71,8 +68,6 @@ const RegisterDApp: FC = () => {
               <Button
                 onClick={() => void handleRegisterDApp()}
                 disabled={isPending || !dappAddress}
-                className={`inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${(isPending || !dappAddress) ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
               >
                 {isPending ? 'Registering...' : 'Register'}
               </Button>

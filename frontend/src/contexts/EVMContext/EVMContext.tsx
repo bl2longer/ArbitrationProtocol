@@ -1,7 +1,6 @@
 import React, { createContext, useContext, ReactNode, useCallback, useEffect } from 'react';
 import { useAccount, useChainId, useConnect, useDisconnect, useReconnect, WagmiProvider } from 'wagmi';
 import { http, createConfig } from 'wagmi';
-import { mainnet, sepolia } from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { injected } from 'wagmi/connectors';
 import { useWalletContext } from '../WalletContext/WalletContext';
@@ -9,19 +8,38 @@ import { useSwitchChain } from "wagmi";
 import { chainList } from '@/config/chains';
 import { ChainConfig } from '@/services/chains/chain-config';
 import { MetaMaskErrorCode } from '../ErrorHandlerContext';
-import { toHex } from 'viem';
+import { Chain, toHex } from 'viem';
 
 const injectedConnector = injected();
 
-export const config = createConfig({
-  chains: [mainnet, sepolia],
+// Map our chains format to wagmi chains format
+const wagmiChains: Chain[] = chainList.map(c => ({
+  id: Number(c.chainId),
+  name: c.name,
+  rpcUrls: {
+    default: {
+      http: c.rpcs
+    }
+  },
+  nativeCurrency: {
+    name: c.nativeCurrency.name,
+    symbol: c.nativeCurrency.symbol,
+    decimals: c.nativeCurrency.decimals,
+  },
+  blockExplorers: {
+    default: {
+      name: c.name,
+      url: c.explorers?.[0]
+    }
+  }
+}));
+
+export const wagmiConfig = createConfig({
+  chains: [wagmiChains[0], ...wagmiChains.slice(1)],
   connectors: [
     injectedConnector
   ],
-  transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
-  },
+  transports: Object.fromEntries(wagmiChains.map(c => [c.id, http()]))
 });
 
 const queryClient = new QueryClient();
@@ -70,7 +88,7 @@ export const EVMProviderInternal: React.FC<EVMProviderProps> = ({ children }) =>
   const chainId = useChainId();
   const { disconnect } = useDisconnect();
   const { isConnected, address, connector } = useAccount();
-  const { setEvmAccount, networkMode } = useWalletContext();
+  const { setEvmAccount, networkMode, setEvmChainId } = useWalletContext();
   const { switchChain } = useSwitchChain();
   const defaultNetworkToUse = chainList.find(c => c.networkMode === networkMode); // Use the first network of the list that supports the current network mode
 
@@ -90,7 +108,11 @@ export const EVMProviderInternal: React.FC<EVMProviderProps> = ({ children }) =>
    */
   const switchNetwork = useCallback(async (chain: ChainConfig) => {
     console.log("Asking wallet to switch to chain:", chain);
-    await switchChain({ chainId: Number(chain.chainId) });
+    await switchChain({ chainId: Number(chain.chainId) }, {
+      onError: (error) => {
+        console.warn("Switch chain error:", error);
+      }
+    })
   }, [switchChain]);
 
   const switchNetworkOrAddDefault = useCallback(async () => {
@@ -118,8 +140,12 @@ export const EVMProviderInternal: React.FC<EVMProviderProps> = ({ children }) =>
     setEvmAccount(address);
   }, [address]);
 
+  useEffect(() => {
+    setEvmChainId(chainId);
+  }, [chainId]);
+
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <EVMContext.Provider value={{
           connect,
@@ -138,7 +164,7 @@ export const EVMProviderInternal: React.FC<EVMProviderProps> = ({ children }) =>
 
 export const EVMProvider: React.FC<EVMProviderProps> = ({ children, ...props }) => {
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <EVMProviderInternal {...props}>
           {children}
@@ -151,7 +177,7 @@ export const EVMProvider: React.FC<EVMProviderProps> = ({ children, ...props }) 
 export const useEVMContext = (): EVMContextProps => {
   const context = useContext(EVMContext);
   if (!context) {
-    throw new Error('useEVMContext must be used within a Web3Provider');
+    throw new Error('useEVMContext must be used within a EVMProvider');
   }
   return context;
 };

@@ -12,14 +12,14 @@ export function handleTransactionRegistered(event: TransactionRegistered): void 
 export function handleArbitrationRequested(event: ArbitrationRequested): void {
   const transaction = getTransaction(event.block, event.params.txId.toHexString());
   transaction.dapp = event.params.dapp.toHexString();
-  transaction.status = "Requested";
+  transaction.status = "Arbitrated";
   transaction.save();
 }
 
 export function handleArbitrationSubmitted(event: ArbitrationSubmitted): void {
   const transaction = getTransaction(event.block, event.params.txId.toHexString());
   transaction.dapp = event.params.dapp.toHexString();
-  transaction.status = "Submitted";
+  transaction.status = "Completed";
   transaction.save();
 }
 
@@ -44,6 +44,7 @@ function getTransaction(block: ethereum.Block, id: string): Transaction {
   }
 
   const transaction = new Transaction(id);
+  transaction.createdAt = block.timestamp;
   transaction.status = "Active";
   transaction.txId = id;
 

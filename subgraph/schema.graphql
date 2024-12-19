@@ -22,6 +22,7 @@ enum TransactionStatus {
 }
 
 enum CompensationType {
+    Unknown
     IllegalSignature
     TimeoutPenalty
 }
@@ -46,6 +47,7 @@ type ArbitratorInfo @entity {
 
 type Transaction @entity {
     id: ID! # required by thegraph
+    createdAt: BigInt! # Timestamp, DB side only, not on chain - block time at which the transaction was first found (first event)
     txId: String! # Transaction ID, same as ID
     dapp: String # DApp address
     arbitrator: String
@@ -72,10 +74,19 @@ type ArbitrationRequest @entity {
 
 type CompensationClaim @entity {
     id: ID!
-    arbitrator: String!
-    claimer: String!
-    amount: BigInt!
+    createdAt: BigInt! # Timestamp, DB side only, not on chain - block time at which the compensation was first found (first event)
+    claimer: String
     claimType: CompensationType!
-    claimed: Boolean!
+    withdrawn: Boolean!
+    arbitrator: String
+    amount: BigInt
     evidence: Bytes
+}
+
+type DApp @entity {
+    id: ID!
+    createdAt: BigInt! # Timestamp, DB side only, not on chain - block time at which the dapp was first found (first event)
+    address: String!
+    owner: String
+    status: DAppStatus!
 }
