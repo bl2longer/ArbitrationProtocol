@@ -16,9 +16,10 @@
 - Arbitrator registration (incl staking)
 
 P2:
+- status label component with bg color like for arbitrators, everywhere (dapps list, etc)
 - Try zustand for state management instead of rxjs
 - Handle subgraph api errors, forward to hooks and pages
-- Replace headless UI components with https://ui.shadcn.com/
+- Finish to replace headless UI components with https://ui.shadcn.com/
 - register dapp: intro about what a dapp is
 
 elastos testnet contract address: {

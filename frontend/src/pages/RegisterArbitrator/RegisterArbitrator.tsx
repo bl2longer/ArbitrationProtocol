@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo, FC } from 'react';
 import { PageTitle } from '@/components/base/PageTitle';
 import { RadioGroup } from '@headlessui/react';
+import { PageContainer } from '@/components/base/PageContainer';
+import { PageTitleRow } from '@/components/base/PageTitleRow';
 
 const RegisterArbitrator: FC = () => {
   const [dappAddress, setDappAddress] = useState('');
@@ -44,10 +46,10 @@ const RegisterArbitrator: FC = () => {
   };
 
   return (
-    <div className="container space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+    <PageContainer>
+      <PageTitleRow>
         <PageTitle className="flex flex-grow sm:flex-grow-0">Register as Arbitrator</PageTitle>
-      </div>
+      </PageTitleRow>
 
       {/* Arbitrator Registration Dialog */}
       <div className="flex items-center justify-center">
@@ -145,7 +147,7 @@ const RegisterArbitrator: FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }
 

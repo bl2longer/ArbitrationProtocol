@@ -4,20 +4,22 @@ import { useCallback } from 'react';
 import { parseEther } from 'viem';
 import { abi } from "../../../../contracts/core/DAppRegistry.sol/DAppRegistry.json";
 
-export const useDappRegistryContract = (dappAddress: string, registrationFee: string) => {
+export const useDappRegistryRegister = () => {
   const activeChain = useActiveEVMChainConfig();
   const { writeContract, isPending, isSuccess, error } = useContractCall();
 
-  const register = useCallback(async () => {
+  const register = useCallback(async (dappAddress: string, registrationFee: bigint): Promise<boolean> => {
     const { hash, receipt } = await writeContract({
       contractAddress: activeChain?.contracts.dappRegistry,
       abi,
       functionName: 'registerDApp',
       args: [dappAddress],
-      value: parseEther(registrationFee)
+      value: parseEther(registrationFee.toString())
     });
-    console.log("DAPP RES", hash, receipt)
-  }, [activeChain, dappAddress, registrationFee, writeContract]);
+
+    console.log("Register dapp result:", hash, receipt)
+    return !!receipt;
+  }, [activeChain, writeContract]);
 
   return { register, isPending, isSuccess, error };
 };

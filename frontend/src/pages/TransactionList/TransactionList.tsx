@@ -9,6 +9,8 @@ import { SearchInput } from '@/components/base/SearchInput';
 import { Loading } from '@/components/base/Loading';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { PageContainer } from '@/components/base/PageContainer';
+import { PageTitleRow } from '@/components/base/PageTitleRow';
 
 // Utility function to safely format ether values
 // const formatEther = (value: string): string => {
@@ -116,13 +118,13 @@ export default function TransactionList() {
   }
 
   return (
-    <div className="container space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+    <PageContainer>
+      <PageTitleRow>
         <PageTitle className="flex flex-grow sm:flex-grow-0">Transaction List</PageTitle>
         <SearchInput placeholder="Search transactions..."
           value={searchTerm}
           onChange={(newValue) => setSearchTerm(newValue)} />
-      </div>
+      </PageTitleRow>
 
       <div className="mb-6">
         <div className="flex flex-wrap gap-2">
@@ -237,6 +239,6 @@ export default function TransactionList() {
           </div>
         </div>
       </Dialog>
-    </div>
+    </PageContainer>
   );
 }

@@ -17,11 +17,10 @@ export default function Navbar() {
 
   const navigation = [
     { name: 'Arbitrators', href: '/' },
-    { name: 'Dashboard', href: '/dashboard' },
     { name: 'Transactions', href: '/transactions' },
     { name: 'Compensations', href: '/compensations' },
-    { name: 'Register DApp', href: '/register-dapp' },
-    { name: 'Register Arbitrator', href: '/register-arbitrator' },
+    { name: 'DApps', href: '/dapps' },
+    { name: 'My dashboard', href: '/dashboard' },
   ];
 
   return (

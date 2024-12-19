@@ -1,23 +1,28 @@
-import { useState, FC } from 'react';
+import { useState, FC, useEffect } from 'react';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 import { PageTitle } from '@/components/base/PageTitle';
-import { useDappRegistryContract } from '@/services/dapp-registry/hooks/useDappRegistryContract';
+import { useDappRegistryRegister } from '@/services/dapp-registry/hooks/useDAppRegistryRegister';
 import { isAddress } from 'viem';
 import { EnsureWalletNetwork } from '@/components/EnsureWalletNetwork/EnsureWalletNetwork';
 import { Button } from '@/components/ui/button';
 import { useToasts } from '@/services/ui/hooks/useToasts';
 import { Input } from '@/components/ui/input';
+import { PageContainer } from '@/components/base/PageContainer';
+import { PageTitleRow } from '@/components/base/PageTitleRow';
+import { useDAppRegistryRegistrationFee } from '@/services/dapp-registry/hooks/useDAppRegistryRegistrationFee';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterDApp: FC = () => {
   const { evmAccount } = useWalletContext();
+  const navigate = useNavigate();
   const [dappAddress, setDappAddress] = useState('');
-  const [registrationFee] = useState('1'); // 1 ELA
-  const { errorToast } = useToasts();
-  const { register, isPending, isSuccess, error } = useDappRegistryContract(dappAddress, registrationFee);
+  const { errorToast, successToast } = useToasts();
+  const { fetchRegistrationFee, registrationFee, isSuccess: registrationFeeKnown } = useDAppRegistryRegistrationFee();
+  const { register, isPending, isSuccess, error } = useDappRegistryRegister();
 
   const handleRegisterDApp = async () => {
     if (!evmAccount) {
-      errorToast('Please connect your wallet first');
+      errorToast('Please connect your wallet');
       return;
     }
 
@@ -27,23 +32,32 @@ const RegisterDApp: FC = () => {
     }
 
     try {
-      await register();
+      if (await register(dappAddress, registrationFee)) {
+        successToast("DApp successfully registered!");
+
+        // Back to dapps list.
+        navigate("/dapps");
+      }
     } catch (error) {
       errorToast(`Error registering DApp: ${error}`);
     }
   };
 
+  useEffect(() => {
+    fetchRegistrationFee();
+  }, [])
+
   return (
-    <div className="container space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+    <PageContainer>
+      <PageTitleRow>
         <PageTitle className="flex flex-grow sm:flex-grow-0">Register DApp</PageTitle>
-      </div>
+      </PageTitleRow>
 
       <div className="flex items-center justify-center">
         <div className="relative bg-white rounded-lg max-w-md w-full mx-4 p-6">
           <div className="mb-4">
             <p className="text-sm text-gray-500 mb-2">
-              Registration Fee: {registrationFee} ELA
+              Registration Fee: {registrationFee !== undefined ? `${Number(registrationFee)} ELA` : `...`}
             </p>
             <Input
               type="text"
@@ -67,7 +81,7 @@ const RegisterDApp: FC = () => {
             <EnsureWalletNetwork continuesTo='Register'>
               <Button
                 onClick={() => void handleRegisterDApp()}
-                disabled={isPending || !dappAddress}
+                disabled={isPending || !dappAddress || !registrationFeeKnown}
               >
                 {isPending ? 'Registering...' : 'Register'}
               </Button>
@@ -75,7 +89,7 @@ const RegisterDApp: FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }
 

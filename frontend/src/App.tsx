@@ -11,6 +11,7 @@ import RegisterDApp from './pages/RegisterDApp/RegisterDApp';
 import RegisterArbitrator from './pages/RegisterArbitrator/RegisterArbitrator';
 import { SnackbarProvider } from 'notistack';
 import { ErrorHandlerProvider } from './contexts/ErrorHandlerContext';
+import DAppList from './pages/DAppList/DAppList';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
                 <Route path="/dashboard" element={<ArbitratorDashboard />} />
                 <Route path="/transactions" element={<TransactionList />} />
                 <Route path="/compensations" element={<CompensationList />} />
+                <Route path="/dapps" element={<DAppList />} />
                 <Route path="/register-dapp" element={<RegisterDApp />} />
                 <Route path="/register-arbitrator" element={<RegisterArbitrator />} />
               </Routes>

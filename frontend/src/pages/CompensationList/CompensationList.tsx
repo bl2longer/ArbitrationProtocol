@@ -4,6 +4,9 @@ import { Loading } from '@/components/base/Loading';
 import { useCompensations } from '@/services/compensations/hooks/useCompensations';
 import { CompensationClaim } from '@/services/compensations/model/compensation-claim';
 import { CompensationDetailsDialog } from './CompensationDetailsDialog';
+import { PageTitle } from '@/components/base/PageTitle';
+import { PageContainer } from '@/components/base/PageContainer';
+import { PageTitleRow } from '@/components/base/PageTitleRow';
 
 // TODO
 const compensationTypeMap = {
@@ -12,7 +15,6 @@ const compensationTypeMap = {
 };
 
 export default function CompensationList() {
-  const { evmAccount: account } = useWalletContext();
   const { compensations } = useCompensations();
   const [selectedCompensation, setSelectedCompensation] = useState<CompensationClaim | null>(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
@@ -32,7 +34,12 @@ export default function CompensationList() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <PageContainer>
+      {/* Title header */}
+      <PageTitleRow>
+        <PageTitle>Compensations</PageTitle>
+      </PageTitleRow>
+
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border rounded-lg">
           <thead>
@@ -105,6 +112,6 @@ export default function CompensationList() {
         compensation={selectedCompensation}
         isOpen={isDetailsDialogOpen}
         onClose={() => setIsDetailsDialogOpen(false)} />
-    </div>
+    </PageContainer>
   );
 }

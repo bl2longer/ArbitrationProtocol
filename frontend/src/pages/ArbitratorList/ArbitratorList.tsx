@@ -14,6 +14,10 @@ import { GridView } from './GridView';
 import { PageTitle } from '@/components/base/PageTitle';
 import { SearchInput } from '@/components/base/SearchInput';
 import { Loading } from '@/components/base/Loading';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { PageContainer } from '@/components/base/PageContainer';
+import { PageTitleRow } from '@/components/base/PageTitleRow';
 
 export type SortConfig = {
   key: 'stake' | 'address';
@@ -25,6 +29,7 @@ export default function ArbitratorList() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'stake', direction: 'desc' });
+  const navigate = useNavigate();
 
   const handleSort = (key: SortConfig['key']) => {
     setSortConfig(prev => ({
@@ -50,10 +55,10 @@ export default function ArbitratorList() {
     return <Loading />
 
   return (
-    <div className="container space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+    <PageContainer>
+      <PageTitleRow>
         <PageTitle>Arbitrator List</PageTitle>
-        <div className="flex space-x-4 w-full sm:w-auto">
+        <div className="flex space-x-4 w-full sm:w-auto items-center">
           <SearchInput placeholder="Search arbitrators..."
             value={searchTerm}
             onChange={(newValue) => setSearchTerm(newValue)} />
@@ -71,11 +76,12 @@ export default function ArbitratorList() {
               <ListBulletIcon className="h-5 w-5" />
             </button>
           </div>
+          <Button onClick={() => navigate("/register-arbitrator")}>Register arbitrator</Button>
         </div>
-      </div>
+      </PageTitleRow>
 
       {viewMode === 'list' && <ListView arbitrators={arbitrators} sortConfig={sortConfig} handleSort={handleSort} />}
       {viewMode === 'grid' && <GridView arbitrators={arbitrators} />}
-    </div>
+    </PageContainer>
   );
 }

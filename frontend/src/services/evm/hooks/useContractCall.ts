@@ -1,15 +1,18 @@
 import { useErrorHandler } from "@/contexts/ErrorHandlerContext";
 import { wagmiConfig } from "@/contexts/EVMContext/EVMContext";
-import { writeContract as wagmiWriteContract, waitForTransactionReceipt, WaitForTransactionReceiptReturnType } from '@wagmi/core';
+import { readContract as wagmiReadContract, writeContract as wagmiWriteContract, waitForTransactionReceipt, WaitForTransactionReceiptReturnType } from '@wagmi/core';
 import { Abi } from "abitype";
 import { useCallback, useState } from "react";
 import { Address } from "viem";
 
-export type WriteContractParams = {
+export type ReadContractParams = {
   contractAddress: string;
   abi: Abi | readonly unknown[];
   functionName: string;
   args: unknown[];
+}
+
+export type WriteContractParams = ReadContractParams & {
   value?: bigint;
 }
 
@@ -18,6 +21,28 @@ export const useContractCall = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<Error>(null);
   const { handleError } = useErrorHandler();
+
+  const readContract = useCallback(async (params: ReadContractParams): Promise<any> => {
+    setIsPending(true);
+    setIsSuccess(false);
+    try {
+      const result = await wagmiReadContract(wagmiConfig, {
+        address: params.contractAddress as Address,
+        abi: params.abi,
+        functionName: params.functionName,
+        args: params.args
+      });
+      setIsSuccess(true);
+      return result;
+    }
+    catch (e) {
+      handleError(e);
+      return undefined;
+    }
+    finally {
+      setIsPending(false);
+    }
+  }, [handleError]);
 
   const writeContract = useCallback(async (params: WriteContractParams, waitForReceipt = true): Promise<{ hash: string, receipt?: WaitForTransactionReceiptReturnType }> => {
     setIsPending(true);
@@ -66,5 +91,5 @@ export const useContractCall = () => {
     }
   }, [handleError]);
 
-  return { writeContract, isPending, isSuccess, error };
+  return { readContract, writeContract, isPending, isSuccess, error };
 }
