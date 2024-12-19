@@ -1,22 +1,16 @@
 const { ethers, network, getChainId } = require("hardhat");
 const { readConfig } = require("./helper.js");
 const bitcoin = require('bitcoinjs-lib');
-const { ECPairFactory } = require('ecpair');
-const ecc = require('tiny-secp256k1');
+const {publicKeyCreate} = require("secp256k1");
 
-const ECPair = ECPairFactory(ecc);
-bitcoin.initEccLib(ecc);
 
 async function getBitcoinCredentials(privateKey) {
   try {
     // Convert Ethereum private key to Buffer (remove '0x' prefix if present)
     const privKeyBuffer = Buffer.from(privateKey.replace('0x', ''), 'hex');
-    
-    // Create key pair using ECPair factory
-    const keyPair = ECPair.fromPrivateKey(privKeyBuffer);
-    
-    // Get public key (compressed format)
-    const pubKey = Buffer.from(keyPair.publicKey)
+
+    const pubKey = publicKeyCreate(privKeyBuffer, true);
+
     // Create legacy address (P2PKH)
     const { address } = bitcoin.payments.p2pkh({ 
       pubkey: pubKey,
@@ -24,7 +18,7 @@ async function getBitcoinCredentials(privateKey) {
     });
     
     // Convert public key to hex string with 0x prefix
-    const pubKeyHex = pubKey.toString('hex');
+    const pubKeyHex = Buffer.from(pubKey).toString("hex");
     
     console.log("Generated Bitcoin credentials:");
     console.log("Public Key Buffer:", pubKey);
@@ -52,7 +46,7 @@ async function main() {
   let privateKey;
   if (typeof accounts === 'string') {
     // If using mnemonic
-    const wallet = ethers.Wallet.fromPhrase(accounts);
+    const wallet = ethers.Wallet.fromMnemonic(accounts);
     privateKey = wallet.privateKey;
   } else if (Array.isArray(accounts)) {
     // If using private keys array
@@ -82,13 +76,14 @@ async function main() {
   console.log("BTC Public Key:", btcPubKey);
   console.log("BTC Address:", btcAddress);
 
+  let gasLimit = await arbitratorManager.estimateGas.setOperator(operatorAddress, "0x" + btcPubKey, btcAddress);
   // Call setOperator
   const tx = await arbitratorManager.setOperator(
     operatorAddress,
     "0x" + btcPubKey,
     btcAddress,
     {
-      gasLimit: 2000000
+      gasLimit: gasLimit
     }
   );
   

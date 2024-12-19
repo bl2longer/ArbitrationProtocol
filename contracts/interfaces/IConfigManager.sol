@@ -11,6 +11,7 @@ interface IConfigManager {
     function setMinTransactionDuration(uint256 duration) external;
     function setMaxTransactionDuration(uint256 duration) external;
     function setArbitrationTimeout(uint256 timeout) external;
+    function getArbitrationTimeout() external view returns (uint256);
     
     // Fee related configurations
     function setTransactionMinFeeRate(uint256 rate) external;

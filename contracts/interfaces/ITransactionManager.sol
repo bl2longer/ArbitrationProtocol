@@ -13,7 +13,7 @@ interface ITransactionManager {
     
     // Complete transaction
     function completeTransaction(bytes32 id) external;
-    
+    function isAbleCompletedTransaction(bytes32 id) external view returns (bool);
     // Request arbitration
     function requestArbitration(
         bytes32 id,

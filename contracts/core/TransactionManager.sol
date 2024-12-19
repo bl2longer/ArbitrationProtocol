@@ -150,7 +150,7 @@ contract TransactionManager is
             arbitrator: arbitrator,
             deadline: deadline,
             depositedFee: fee,
-            startTime: block.timestamp,
+            startTime: 0,
             status: DataTypes.TransactionStatus.Active,
             btcTx: new bytes(0),
             signature: new bytes(0),
@@ -169,11 +169,8 @@ contract TransactionManager is
      */
     function completeTransaction(bytes32 id) external {
         DataTypes.Transaction storage transaction = transactions[id];
-
-        if (transaction.status == DataTypes.TransactionStatus.Active && block.timestamp < transaction.deadline) {
-            revert(Errors.INVALID_DEADLINE);
-        } else if (transaction.status != DataTypes.TransactionStatus.Submitted) {
-            revert(Errors.INVALID_TRANSACTION_STATUS);
+        if (!this.isAbleCompletedTransaction(id)) {
+            revert(Errors.CANNOT_COMPLETE_TRANSACTION);
         }
 
         if (msg.sender != transaction.dapp) {
@@ -183,9 +180,50 @@ contract TransactionManager is
         _completeTransaction(id, transaction);
     }
 
+    function isAbleCompletedTransaction(bytes32 id) external view returns (bool) {
+        DataTypes.Transaction memory transaction = transactions[id];
+        if(transaction.status == DataTypes.TransactionStatus.Active) {
+            return true;
+        } else if (transaction.status == DataTypes.TransactionStatus.Arbitrated) {
+            if(isSubmitArbitrationOutTime(transaction)) {
+                return true;
+            }
+        } else if (transaction.status == DataTypes.TransactionStatus.Submitted) {
+            return true;
+        }
+
+        return false;
+    }
+
+    function isSubmitArbitrationOutTime(DataTypes.Transaction memory transaction ) internal view returns (bool) {
+       uint256 configTime = configManager.getArbitrationTimeout();
+       return block.timestamp > transaction.startTime + configTime;
+    }
+
     function _completeTransaction(bytes32 id, DataTypes.Transaction storage transaction) internal returns(uint256, uint256) {
         // Get arbitrator info and calculate duration-based fee
+        uint256 finalArbitratorFee = 0;
+        uint256 systemFee = 0;
+       
+        if (transaction.status != DataTypes.TransactionStatus.Active) {
+            (finalArbitratorFee, systemFee) = transferCompletedTransactionFee(transaction);
+        }
+        
+        // Release arbitrator from working status
+        arbitratorManager.releaseArbitrator(transaction.arbitrator, id);
+
+        transaction.status = DataTypes.TransactionStatus.Completed;
+        emit TransactionCompleted(transaction.dapp, id);
+
+        return (finalArbitratorFee, systemFee);
+    }
+    
+    function transferCompletedTransactionFee(DataTypes.Transaction memory transaction) internal returns(uint256, uint256) {
+        // Get arbitrator info and calculate duration-based fee
         DataTypes.ArbitratorInfo memory arbitratorInfo = arbitratorManager.getArbitratorInfo(transaction.arbitrator);
+        if (transaction.status == DataTypes.TransactionStatus.Active) {
+            revert("Can't transfer fee for active transaction");
+        }
         uint256 duration = block.timestamp - transaction.startTime;
         uint256 arbitratorFee = (arbitratorInfo.ethAmount * duration * arbitratorInfo.currentFeeRate) / (SECONDS_PER_YEAR * FEE_RATE_MULTIPLIER);
 
@@ -208,13 +246,6 @@ contract TransactionManager is
             (bool success3, ) = transaction.dapp.call{value: remainingBalance}("");
             if (!success3) revert(Errors.TRANSFER_FAILED);
         }
-
-        // Release arbitrator from working status
-        arbitratorManager.releaseArbitrator(transaction.arbitrator, id);
-
-        transaction.status = DataTypes.TransactionStatus.Completed;
-        emit TransactionCompleted(transaction.dapp, id);
-
         return (finalArbitratorFee, systemFee);
     }
 
@@ -253,6 +284,7 @@ contract TransactionManager is
         transaction.status = DataTypes.TransactionStatus.Arbitrated;
         transaction.btcTx = btcTx;
         transaction.btcTxHash = txHash;
+        transaction.startTime = block.timestamp;
         transaction.timeoutCompensationReceiver = timeoutCompensationReceiver;
 
         // Store txHash to id mapping

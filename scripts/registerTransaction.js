@@ -19,21 +19,27 @@ async function main() {
     const arbitratorAddress = deployer.address;
     const compensationReceiverAddress = deployer.address;
     const deadline = Math.floor(Date.now() / 1000) + 3600 * 24 + 180; // 1 days from now
+    const value = ethers.utils.parseEther("0.1");
     try {
         // Log detailed transaction parameters
         console.log("Transaction Parameters:");
         console.log("Arbitrator Address:", arbitratorAddress);
         console.log("Compensation Receiver Address:", compensationReceiverAddress);
         console.log("Deadline:", deadline);
-
+        console.log("Value:", value);
+        let gasLimit = await transactionManager.estimateGas.registerTransaction(
+            arbitratorAddress, deadline, compensationReceiverAddress,
+            {value: value}
+        );
+        console.log("Gas Limit:", gasLimit);
         // Call registerTransaction directly with transaction options
         const tx = await transactionManager.registerTransaction(
             arbitratorAddress, 
             deadline, 
             compensationReceiverAddress,
             {
-                value: ethers.parseEther("0.1"),
-                gasLimit: 500000 // Hardcoded gas limit
+                value: value,
+                gasLimit: gasLimit
             }
         );
 

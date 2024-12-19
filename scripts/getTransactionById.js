@@ -16,7 +16,7 @@ async function main() {
     const transactionManager = TransactionManager.attach(transactionManagerAddress);
 
     // Transaction ID to query
-    const transactionId = "0x611651b62dfeae98b360574d74fe1bd8de5b51867eec96b1abb5018461cdd3f6";
+    const transactionId = "0x1a1c954f3e18c81d6f127913cbbc8a5e533ad25d1dbd1e83afcd08ef981d04e5";
 
     try {
         // Log transaction details
@@ -24,7 +24,6 @@ async function main() {
 
         // Call getTransactionById
         const transaction = await transactionManager.getTransactionById(transactionId);
-
         // Log the transaction details
         console.log("\n--- Transaction Details ---");
         console.log("DApp:", transaction.dapp);

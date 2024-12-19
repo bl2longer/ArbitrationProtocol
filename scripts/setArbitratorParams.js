@@ -22,7 +22,7 @@ async function main() {
     // Parameters to set
     // Note: Adjust these values according to your requirements
     const feeRate = 200;  // 2% fee rate (200 basis points)
-    const deadline = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;  // 30 days from now
+    const deadline = Math.floor(Date.now() / 1000) + 24 * 3600;  // 1 days from now
 
     // Call setArbitratorParams
     console.log(`Setting arbitrator parameters:
@@ -35,10 +35,10 @@ async function main() {
     );
     
     console.log("Transaction sent. Waiting for confirmation...");
-    const receipt = await tx.wait();
+    await tx.wait();
     
     console.log("Arbitrator parameters set successfully!");
-    console.log("Transaction hash:", receipt.hash);
+    console.log("Transaction hash:", tx.hash);
 }
 
 main()

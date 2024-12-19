@@ -16,13 +16,16 @@ async function main() {
   const arbitratorManager = await ArbitratorManager.attach(arbitratorManagerAddress).connect(deployer);
 
   // Amount of ETH to stake (in wei)
-  const stakeAmount = ethers.parseEther("1.0"); // Staking 1 ETH, adjust as needed
-  console.log("Staking amount:", ethers.formatEther(stakeAmount), "ETH");
+  const stakeAmount = ethers.utils.parseEther("1.0"); // Staking 1 ETH, adjust as needed
+  console.log("Staking amount:", ethers.utils.formatEther(stakeAmount), "ETH");
 
+  let gasLimit = await arbitratorManager.estimateGas.stakeETH({
+    value: stakeAmount
+  })
   // Call stakeETH with the specified amount
   const tx = await arbitratorManager.stakeETH({
     value: stakeAmount,
-    gasLimit: 2000000
+    gasLimit: gasLimit
   });
   
   // Wait for the transaction to be mined

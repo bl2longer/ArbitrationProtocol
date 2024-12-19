@@ -43,8 +43,8 @@ contract ConfigManager is IConfigManager, OwnableUpgradeable {
         configs[MIN_TRANSACTION_DURATION] = 1 days;
         configs[MAX_TRANSACTION_DURATION] = 30 days;
         configs[TRANSACTION_MIN_FEE_RATE] = 100; // 1% in basis points
-        configs[ARBITRATION_TIMEOUT] = 24 hours;
-        configs[ARBITRATION_FROZEN_PERIOD] = 30 minutes;
+        configs[ARBITRATION_TIMEOUT] = 24 hours; //Deadline for submitting signatures
+        configs[ARBITRATION_FROZEN_PERIOD] = 30 minutes;//The freezing period after the end of the transaction, during which transaction cannot be accepted or exited
         configs[SYSTEM_FEE_RATE] = 500; // 5% in basis points
         configs[SYSTEM_COMPENSATION_FEE_RATE] = 200; // 2% in basis points
     }
@@ -250,6 +250,14 @@ contract ConfigManager is IConfigManager, OwnableUpgradeable {
             return owner();  // Default to contract owner if not set
         }
         return address(uint160(collector));
+    }
+
+    /**
+     * @notice Get arbitration timeout Deadline for submitting signatures
+     * @return Timeout duration in seconds
+     */
+    function getArbitrationTimeout() external view returns (uint256) {
+        return configs[ARBITRATION_TIMEOUT];
     }
 
     // Add a gap for future storage variables

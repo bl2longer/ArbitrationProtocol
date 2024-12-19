@@ -16,7 +16,7 @@ async function main() {
     const transactionManager = TransactionManager.attach(transactionManagerAddress).connect(operator);
 
     // Transaction ID for arbitration submission
-    const transactionId = "0x611651b62dfeae98b360574d74fe1bd8de5b51867eec96b1abb5018461cdd3f6";
+    const transactionId = "0x1a1c954f3e18c81d6f127913cbbc8a5e533ad25d1dbd1e83afcd08ef981d04e5";
 
     // Arbitration signature
     const signature = "0x304402202c731fd1feff32e502ea2364b10556e1d5e1a141a7837b993f84a03d2109a7a802202a05b2328d14287b7f0a2882b3255303671b7b949b065b7c0a8a946048829be4";
@@ -25,13 +25,14 @@ async function main() {
         // Log transaction details
         console.log("Transaction ID for Arbitration Submission:", transactionId);
         console.log("Signature:", signature);
-
+        let gasLimit = await transactionManager.estimateGas.submitArbitration(transactionId, signature);
+        console.log("gasLimit:", gasLimit);
         // Call submitArbitration
         const tx = await transactionManager.submitArbitration(
             transactionId,
             signature,
             {
-                gasLimit: 500000 // Hardcoded gas limit
+                gasLimit: gasLimit // Hardcoded gas limit
             }
         );
 

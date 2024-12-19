@@ -16,17 +16,18 @@ async function main() {
     const transactionManager = TransactionManager.attach(transactionManagerAddress);
 
     // Transaction ID to complete
-    const transactionId = "0x611651b62dfeae98b360574d74fe1bd8de5b51867eec96b1abb5018461cdd3f6";
+    const transactionId = "0x1a1c954f3e18c81d6f127913cbbc8a5e533ad25d1dbd1e83afcd08ef981d04e5";
 
     try {
         // Log transaction details
         console.log("Transaction ID to complete:", transactionId);
-
+        let gasLimit = await transactionManager.estimateGas.completeTransaction(transactionId);
+        console.log("gasLimit:", gasLimit);
         // Call completeTransaction
         const tx = await transactionManager.completeTransaction(
             transactionId,
             {
-                gasLimit: 500000 // Hardcoded gas limit
+                gasLimit: gasLimit // Hardcoded gas limit
             }
         );
 

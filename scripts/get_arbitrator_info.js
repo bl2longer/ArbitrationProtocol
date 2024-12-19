@@ -11,7 +11,7 @@ async function main() {
   const chainID = await getChainId();
   console.log("chain ID:", chainID);
   const [deployer, operator] = await ethers.getSigners();
-  
+
   // Get the contract factory
   const ArbitratorManager = await ethers.getContractFactory("ArbitratorManager");
   
@@ -25,7 +25,7 @@ async function main() {
   // Get arbitrator info for the deployer address
   const arbitratorAddress = deployer.address;
   console.log("\nGetting arbitrator info for address:", arbitratorAddress);
-  
+  console.log("Account balance:", ethers.utils.formatEther(await deployer.provider.getBalance(deployer.address)).toString());
   const info = await arbitratorManager.getArbitratorInfo(arbitratorAddress);
   
   // Format and display the information
@@ -34,7 +34,7 @@ async function main() {
   console.log("Arbitrator Address:", info.arbitrator);
   console.log("Status:", formatArbitratorStatus(info.status));
   console.log("Current Fee Rate:", info.currentFeeRate.toString(), "basis points");
-  console.log("ETH Stake Amount:", ethers.formatEther(info.ethAmount), "ETH");
+  console.log("ETH Stake Amount:", ethers.utils.formatEther(info.ethAmount), "ETH");
   console.log("Active Transaction ID:", info.activeTransactionId);
   console.log("Operator Address:", info.operator);
   console.log("Operator BTC Public Key:", info.operatorBtcPubKey);
@@ -52,7 +52,7 @@ async function main() {
   console.log("\nAdditional Status:");
   console.log("------------------------");
   console.log("Is Active Arbitrator:", isActive);
-  console.log("Available Stake:", ethers.formatEther(availableStake), "ETH");
+  console.log("Available Stake:", ethers.utils.formatEther(availableStake), "ETH");
   console.log("Can Unstake:", canUnstake);
   console.log("Is Paused:", isPaused);
 }

@@ -2,7 +2,7 @@ const { ethers, network } = require("hardhat");
 const { readConfig } = require("./helper.js");
 
 async function main() {
-    const txId = "0x611651b62dfeae98b360574d74fe1bd8de5b51867eec96b1abb5018461cdd3f6";
+    const txId = "0x1a1c954f3e18c81d6f127913cbbc8a5e533ad25d1dbd1e83afcd08ef981d04e5";
 
     const [signer] = await ethers.getSigners();
     const compensationManagerAddress = await readConfig(network.name, "COMPENSATION_MANAGER");
@@ -14,8 +14,10 @@ async function main() {
     const contract = contractFactory.attach(compensationManagerAddress).connect(signer);
 
     try {
+        let gasLimit = await contract.estimateGas.claimArbitratorFee(txId);
+        console.log("gasLimit:", gasLimit);
         // Attempt to call the function and log result
-        const result = await contract.claimArbitratorFee(txId, {gasLimit: 3000000});
+        const result = await contract.claimArbitratorFee(txId, {gasLimit: gasLimit});
         let receipt = await result.wait();
         console.log("Transaction hash:", result.hash);
 

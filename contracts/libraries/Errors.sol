@@ -31,6 +31,7 @@ library Errors {
     string constant INSUFFICIENT_FEE = "Insufficient fee";
     string constant INVALID_TRANSACTION_ID = "Invalid transaction ID";
     string constant INVALID_BTC_TX = "Invalid BTC transaction";
+    string constant CANNOT_COMPLETE_TRANSACTION = "Cannot complete transaction";
 
     // Arbitrator related errors
     string constant ARBITRATOR_ALREADY_REGISTERED = "Arbitrator already registered";
