@@ -75,7 +75,7 @@ interface IArbitratorManager {
      * @param arbitrator The address of the arbitrator
      * @return True if the arbitrator can unstake, false otherwise
      */
-    function canUnstake(address arbitrator) external view returns (bool);
+    function canUnStake(address arbitrator) external view returns (bool);
 
     /**
      * @notice Check if the arbitrator is paused

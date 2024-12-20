@@ -49,6 +49,7 @@ library Errors {
     string constant INVALID_TOKEN = "Invalid token";
     string constant INVALID_TOKEN_ID = "Invalid token ID";
     string constant TRANSFER_FAILED = "Transfer failed";
+    string constant IS_FROZEN = "Is frozen";
 
     // Config related errors
     string constant INVALID_CONFIG_KEY = "Invalid config key";
@@ -87,4 +88,5 @@ library Errors {
     string constant TRANSACTION_NOT_COMPLETED = "Transaction not completed";
     string constant EMPTY_TOKEN_IDS = "Empty token IDs";
     string constant INVALID_NFT_CONTRACT = "Invalid NFT contract";
+    string constant CANNOT_CLAIM_ARBITRATOR_FEE = "cannot claim arbitrator fee";
 }

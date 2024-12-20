@@ -188,6 +188,7 @@ contract ArbitratorManager is
      */
     function unstake() external override notWorking {
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
+        if (isFrozenArbitrator(arbitrator)) revert(Errors.IS_FROZEN);
         require(arbitrator.ethAmount > 0 || arbitrator.nftTokenIds.length > 0, "NoStake");
         
         uint256 amount = arbitrator.ethAmount;
@@ -334,12 +335,30 @@ contract ArbitratorManager is
         if (arbitrator.status != DataTypes.ArbitratorStatus.Active) {
             return false;
         }
-
-        uint256 totalNftValue = getTotalNFTStakeValue(arbitratorAddress);
-        uint256 totalStakeValue = arbitrator.ethAmount + totalNftValue;
+        if (arbitrator.lastArbitrationTime == 0) {
+            return false;
+        }
+        if (arbitrator.lastArbitrationTime <= block.timestamp) {
+            return false;
+        }
+        // freeze lock time
+        if (isFrozenArbitrator(arbitrator)) {
+            return false;
+        }
+        uint256 totalStakeValue = this.getAvailableStake(arbitratorAddress);
         return totalStakeValue >= configManager.getConfig(configManager.MIN_STAKE());
     }
 
+    function isFrozenArbitrator( DataTypes.ArbitratorInfo memory arbitrator) internal view returns(bool) {
+        uint256 freeze_period = configManager.getArbitrationFrozenPeriod();
+        if (arbitrator.lastCompletedWorkTime == 0) {
+            return false;
+        }
+        if (arbitrator.lastCompletedWorkTime + freeze_period <= block.timestamp) {
+            return false;
+        }
+        return false;
+    }
     /**
      * @notice Get available stake amount for an arbitrator
      * @param arbitrator Address of the arbitrator
@@ -366,7 +385,8 @@ contract ArbitratorManager is
      * @param arbitrator Address of the arbitrator
      * @return bool True if arbitrator is not working
      */
-    function canUnstake(address arbitrator) external view returns (bool) {
+    function canUnStake(address arbitrator) external view returns (bool) {
+        if (isFrozenArbitrator(arbitrators[arbitrator])) return false;
         return arbitrators[arbitrator].activeTransactionId == bytes32(0);
     }
 

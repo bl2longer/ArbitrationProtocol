@@ -196,7 +196,10 @@ contract TransactionManager is
     }
 
     function isSubmitArbitrationOutTime(DataTypes.Transaction memory transaction ) internal view returns (bool) {
-       uint256 configTime = configManager.getArbitrationTimeout();
+        if (block.timestamp > transaction.deadline) {
+            return true;
+        }
+        uint256 configTime = configManager.getArbitrationTimeout();
        return block.timestamp > transaction.startTime + configTime;
     }
 
