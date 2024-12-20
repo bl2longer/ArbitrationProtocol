@@ -7,6 +7,9 @@ import { CompensationDetailsDialog } from './CompensationDetailsDialog';
 import { PageTitle } from '@/components/base/PageTitle';
 import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { StatusLabel } from '@/components/base/StatusLabel';
 
 // TODO
 const compensationTypeMap = {
@@ -18,20 +21,11 @@ export default function CompensationList() {
   const { compensations } = useCompensations();
   const [selectedCompensation, setSelectedCompensation] = useState<CompensationClaim | null>(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const loading = useMemo(() => !compensations, [compensations]);
 
   if (loading)
     return <Loading />
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-lg text-red-600">{error}</div>
-      </div>
-    );
-  }
 
   return (
     <PageContainer>
@@ -41,71 +35,62 @@ export default function CompensationList() {
       </PageTitleRow>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border rounded-lg">
-          <thead>
-            <tr>
-              <th className="px-6 py-3 border-b text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>
                 ID
-              </th>
-              <th className="px-6 py-3 border-b text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+              </TableHead>
+              <TableHead>
                 Receiver
-              </th>
-              <th className="px-6 py-3 border-b text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+              </TableHead>
+              <TableHead>
                 Amount
-              </th>
-              <th className="px-6 py-3 border-b text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+              </TableHead>
+              <TableHead>
                 Type
-              </th>
-              <th className="px-6 py-3 border-b text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+              </TableHead>
+              <TableHead>
                 Status
-              </th>
-              <th className="px-6 py-3 border-b text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+              </TableHead>
+              <TableHead>
                 Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {compensations.map((compensation, index) => (
-              <tr key={compensation.id} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                <td className="px-6 py-4 text-sm text-gray-900">
+              <TableRow key={compensation.id} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+                <TableCell>
                   {compensation.id.slice(0, 10)}...
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
+                </TableCell>
+                <TableCell>
                   {/* {compensation.receiver.slice(0, 10)}... */}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
+                </TableCell>
+                <TableCell>
                   {`${compensation.amount}`} ETH
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
+                </TableCell>
+                <TableCell>
                   {/* {compensationTypeMap[compensation.compensationType as keyof typeof compensationTypeMap]} */}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
-                  {<span
-                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${compensation.withdrawn
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-yellow-100 text-yellow-800'
-                      }`}
-                  >
-                    {compensation.withdrawn ? 'Withdrawn' : 'Unclaimed'}
-                  </span>}
-                </td>
-                <td className="px-6 py-4 text-sm">
+                </TableCell>
+                <TableCell>
+                  <StatusLabel title={compensation.withdrawn ? 'Withdrawn' : 'Unclaimed'} color={compensation.withdrawn ? 'green' : 'yellow'} />
+                </TableCell>
+                <TableCell className="px-6 py-4 text-sm">
                   {!compensation.withdrawn && (
-                    <button
+                    <Button
                       onClick={() => {
                         setSelectedCompensation(compensation);
                         setIsDetailsDialogOpen(true);
-                      }}
-                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    >
+                      }}>
                       Claim Compensation
-                    </button>
+                    </Button>
                   )}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
       <CompensationDetailsDialog

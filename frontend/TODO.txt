@@ -3,9 +3,6 @@
 - bug: register arbitrator, operator seems null, and dashboard shows nothing
 - forbid "register arbitrator" buttons/page if arbitrator already owned
 
-- transaction list
-  - format table values
-  - refresh icon next to title to get latest transactions
 - arbitrator list:
   - remember previous view mode in local storage
   - list view: show a opearator column (evm, btc addr, btc pub key), possibly foldable
@@ -22,7 +19,9 @@
     - Show current stake summary (hideable)
 - Arbitrator registration (incl staking)
   - register with NFT
-  
+- Compensations list:
+  - Store for compensations
+
 - Mobile view: header menu is broken
 
 P2:

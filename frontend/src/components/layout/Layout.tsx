@@ -1,6 +1,17 @@
+import { useOwnedArbitrator } from '@/services/arbitrators/hooks/useOwnedArbitrator';
 import Navbar from './Navbar';
+import { FC, useEffect } from 'react';
+import { useArbitrators } from '@/services/arbitrators/hooks/useArbitrators';
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+const Layout: FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { fetchArbitrators } = useArbitrators();
+  const { fetchOwnedArbitrator } = useOwnedArbitrator();
+
+  useEffect(() => {
+    void fetchArbitrators();
+    void fetchOwnedArbitrator();
+  }, [fetchArbitrators, fetchOwnedArbitrator]);
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Top navigation */}
@@ -23,3 +34,4 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+export default Layout;

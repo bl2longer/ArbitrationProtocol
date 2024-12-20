@@ -1,5 +1,4 @@
 import { FC, useState } from 'react';
-import { useOwnedArbitrator } from '@/services/arbitrators/hooks/useOwnedArbitrator';
 import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
 import { PageTitle } from '@/components/base/PageTitle';
@@ -9,6 +8,7 @@ import { ArbitratorPreview } from './ArbitratorPreview';
 import { Loading } from '@/components/base/Loading';
 import { useNavigate } from 'react-router-dom';
 import { EditOperatorDialog } from './dialogs/EditOperator';
+import { useOwnedArbitrator } from '@/services/arbitrators/hooks/useOwnedArbitrator';
 
 const ArbitratorDashboard: FC = () => {
   const { ownedArbitrator, isPending } = useOwnedArbitrator();
@@ -38,7 +38,7 @@ const ArbitratorDashboard: FC = () => {
         </>
       }
 
-      <EditOperatorDialog arbitrator={ownedArbitrator} isOpen={editOperatorIsOpen} onHandleClose={() => setEditOperatorIsOpen(false)} />
+      {ownedArbitrator && <EditOperatorDialog arbitrator={ownedArbitrator} isOpen={editOperatorIsOpen} onHandleClose={() => setEditOperatorIsOpen(false)} />}
     </PageContainer>
   );
 }

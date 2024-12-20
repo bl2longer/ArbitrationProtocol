@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   MagnifyingGlassIcon,
   Squares2X2Icon,
@@ -19,6 +19,10 @@ import { useNavigate } from 'react-router-dom';
 import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
 import { RefreshCwIcon } from 'lucide-react';
+import { useOwnedArbitrator } from '@/services/arbitrators/hooks/useOwnedArbitrator';
+import { useCall } from 'wagmi';
+
+type ViewMode = 'grid' | 'list';
 
 export type SortConfig = {
   key: 'stake' | 'address';
@@ -26,8 +30,9 @@ export type SortConfig = {
 };
 
 export default function ArbitratorList() {
-  const { arbitrators: rawArbitrators, refreshArbitrators } = useArbitrators();
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const { arbitrators: rawArbitrators, fetchArbitrators: refreshArbitrators } = useArbitrators();
+  const { ownedArbitrator } = useOwnedArbitrator();
+  const [viewMode, setViewMode] = useState<ViewMode>(localStorage.getItem('arbitratorListMode') as ViewMode || 'grid');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'stake', direction: 'desc' });
   const navigate = useNavigate();
@@ -38,6 +43,11 @@ export default function ArbitratorList() {
       direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
     }));
   };
+
+  const handleViewModeChange = useCallback((mode: ViewMode) => {
+    setViewMode(mode);
+    localStorage.setItem('arbitratorListMode', mode);
+  }, []);
 
   const arbitrators = useMemo(() => {
     const filtered = rawArbitrators?.filter(arb => arb.address.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -65,19 +75,19 @@ export default function ArbitratorList() {
             onChange={(newValue) => setSearchTerm(newValue)} />
           <div className="flex rounded-lg shadow-sm">
             <button
-              onClick={() => setViewMode('grid')}
+              onClick={() => handleViewModeChange('grid')}
               className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-white' : 'bg-white text-gray-600'} rounded-l-lg border`}
             >
               <Squares2X2Icon className="h-5 w-5" />
             </button>
             <button
-              onClick={() => setViewMode('list')}
+              onClick={() => handleViewModeChange('list')}
               className={`p-2 ${viewMode === 'list' ? 'bg-primary text-white' : 'bg-white text-gray-600'} rounded-r-lg border-t border-r border-b`}
             >
               <ListBulletIcon className="h-5 w-5" />
             </button>
           </div>
-          <Button onClick={() => navigate("/register-arbitrator")}>Register arbitrator</Button>
+          <Button disabled={!!ownedArbitrator} onClick={() => navigate("/register-arbitrator")}>Register arbitrator</Button>
         </div>
       </PageTitleRow>
 

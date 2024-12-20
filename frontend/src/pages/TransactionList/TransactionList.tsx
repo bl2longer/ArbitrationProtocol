@@ -1,6 +1,4 @@
-import { useState, useMemo } from 'react';
-import { Dialog } from '@headlessui/react';
-import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
+import { useState, useMemo, FC } from 'react';
 import { Transaction } from '@/services/transactions/model/transaction';
 import { useTransactions } from '@/services/transactions/hooks/useTransactions';
 import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
@@ -11,45 +9,28 @@ import { Button } from '@/components/ui/button';
 import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
 import { RefreshCwIcon } from 'lucide-react';
+import { SubmitArbitrationDialog } from './dialogs/SubmitArbitrationDialog';
+import { formatAddress } from '@/utils/formatAddress';
+import { formatDateWithoutYear } from '@/utils/dates';
+import { StatusLabel } from '@/components/base/StatusLabel';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-const statusMap = {
-  0: 'Active',
-  1: 'Completed',
-  2: 'Arbitrated',
-  3: 'Expired',
-  4: 'Disputed'
-};
-
-const fieldLabels = {
-  dapp: 'DApp Address',
+const fieldLabels: Partial<Record<keyof Transaction, string>> = {
+  dapp: 'DApp',
   arbitrator: 'Arbitrator',
   startTime: 'Start Time',
   deadline: 'Deadline',
-  btcTx: 'BTC Transaction',
+  btcTx: 'BTC Tx',
   status: 'Status',
   depositedFee: 'Deposited Fee',
-  signature: 'Signature'
+  // signature: 'Signature'
 };
 
 export default function TransactionList() {
   const { transactions: rawTransactions, refreshTransactions } = useTransactions();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedFields] = useState<string[]>(Object.keys(fieldLabels));
   const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-  const [signature, setSignature] = useState('');
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmitArbitration = () => {
-    if (!selectedTransaction || !signature) return;
-    try {
-      // TODO await contract.submitArbitration(selectedTransaction.dapp, signature);
-      setIsSignDialogOpen(false);
-      setSignature('');
-    } catch (error) {
-      console.error('Error submitting arbitration:', error);
-    }
-  };
 
   const transactions = useMemo(() => {
     return rawTransactions?.filter(tx => {
@@ -63,33 +44,6 @@ export default function TransactionList() {
   }, [rawTransactions, searchTerm]);
 
   const loading = useMemo(() => isNullOrUndefined(transactions), [transactions]);
-
-  const formatValue = (key: string, value: any) => {
-    if (key === 'startTime' || key === 'deadline') {
-      return new Date(value).toLocaleString();
-    }
-    if (key === 'status') {
-      return statusMap[value as keyof typeof statusMap];
-    }
-    // if (key === 'depositedFee') {
-    //   return `${formatEther(value)} ETH`;
-    // }
-    if (key === 'dapp' || key === 'arbitrator') {
-      return value?.slice(0, 10) + '...';
-    }
-    if (key === 'btcTx') {
-      return value?.slice(0, 20) + '...';
-    }
-    return value;
-  };
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-lg text-red-600">{error}</div>
-      </div>
-    );
-  }
 
   return (
     <PageContainer>
@@ -106,99 +60,72 @@ export default function TransactionList() {
       </PageTitleRow>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border rounded-lg">
-          <thead>
-            <tr>
-              {selectedFields.map(field => (
-                <th key={field} className="px-6 py-3 border-b text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
-                  {fieldLabels[field as keyof typeof fieldLabels]}
-                </th>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {Object.values(fieldLabels).map(field => (
+                <TableHead key={field}>
+                  {field}
+                </TableHead>
               ))}
-              <th className="px-6 py-3 border-b text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions?.map((tx, index) => (
-              <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                {selectedFields.map(field => (
-                  <td key={field} className="px-6 py-4 text-sm text-gray-900">
-                    {formatValue(field, tx[field as keyof Transaction])}
-                  </td>
-                ))}
-                <td className="px-6 py-4 text-sm">
-                  {tx.status === "Active" && (
-                    <Button
-                      onClick={() => {
-                        setSelectedTransaction(tx);
-                        setIsSignDialogOpen(true);
-                      }} >
-                      Submit Arbitration
-                    </Button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {transactions?.map((tx, index) => <TransactionRow
+              transaction={tx}
+              key={index}
+              onSubmitArbitration={() => {
+                setSelectedTransaction(tx);
+                setIsSignDialogOpen(true);
+              }} />)}
+          </TableBody>
+        </Table>
       </div>
 
       {loading && <Loading />}
 
-      <Dialog
-        open={isSignDialogOpen}
-        onClose={() => setIsSignDialogOpen(false)}
-        className="fixed inset-0 z-10 overflow-y-auto"
-      >
-        <div className="flex items-center justify-center min-h-screen">
-          <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
+      <SubmitArbitrationDialog transaction={selectedTransaction} isOpen={isSignDialogOpen} onHandleClose={() => setIsSignDialogOpen(false)} />
 
-          <div className="relative bg-white rounded-lg max-w-md w-full mx-4 p-6">
-            <Dialog.Title className="text-lg font-medium mb-4">
-              Submit Arbitration
-            </Dialog.Title>
-
-            <div className="mb-4">
-              <p className="text-sm text-gray-600 mb-2">
-                Please sign the following BTC transaction using your BTC wallet:
-              </p>
-              <div className="bg-gray-100 p-3 rounded break-all">
-                {selectedTransaction?.btcTx}
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                BTC Signature
-              </label>
-              <input
-                type="text"
-                value={signature}
-                onChange={(e) => setSignature(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg"
-                placeholder="Enter your BTC signature"
-              />
-            </div>
-
-            <div className="flex justify-end space-x-4">
-              <button
-                onClick={() => setIsSignDialogOpen(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmitArbitration}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-lg"
-                disabled={!signature}
-              >
-                Submit
-              </button>
-            </div>
-          </div>
-        </div>
-      </Dialog>
     </PageContainer>
   );
+}
+
+const TransactionRow: FC<{
+  transaction: Transaction;
+  onSubmitArbitration: () => void;
+}> = ({ transaction, onSubmitArbitration }) => {
+
+  const formatValue = (key: keyof typeof fieldLabels, value: any) => {
+    if (key === 'startTime' || key === 'deadline')
+      return value ? formatDateWithoutYear(value) : "Not set";
+
+    if (key === 'status')
+      return <StatusLabel title={value} color={value === "Completed" ? "green" : "red"} />
+
+    if (key === 'dapp' || key === 'arbitrator')
+      return formatAddress(value);
+
+    if (key === 'btcTx')
+      return formatAddress(value) || "Not set";
+
+    return value;
+  };
+
+  return (
+    <TableRow>
+      {Object.keys(fieldLabels).map((field: keyof Transaction) => (
+        <TableCell key={field}>
+          {formatValue(field, transaction[field as keyof Transaction])}
+        </TableCell>
+      ))}
+      <TableCell>
+        {transaction.status === "Active" && (
+          <Button onClick={onSubmitArbitration}>
+            Submit Arbitration
+          </Button>
+        )}
+      </TableCell>
+    </TableRow>
+  )
 }
