@@ -14,6 +14,7 @@ import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
 import { RefreshCwIcon } from 'lucide-react';
 import { StatusLabel, StatusLabelColor } from '@/components/base/StatusLabel';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const statusMap = {
   0: 'Active',
@@ -63,23 +64,23 @@ const DAppList: FC = () => {
       </PageTitleRow>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border rounded-lg">
-          <thead>
-            <tr>
+        <Table>
+          <TableHeader>
+            <TableRow>
               {Object.keys(fieldLabels).map(field => (
-                <th key={field} className="px-6 py-3 border-b text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                <TableHead key={field}>
                   {fieldLabels[field as keyof typeof fieldLabels]}
-                </th>
+                </TableHead>
               ))}
-              <th className="px-6 py-3 border-b text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+              <TableHead>
                 Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {dApps?.map((dapp, index) => <DAppRow key={index} dapp={dapp} index={index} fieldLabels={Object.keys(fieldLabels)} />)}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
 
         {loading && <Loading />}
       </div>
@@ -110,17 +111,17 @@ const DAppRow: FC<{
     return value;
   }, []);
 
-  return <tr className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+  return <TableRow>
     {fieldLabels.map(field => (
-      <td key={field} className="px-6 py-4 text-sm text-gray-900">
+      <TableCell key={field}>
         {formatValue(field, dapp[field as keyof typeof dapp])}
-      </td>
+      </TableCell>
     ))}
     {/* Actions */}
-    <td className="px-6 py-4 text-sm text-gray-900">
+    <TableCell>
       {/* TODO */}
-    </td>
-  </tr>
+    </TableCell>
+  </TableRow>
 }
 
 export default DAppList;

@@ -5,6 +5,7 @@ import { SortConfig } from "./ArbitratorList";
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatAddress } from "@/utils/formatAddress";
+import { StatusLabel } from "@/components/base/StatusLabel";
 
 export const ListView: FC<{
   arbitrators: ArbitratorInfo[];
@@ -50,10 +51,8 @@ export const ListView: FC<{
       <TableBody>
         {arbitrators?.map((arbitrator) => (
           <TableRow key={arbitrator.address}>
-            <TableCell className="whitespace-nowrap">
-              <div className="font-mono text-sm">
-                {formatAddress(arbitrator.address)}
-              </div>
+            <TableCell className="whitespace-nowrap font-mono text-sm">
+              {formatAddress(arbitrator.address)}
             </TableCell>
             <TableCell className="whitespace-nowrap">
               <div className="text-sm">{Number(arbitrator.currentFeeRate) / 100}%</div>
@@ -62,12 +61,10 @@ export const ListView: FC<{
               <div className="text-sm">{Number(arbitrator.ethAmount)} {activeChain?.nativeCurrency.symbol}</div>
             </TableCell>
             <TableCell className="whitespace-nowrap">
-              <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${arbitrator.isPaused()
-                ? 'bg-red-100 text-red-800'
-                : 'bg-green-100 text-green-800'
-                }`}>
-                {arbitrator.isPaused() ? 'Paused' : 'Active'}
-              </span>
+              <StatusLabel
+                title={arbitrator.isPaused() ? 'Paused' : 'Active'}
+                color={arbitrator.isPaused() ? 'red' : 'green'}
+              />
             </TableCell>
           </TableRow>
         ))}

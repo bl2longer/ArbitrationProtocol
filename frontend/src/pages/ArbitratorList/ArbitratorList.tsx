@@ -37,6 +37,7 @@ export default function ArbitratorList() {
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'stake', direction: 'desc' });
   const navigate = useNavigate();
 
+
   const handleSort = (key: SortConfig['key']) => {
     setSortConfig(prev => ({
       key,

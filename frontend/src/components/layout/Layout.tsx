@@ -8,9 +8,12 @@ const Layout: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { fetchOwnedArbitrator } = useOwnedArbitrator();
 
   useEffect(() => {
-    void fetchArbitrators();
     void fetchOwnedArbitrator();
-  }, [fetchArbitrators, fetchOwnedArbitrator]);
+  }, [fetchOwnedArbitrator]);
+
+  useEffect(() => {
+    void fetchArbitrators();
+  }, [fetchArbitrators]);
 
   return (
     <div className="min-h-screen bg-gray-100">
