@@ -33,6 +33,7 @@ library Errors {
     string constant INVALID_BTC_TX = "Invalid BTC transaction";
     string constant CANNOT_COMPLETE_TRANSACTION = "Cannot complete transaction";
     string constant SUBMITTED_SIGNATURES_OUTTIME = "Out submitted signatures time";
+    string constant INVALID_UTXO = "Invalid UTXO";
 
     // Arbitrator related errors
     string constant ARBITRATOR_ALREADY_REGISTERED = "Arbitrator already registered";
@@ -92,4 +93,5 @@ library Errors {
     string constant INVALID_NFT_CONTRACT = "Invalid NFT contract";
     string constant CANNOT_CLAIM_ARBITRATOR_FEE = "cannot claim arbitrator fee";
     string constant NO_ACTIVE_TRANSACTION = "No active transaction";
+    string constant INVALID_VERIFICATION_DATA = "Invalid verification data";
 }

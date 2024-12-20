@@ -87,12 +87,14 @@ contract TransactionManager is
 
     /**
      * @notice Register a new transaction
+     * @param utxos UTXO array
      * @param arbitrator The arbitrator address
      * @param deadline The deadline for the transaction
      * @param compensationReceiver Address to receive compensation in case of timeout
      * @return id The unique transaction ID
      */
     function registerTransaction(
+        DataTypes.UTXO[] calldata utxos,
         address arbitrator,
         uint256 deadline,
         address compensationReceiver
@@ -100,6 +102,9 @@ contract TransactionManager is
         if (arbitrator == address(0) || compensationReceiver == address(0)) {
             revert(Errors.ZERO_ADDRESS);
         }
+
+        // Validate UTXO input
+        if (utxos.length == 0) revert(Errors.INVALID_UTXO);
 
         // Check DApp status
         if (!dappRegistry.isActiveDApp(msg.sender)) {
@@ -145,19 +150,24 @@ contract TransactionManager is
         arbitratorManager.setArbitratorWorking(arbitrator, id);
 
         // Store transaction
-        transactions[id] = DataTypes.Transaction({
-            dapp: msg.sender,
-            arbitrator: arbitrator,
-            deadline: deadline,
-            depositedFee: fee,
-            startTime: 0,
-            status: DataTypes.TransactionStatus.Active,
-            btcTx: new bytes(0),
-            signature: new bytes(0),
-            btcTxHash: bytes32(0),
-            compensationReceiver: compensationReceiver,
-            timeoutCompensationReceiver: compensationReceiver
-        });
+        DataTypes.Transaction storage transaction = transactions[id];
+        transaction.dapp = msg.sender;
+        transaction.arbitrator = arbitrator;
+        transaction.startTime = 0;
+        transaction.deadline = deadline;
+        transaction.btcTx = new bytes(0);
+        transaction.btcTxHash = bytes32(0);
+        transaction.status = DataTypes.TransactionStatus.Active;
+        transaction.depositedFee = fee;
+        transaction.signature = new bytes(0);
+        transaction.compensationReceiver = compensationReceiver;
+        transaction.timeoutCompensationReceiver = compensationReceiver;
+        
+        // Manually copy UTXO array
+        delete transaction.utxos;
+        for (uint i = 0; i < utxos.length; i++) {
+            transaction.utxos.push(utxos[i]);
+        }
 
         emit TransactionRegistered(id, msg.sender, arbitrator);
         return uint256(id);
@@ -269,10 +279,10 @@ contract TransactionManager is
 
         DataTypes.Transaction storage transaction = transactions[id];
 
+        // Validate transaction status and ownership
         if (transaction.status != DataTypes.TransactionStatus.Active) {
             revert(Errors.INVALID_TRANSACTION_STATUS);
         }
-
         if (msg.sender != transaction.dapp) {
             revert(Errors.NOT_AUTHORIZED);
         }
