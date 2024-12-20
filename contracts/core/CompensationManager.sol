@@ -94,6 +94,7 @@ contract CompensationManager is
         if (arbitratorInfo.operatorBtcPubKey.length == 0) revert(Errors.EMPTY_OPERATOR_PUBLIC_KEY);
         if (keccak256(pubKey) != keccak256(arbitratorInfo.operatorBtcPubKey)) revert(Errors.PUBLIC_KEY_MISMATCH);
         if (keccak256(btcTx) != keccak256(rawData)) revert(Errors.BTC_TRANSACTION_MISMATCH);
+
         // Get transaction details
         address receivedCompensationAddress = address(0);
         if (arbitratorInfo.activeTransactionId != 0) {
@@ -108,6 +109,9 @@ contract CompensationManager is
         uint256 stakeAmount = arbitratorInfo.ethAmount;
         if (stakeAmount == 0) revert(Errors.NO_STAKE_AVAILABLE);
 
+        // Precompute available stake to reduce stack complexity
+        uint256 availableStake = arbitratorManager.getAvailableStake(arbitrator);
+
         // Generate claim ID
         claimId = keccak256(abi.encodePacked(block.timestamp, arbitrator, msg.sender, "IllegalSignature"));
 
@@ -118,7 +122,7 @@ contract CompensationManager is
             ethAmount: stakeAmount,
             nftContract: arbitratorInfo.nftContract,
             nftTokenIds: arbitratorInfo.nftTokenIds,
-            totalAmount: arbitratorManager.getAvailableStake(arbitrator),
+            totalAmount: availableStake,
             withdrawn: false,
             claimType: CompensationType.IllegalSignature,
             receivedCompensationAddress: receivedCompensationAddress
@@ -143,6 +147,9 @@ contract CompensationManager is
         uint256 stakeAmount = arbitratorInfo.ethAmount;
         if (stakeAmount == 0) revert(Errors.NO_STAKE_AVAILABLE);
 
+        // Precompute available stake to reduce stack complexity
+        uint256 availableStake = arbitratorManager.getAvailableStake(transaction.arbitrator);
+
         // Generate claim ID
         claimId = keccak256(abi.encodePacked(block.timestamp, transaction.arbitrator, msg.sender, "Timeout", id));
 
@@ -153,7 +160,7 @@ contract CompensationManager is
             ethAmount: stakeAmount,
             nftContract: arbitratorInfo.nftContract,
             nftTokenIds: arbitratorInfo.nftTokenIds,
-            totalAmount: arbitratorManager.getAvailableStake(transaction.arbitrator),
+            totalAmount: availableStake,
             withdrawn: false,
             claimType: CompensationType.Timeout,
             receivedCompensationAddress: transaction.timeoutCompensationReceiver
@@ -192,6 +199,9 @@ contract CompensationManager is
         uint256 stakeAmount = arbitratorInfo.ethAmount;
         if (stakeAmount == 0) revert(Errors.NO_STAKE_AVAILABLE);
 
+        // Precompute available stake to reduce stack complexity
+        uint256 availableStake = arbitratorManager.getAvailableStake(transaction.arbitrator);
+
         // Generate claim ID
         claimId = keccak256(abi.encodePacked(block.timestamp, transaction.arbitrator, msg.sender, "FailedArbitration"));
 
@@ -202,7 +212,7 @@ contract CompensationManager is
             ethAmount: stakeAmount,
             nftContract: arbitratorInfo.nftContract,
             nftTokenIds: arbitratorInfo.nftTokenIds,
-            totalAmount: arbitratorManager.getAvailableStake(transaction.arbitrator),
+            totalAmount: availableStake,
             withdrawn: false,
             claimType: CompensationType.FailedArbitration,
             receivedCompensationAddress: transaction.compensationReceiver
