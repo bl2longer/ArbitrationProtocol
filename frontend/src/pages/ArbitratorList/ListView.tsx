@@ -30,10 +30,10 @@ export const ListView: FC<{
               {getSortIcon('address')}
             </div>
           </TableHead>
-          <TableHead scope="col" /* onClick={() => handleSort('feeRate')} */>
+          <TableHead scope="col" className="cursor-pointer" onClick={() => handleSort('currentFeeRate')}>
             <div className="flex items-center space-x-1">
               <span>Fee Rate</span>
-              {/* {getSortIcon('feeRate')} */}
+              {getSortIcon('currentFeeRate')}
             </div>
           </TableHead>
           <TableHead scope="col" className="cursor-pointer" onClick={() => handleSort('stake')}>
@@ -48,7 +48,7 @@ export const ListView: FC<{
         </TableRow>
       </TableHeader>
       <TableBody>
-        {arbitrators.map((arbitrator) => (
+        {arbitrators?.map((arbitrator) => (
           <TableRow key={arbitrator.address}>
             <TableCell className="whitespace-nowrap">
               <div className="font-mono text-sm">

@@ -3,7 +3,7 @@ import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 import { PageTitle } from '@/components/base/PageTitle';
 import { useDappRegistryRegister } from '@/services/dapp-registry/hooks/contract/useDAppRegistryRegister';
 import { isAddress } from 'viem';
-import { EnsureWalletNetwork } from '@/components/EnsureWalletNetwork/EnsureWalletNetwork';
+import { EnsureWalletNetwork } from '@/components/base/EnsureWalletNetwork/EnsureWalletNetwork';
 import { Button } from '@/components/ui/button';
 import { useToasts } from '@/services/ui/hooks/useToasts';
 import { Input } from '@/components/ui/input';

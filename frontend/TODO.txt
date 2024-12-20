@@ -1,32 +1,27 @@
 ===> Target release date: dec 30
 
 - bug: register arbitrator, operator seems null, and dashboard shows nothing
-- forbid "register arbitrator" buttons/page if arbitrator already owned
 
-- arbitrator list:
-  - remember previous view mode in local storage
-  - list view: show a opearator column (evm, btc addr, btc pub key), possibly foldable
-  - grid view: group operato values together
-- arbitrator dashboard
-  - finalize arbitrator preview with well formatted data
-  - ability to edit value + write to contract
+- arbitrator staking component:
+  - summary of current staking
+  - ability to unstake (with amount)
+  - ability to stake more
+  - Change "register" to "stake" in edit mode
+  - stake/unstake NFT (TBD: how does that work?)
+- arbitrator dashboard:
   - wait for contract new register() method that will merge oeprator/revenue/params in one call
     - registers sets all fields at once. But updating later should call individual methods
-  - Button to "edit stake":
-    - Share the same (customizable) component as for "register arbitrator"
-    - Change "register" to "stake"
-    - Ability to unstake
-    - Show current stake summary (hideable)
-- Arbitrator registration (incl staking)
-  - register with NFT
+- register dapp:
+  - use Form and form schema + validate evm address for dapp value
 - Compensations list:
-  - Store for compensations
+  - zustand store for compensations
+- arbitrator list:
+  - list view: show a opearator column (evm, btc addr, btc pub key), possibly foldable
+  - grid view: group operator values together
 
 - Mobile view: header menu is broken
 
 P2:
-- status label component with bg color like for arbitrators, everywhere (dapps list, etc)
-- Try zustand for state management instead of rxjs
 - Handle subgraph api errors, forward to hooks and pages
 - Finish to replace headless UI components with https://ui.shadcn.com/
 - register dapp: intro about what a dapp is

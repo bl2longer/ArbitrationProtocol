@@ -25,7 +25,7 @@ import { useCall } from 'wagmi';
 type ViewMode = 'grid' | 'list';
 
 export type SortConfig = {
-  key: 'stake' | 'address';
+  key: 'stake' | 'address' | 'currentFeeRate';
   direction: 'asc' | 'desc';
 };
 
@@ -57,6 +57,10 @@ export default function ArbitratorList() {
         return filtered?.sort((a, b) => a.address.localeCompare(b.address) * directionFactor);
       case "stake":
         return filtered?.sort((a, b) => Number(a.ethAmount - b.ethAmount) * directionFactor);
+      case "currentFeeRate":
+        return filtered?.sort((a, b) => Number(a.currentFeeRate - b.currentFeeRate) * directionFactor);
+      default:
+        throw new Error(`Unknown sort key: ${sortConfig.key}`);
     }
   }, [rawArbitrators, searchTerm, sortConfig]);
 
