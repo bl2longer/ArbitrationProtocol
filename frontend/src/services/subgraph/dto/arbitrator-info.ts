@@ -9,7 +9,14 @@ export interface ArbitratorInfo {
   pendingFeeRate: number;
   status: string; // TODO: enum
   activeTransactionId: string;
+
+  // Operator
   operatorEvmAddress: string;
   operatorBtcAddress: string;
   operatorBtcPubKey: string;
+
+  // Revenue
+  revenueEvmAddress: string;
+  revenueBtcAddress: string;
+  revenueBtcPubKey: string;
 }

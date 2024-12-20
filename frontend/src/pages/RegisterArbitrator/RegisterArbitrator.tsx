@@ -41,7 +41,7 @@ const RegisterArbitrator: FC = () => {
   });
 
   useEffect(() => {
-    fetchAllSettings();
+    void fetchAllSettings();
   }, [fetchAllSettings]);
 
   const handleArbitratorRegistration = useCallback(async (values: z.infer<typeof stakeCoinFormSchema>) => {

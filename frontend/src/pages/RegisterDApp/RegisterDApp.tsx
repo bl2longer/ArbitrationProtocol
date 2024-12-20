@@ -45,8 +45,8 @@ const RegisterDApp: FC = () => {
   };
 
   useEffect(() => {
-    fetchRegistrationFee();
-  }, [])
+    void fetchRegistrationFee();
+  }, [fetchRegistrationFee])
 
   return (
     <PageContainer>

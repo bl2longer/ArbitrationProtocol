@@ -13,10 +13,10 @@ export const useOwnedArbitrator = () => {
   const [ownedArbitrator, setOwnedArbitrator] = useState<ArbitratorInfo>();
   const [isPending, setIsPending] = useState(true);
 
-  const refreshArbitrators = useCallback(() => {
+  const fetchOwnedArbitrator = useCallback(() => {
     setIsPending(true);
     if (activeChain && evmAccount) {
-      void fetchArbitrators(activeChain, 0, 100, evmAccount).then(({ arbitrators }) => {
+      void fetchArbitrators(activeChain, 0, 100, { creatorEvmAddress: evmAccount }).then(({ arbitrators }) => {
         setOwnedArbitrator(arbitrators?.[0]);
       });
     }
@@ -27,8 +27,8 @@ export const useOwnedArbitrator = () => {
   }, [activeChain, evmAccount]);
 
   useEffect(() => {
-    refreshArbitrators();
-  }, [refreshArbitrators]);
+    fetchOwnedArbitrator();
+  }, [fetchOwnedArbitrator]);
 
   return { ownedArbitrator, isPending }
 }

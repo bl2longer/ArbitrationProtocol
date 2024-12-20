@@ -73,18 +73,17 @@ export function handleArbitratorUnpaused(event: ArbitratorUnpaused): void {
     arbitratorInfo.save();
 }
 
-// Stub for handling OwnershipTransferred event
 export function handleOwnershipTransferred(event: OwnershipTransferred): void {
-    // TODO: Implement logic
+    // TODO
 }
 
 export function handleRevenueAddressesSet(event: RevenueAddressesSet): void {
     const arbitratorAddress = event.params.arbitrator.toHexString();
 
     const arbitratorInfo = getArbitratorInfo(event.block, arbitratorAddress);
-    arbitratorInfo.operatorEvmAddress = event.params.ethAddress.toHexString();
-    arbitratorInfo.operatorBtcAddress = event.params.btcAddress;
-    arbitratorInfo.operatorBtcPubKey = event.params.btcPubKey.toHexString();
+    arbitratorInfo.revenueEvmAddress = event.params.ethAddress.toHexString();
+    arbitratorInfo.revenueBtcAddress = event.params.btcAddress;
+    arbitratorInfo.revenueBtcPubKey = event.params.btcPubKey.toHexString();
 
     arbitratorInfo.save();
 }
@@ -112,8 +111,17 @@ function getArbitratorInfo(block: ethereum.Block, arbitratorAddress: string): Ar
     const arbitratorInfo = new ArbitratorInfo(arbitratorAddress);
     arbitratorInfo.createdAt = block.timestamp;
     arbitratorInfo.address = arbitratorAddress;
-    arbitratorInfo.status = "Active"; // Default state is active at creation
+    arbitratorInfo.status = "Paused"; // Default state is paused at creation. Owner must set operator, revenue, params info first
     arbitratorInfo.ethAmount = new BigInt(0);
+    arbitratorInfo.currentFeeRate = new BigInt(0);
+
+    arbitratorInfo.operatorEvmAddress = null;
+    arbitratorInfo.operatorBtcAddress = null;
+    arbitratorInfo.operatorBtcPubKey = null;
+
+    arbitratorInfo.revenueEvmAddress = null;
+    arbitratorInfo.revenueBtcAddress = null;
+    arbitratorInfo.revenueBtcPubKey = null;
 
     return arbitratorInfo;
 }

@@ -19,7 +19,7 @@ export const GridView: FC<{
 
 const ArbitratorGridItem: FC<{ arbitrator: ArbitratorInfo }> = ({ arbitrator }) => {
   const activeChain = useActiveEVMChainConfig();
-  const termEnd = moment.unix(arbitrator.lastArbitrationTime);
+  const termEnd = arbitrator.getTermEndDate();
 
   return <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
     <div className="flex justify-between items-start mb-4">

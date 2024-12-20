@@ -42,9 +42,16 @@ type ArbitratorInfo @entity {
     erc20Token: String # ERC20 token address
     nftContract: String # NFT contract address
     nftTokenIds: [BigInt!] # NFT token IDs
+    
+    # Operator
     operatorEvmAddress: String # Operator EVM address
     operatorBtcPubKey: String # Bitcoin public key
     operatorBtcAddress: String # Bitcoin address
+
+    # Revenue
+    revenueEvmAddress: String # Revenue EVM address
+    revenueBtcPubKey: String # Bitcoin public key
+    revenueBtcAddress: String # Bitcoin address
 }
 
 type Transaction @entity {

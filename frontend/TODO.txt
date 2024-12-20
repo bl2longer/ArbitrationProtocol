@@ -1,15 +1,29 @@
 ===> Target release date: dec 30
 
-- Arbitrator registration (incl staking)
-  - register with NFT
+- bug: register arbitrator, operator seems null, and dashboard shows nothing
+- forbid "register arbitrator" buttons/page if arbitrator already owned
+
 - transaction list
   - format table values
   - refresh icon next to title to get latest transactions
 - arbitrator list:
   - remember previous view mode in local storage
+  - list view: show a opearator column (evm, btc addr, btc pub key), possibly foldable
+  - grid view: group operato values together
 - arbitrator dashboard
   - finalize arbitrator preview with well formatted data
   - ability to edit value + write to contract
+  - wait for contract new register() method that will merge oeprator/revenue/params in one call
+    - registers sets all fields at once. But updating later should call individual methods
+  - Button to "edit stake":
+    - Share the same (customizable) component as for "register arbitrator"
+    - Change "register" to "stake"
+    - Ability to unstake
+    - Show current stake summary (hideable)
+- Arbitrator registration (incl staking)
+  - register with NFT
+  
+- Mobile view: header menu is broken
 
 P2:
 - status label component with bg color like for arbitrators, everywhere (dapps list, etc)

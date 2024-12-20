@@ -8,13 +8,21 @@ type FetchArbitratorsResponse = SubgraphGQLResponse<{
   arbitratorInfos: ArbitratorInfoDTO[];
 }>;
 
+export type FetchArbitratorsQueryParams = {
+  creatorEvmAddress?: string;
+  operatorEvmAddress?: string
+}
+
 /**
  * Fetch all arbitrators from the subsgraph.
  */
-export const fetchArbitrators = async (chain: ChainConfig, start = 0, limit = 100, operatorEvmAddress?: string): Promise<{ arbitrators: ArbitratorInfo[], total: number }> => {
-  let whereQuery: string = "";
-  if (operatorEvmAddress)
-    whereQuery += ` operatorEvmAddress: "${operatorEvmAddress.toLowerCase()}"`;
+export const fetchArbitrators = async (chain: ChainConfig, start = 0, limit = 100, queryParams: FetchArbitratorsQueryParams = {}): Promise<{ arbitrators: ArbitratorInfo[], total: number }> => {
+  let whereQuery = "";
+
+  if (queryParams.creatorEvmAddress)
+    whereQuery += ` address: "${queryParams.creatorEvmAddress.toLowerCase()}"`;
+  if (queryParams.operatorEvmAddress)
+    whereQuery += ` operatorEvmAddress: "${queryParams.operatorEvmAddress.toLowerCase()}"`;
 
   let whereClause: string = !whereQuery ? "" : `where: { ${whereQuery} }`;
 

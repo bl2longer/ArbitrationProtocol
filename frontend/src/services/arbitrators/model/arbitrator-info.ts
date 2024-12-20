@@ -1,6 +1,7 @@
 import { ArbitratorInfo as ArbitratorInfoDTO } from "@/services/subgraph/dto/arbitrator-info";
 import { tokenToReadableValue } from "@/services/tokens/tokens";
 import { Expose, Transform } from "class-transformer";
+import moment, { Moment } from "moment";
 
 export class ArbitratorInfo implements Omit<ArbitratorInfoDTO, "ethAmount" | "createdAt"> {
   @Expose() public id: string;
@@ -15,8 +16,18 @@ export class ArbitratorInfo implements Omit<ArbitratorInfoDTO, "ethAmount" | "cr
   @Expose() public operatorEvmAddress: string;
   @Expose() public operatorBtcAddress: string;
   @Expose() public operatorBtcPubKey: string;
+  @Expose() public revenueEvmAddress: string;
+  @Expose() public revenueBtcAddress: string;
+  @Expose() public revenueBtcPubKey: string;
 
   public isPaused(): boolean {
     return this.status === "Paused"; // TODO: improve with enum
+  }
+
+  public getTermEndDate(): Moment {
+    if (!this.lastArbitrationTime)
+      return null;
+
+    return moment.unix(this.lastArbitrationTime);
   }
 }

@@ -273,6 +273,57 @@ export class ArbitratorInfo extends Entity {
       this.set("operatorBtcAddress", Value.fromString(<string>value));
     }
   }
+
+  get revenueEvmAddress(): string | null {
+    let value = this.get("revenueEvmAddress");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set revenueEvmAddress(value: string | null) {
+    if (!value) {
+      this.unset("revenueEvmAddress");
+    } else {
+      this.set("revenueEvmAddress", Value.fromString(<string>value));
+    }
+  }
+
+  get revenueBtcPubKey(): string | null {
+    let value = this.get("revenueBtcPubKey");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set revenueBtcPubKey(value: string | null) {
+    if (!value) {
+      this.unset("revenueBtcPubKey");
+    } else {
+      this.set("revenueBtcPubKey", Value.fromString(<string>value));
+    }
+  }
+
+  get revenueBtcAddress(): string | null {
+    let value = this.get("revenueBtcAddress");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set revenueBtcAddress(value: string | null) {
+    if (!value) {
+      this.unset("revenueBtcAddress");
+    } else {
+      this.set("revenueBtcAddress", Value.fromString(<string>value));
+    }
+  }
 }
 
 export class Transaction extends Entity {
