@@ -4,7 +4,6 @@ require("hardhat-deploy");
 require("dotenv").config();
 
 const { staging_key, prod_key, operator_key } = process.env;
-
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: {

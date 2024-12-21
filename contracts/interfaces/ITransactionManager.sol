@@ -6,6 +6,7 @@ import "../libraries/DataTypes.sol";
 interface ITransactionManager {   
     // Register transaction
     function registerTransaction(
+        DataTypes.UTXO[] calldata utxos,
         address arbitrator,
         uint256 deadline,
         address compensationReceiver

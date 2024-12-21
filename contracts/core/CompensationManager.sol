@@ -72,45 +72,91 @@ contract CompensationManager is
         arbitratorManager = IArbitratorManager(_arbitratorManager);
     }
 
+    function _validateUTXOConsistency(
+        DataTypes.UTXO[] memory zkServiceUtxos, 
+        DataTypes.UTXO[] memory transactionUtxos
+    ) internal pure {
+        // Check if UTXO arrays have the same length
+        if (zkServiceUtxos.length != transactionUtxos.length) {
+            revert(Errors.INVALID_UTXO);
+        }
+
+        // Compare each UTXO
+        for (uint256 i = 0; i < zkServiceUtxos.length; i++) {
+            // Compare txHash
+            if (zkServiceUtxos[i].txHash != transactionUtxos[i].txHash) {
+                revert(Errors.INVALID_UTXO);
+            }
+
+            // Compare index
+            if (zkServiceUtxos[i].index != transactionUtxos[i].index) {
+                revert(Errors.INVALID_UTXO);
+            }
+
+            // Compare script
+            if (keccak256(zkServiceUtxos[i].script) != keccak256(transactionUtxos[i].script)) {
+                revert(Errors.INVALID_UTXO);
+            }
+
+            // Compare amount
+            if (zkServiceUtxos[i].amount != transactionUtxos[i].amount) {
+                revert(Errors.INVALID_UTXO);
+            }
+        }
+    }
+
+    function _getCompensationAddress(
+        DataTypes.ArbitratorInfo memory arbitratorInfo, 
+        address sender
+    ) internal view returns (address) {
+        if (arbitratorInfo.activeTransactionId == 0) {
+            revert(Errors.NO_ACTIVE_TRANSACTION);
+        }
+        
+        DataTypes.Transaction memory transaction = transactionManager.getTransactionById(arbitratorInfo.activeTransactionId);
+        if (transaction.dapp != sender) {
+            revert(Errors.NOT_TRANSACTION_OWNER);
+        }
+        
+        return transaction.compensationReceiver;
+    }
+
     function claimIllegalSignatureCompensation(
         address arbitrator,
         bytes calldata btcTx,
         bytes32 evidence
     ) external override returns (bytes32 claimId) {
-        // Get ZK verification details
-        (bytes memory rawData, bytes memory pubKey, bytes32 txHash, , bool verified) = zkService.getZkVerification(evidence);
+        // Get ZK verification details with minimal local variables
+        (bytes memory rawData, , bytes memory pubKey, bytes32 txHash, , bool verified) = zkService.getZkVerification(evidence);
         
-        if (rawData.length == 0) revert(Errors.EMPTY_RAW_DATA);
-        if (pubKey.length == 0) revert(Errors.EMPTY_PUBLIC_KEY);
-        if (txHash == bytes32(0)) revert(Errors.EMPTY_HASH);
-        if (!verified) revert(Errors.INVALID_ZK_PROOF);
-
-        // Check if transaction exists
-        bytes32 id = transactionManager.txHashToId(txHash);
-        if (id != bytes32(0)) revert(Errors.TRANSACTION_EXISTS);
-
-        // Get arbitrator details and verify pubkey match
-        DataTypes.ArbitratorInfo memory arbitratorInfo = arbitratorManager.getArbitratorInfo(arbitrator);
-        if (arbitratorInfo.operatorBtcPubKey.length == 0) revert(Errors.EMPTY_OPERATOR_PUBLIC_KEY);
-        if (keccak256(pubKey) != keccak256(arbitratorInfo.operatorBtcPubKey)) revert(Errors.PUBLIC_KEY_MISMATCH);
-        if (keccak256(btcTx) != keccak256(rawData)) revert(Errors.BTC_TRANSACTION_MISMATCH);
-
-        // Get transaction details
-        address receivedCompensationAddress = address(0);
-        if (arbitratorInfo.activeTransactionId != 0) {
-            DataTypes.Transaction memory transaction = transactionManager.getTransactionById(arbitratorInfo.activeTransactionId);
-            receivedCompensationAddress = transaction.compensationReceiver;
-            if (transaction.dapp != msg.sender) revert(Errors.NOT_TRANSACTION_OWNER);
-        } else {
-            revert(Errors.NO_ACTIVE_TRANSACTION);
+        // Basic data validation
+        if (rawData.length == 0 || pubKey.length == 0 || txHash == bytes32(0) || !verified) {
+            revert(Errors.INVALID_VERIFICATION_DATA);
         }
 
-        // Get arbitrator's stake amount
-        uint256 stakeAmount = arbitratorInfo.ethAmount;
-        if (stakeAmount == 0) revert(Errors.NO_STAKE_AVAILABLE);
+        // Check transaction existence
+        if (transactionManager.txHashToId(txHash) != bytes32(0)) {
+            revert(Errors.TRANSACTION_EXISTS);
+        }
 
-        // Precompute available stake to reduce stack complexity
-        uint256 availableStake = arbitratorManager.getAvailableStake(arbitrator);
+        // Get arbitrator details
+        DataTypes.ArbitratorInfo memory arbitratorInfo = arbitratorManager.getArbitratorInfo(arbitrator);
+        
+        // Validate arbitrator details
+        if (arbitratorInfo.operatorBtcPubKey.length == 0 || 
+            keccak256(pubKey) != keccak256(arbitratorInfo.operatorBtcPubKey) || 
+            keccak256(btcTx) != keccak256(rawData)) {
+            revert(Errors.INVALID_VERIFICATION_DATA);
+        }
+
+        // Get compensation address
+        address receivedCompensationAddress = _getCompensationAddress(arbitratorInfo, msg.sender);
+
+        // Validate stake
+        uint256 stakeAmount = arbitratorInfo.ethAmount;
+        if (stakeAmount == 0) {
+            revert(Errors.NO_STAKE_AVAILABLE);
+        }
 
         // Generate claim ID
         claimId = keccak256(abi.encodePacked(block.timestamp, arbitrator, msg.sender, "IllegalSignature"));
@@ -122,7 +168,7 @@ contract CompensationManager is
             ethAmount: stakeAmount,
             nftContract: arbitratorInfo.nftContract,
             nftTokenIds: arbitratorInfo.nftTokenIds,
-            totalAmount: availableStake,
+            totalAmount: arbitratorManager.getAvailableStake(arbitrator),
             withdrawn: false,
             claimType: CompensationType.IllegalSignature,
             receivedCompensationAddress: receivedCompensationAddress
@@ -177,7 +223,7 @@ contract CompensationManager is
         bytes32 evidence
     ) external override returns (bytes32 claimId) {
         // Get ZK verification details
-        (bytes memory rawData, bytes memory pubKey, bytes32 txHash, bytes memory signature, bool verified) = zkService.getZkVerification(evidence);
+        (bytes memory rawData, DataTypes.UTXO[] memory utxos, bytes memory pubKey, bytes32 txHash, bytes memory signature, bool verified) = zkService.getZkVerification(evidence);
         
         if (rawData.length == 0) revert(Errors.EMPTY_RAW_DATA);
         if (pubKey.length == 0) revert(Errors.EMPTY_PUBLIC_KEY);
@@ -188,6 +234,10 @@ contract CompensationManager is
 
         // Get transaction details
         DataTypes.Transaction memory transaction = transactionManager.getTransaction(txHash);
+
+        // Validate UTXO consistency
+        _validateUTXOConsistency(utxos, transaction.utxos);
+
         if (transaction.dapp != msg.sender) revert(Errors.NOT_TRANSACTION_OWNER);
         if (transaction.signature.length == 0) revert(Errors.SIGNATURE_NOT_SUBMITTED);
 
