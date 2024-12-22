@@ -10,7 +10,7 @@ interface ITransactionManager {
         address arbitrator,
         uint256 deadline,
         address compensationReceiver
-    ) external payable returns (uint256 id);
+    ) external payable returns (bytes32 id);
     
     // Complete transaction
     function completeTransaction(bytes32 id) external;

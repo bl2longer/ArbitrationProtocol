@@ -98,7 +98,7 @@ contract TransactionManager is
         address arbitrator,
         uint256 deadline,
         address compensationReceiver
-    ) external payable nonReentrant returns (uint256) {
+    ) external payable nonReentrant returns (bytes32) {
         if (arbitrator == address(0) || compensationReceiver == address(0)) {
             revert(Errors.ZERO_ADDRESS);
         }
@@ -170,7 +170,7 @@ contract TransactionManager is
         }
 
         emit TransactionRegistered(id, msg.sender, arbitrator);
-        return uint256(id);
+        return id;
     }
 
     /**
