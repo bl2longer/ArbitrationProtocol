@@ -45,7 +45,7 @@ export const wagmiConfig = createConfig({
 const queryClient = new QueryClient();
 
 interface EVMContextProps {
-  connect: () => Promise<void>;
+  connect: () => void;
   disconnect: ReturnType<typeof useDisconnect>['disconnect'];
   switchNetworkOrAddDefault: () => Promise<void>;
   isConnected: boolean;
@@ -64,22 +64,18 @@ interface EVMProviderProps {
  */
 const addNetwork = async (provider: any, chain: ChainConfig) => {
   console.log("Asking wallet to add chain:", chain);
-  try {
-    await provider.provider.request({
-      method: "wallet_addEthereumChain",
-      params: [
-        {
-          chainId: toHex(chain.chainId),
-          chainName: chain.name,
-          nativeCurrency: chain.nativeCurrency,
-          rpcUrls: chain.rpcs,
-          blockExplorerUrls: chain.explorers,
-        },
-      ],
-    });
-  } catch (addingNetworkErr) {
-    throw addingNetworkErr;
-  }
+  await provider.provider.request({
+    method: "wallet_addEthereumChain",
+    params: [
+      {
+        chainId: toHex(chain.chainId),
+        chainName: chain.name,
+        nativeCurrency: chain.nativeCurrency,
+        rpcUrls: chain.rpcs,
+        blockExplorerUrls: chain.explorers,
+      },
+    ],
+  });
 };
 
 export const EVMProviderInternal: React.FC<EVMProviderProps> = ({ children }) => {
@@ -92,7 +88,7 @@ export const EVMProviderInternal: React.FC<EVMProviderProps> = ({ children }) =>
   const { switchChain } = useSwitchChain();
   const defaultNetworkToUse = chainList.find(c => c.networkMode === networkMode); // Use the first network of the list that supports the current network mode
 
-  const connect = useCallback(async () => {
+  const connect = useCallback(() => {
     if (address) {
       console.log("Reconnecting to the injected wallet provider");
       reconnect();
@@ -134,15 +130,15 @@ export const EVMProviderInternal: React.FC<EVMProviderProps> = ({ children }) =>
         // TODO handleError(networkError, evmAccount);
       }
     }
-  }, [switchNetwork, defaultNetworkToUse]);
+  }, [switchNetwork, defaultNetworkToUse, connector]);
 
   useEffect(() => {
     setEvmAccount(address);
-  }, [address]);
+  }, [address, setEvmAccount]);
 
   useEffect(() => {
     setEvmChainId(chainId);
-  }, [chainId]);
+  }, [chainId, setEvmChainId]);
 
   return (
     <WagmiProvider config={wagmiConfig}>

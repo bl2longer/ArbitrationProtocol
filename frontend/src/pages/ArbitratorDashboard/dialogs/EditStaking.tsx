@@ -46,7 +46,7 @@ export const EditStakingDialog: FC<{
           <DialogDescription>Increase stake, or withdrawn everything, from your arbitrator.</DialogDescription>
         </DialogHeader>
 
-        <ArbitratorStaking arbitrator={arbitrator} />
+        <ArbitratorStaking arbitrator={arbitrator} onOperationComplete={onHandleClose} />
       </DialogContent>
     </Dialog>
   )

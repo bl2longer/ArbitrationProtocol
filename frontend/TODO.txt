@@ -1,23 +1,16 @@
 ===> Target release date: dec 30
 
+- update contracts, add frozen arbitrator state
 - bug: register arbitrator, operator seems null, and dashboard shows nothing
 
-- arbitrator staking component:
-  - summary of current staking
-  - ability to unstake (with amount)
-  - ability to stake more
-  - Change "register" to "stake" in edit mode
-  - stake/unstake NFT (TBD: how does that work?)
 - arbitrator dashboard:
   - wait for contract new register() method that will merge oeprator/revenue/params in one call
     - registers sets all fields at once. But updating later should call individual methods
-- register dapp:
-  - use Form and form schema + validate evm address for dapp value
-- Compensations list:
-  - global state
 - arbitrator list:
-  - list view: show a opearator column (evm, btc addr, btc pub key), possibly foldable
+  - list view: show a operator column (evm, btc addr, btc pub key), possibly foldable
   - grid view: group operator values together
+- arbitrator staking component:
+  - Stake NFT
 
 - Mobile view: header menu is broken
 

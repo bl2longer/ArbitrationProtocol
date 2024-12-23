@@ -1,7 +1,7 @@
 import { useSnackbar } from "notistack";
 
 const SuccessToastDurationMs = 2000;
-const ErrorToastDurationMs = 7000;
+const ErrorToastDurationMs = 4000;
 
 export const useToasts = () => {
   const { enqueueSnackbar } = useSnackbar();

@@ -101,7 +101,7 @@ export const EditOperatorDialog: FC<{
 
             <DialogFooter className="mt-6">
               <Button type="submit" className={!form.formState.isValid && "opacity-30"} disabled={isPending}>
-                Publish
+                Update
               </Button>
             </DialogFooter>
           </form>

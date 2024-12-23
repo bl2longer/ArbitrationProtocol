@@ -28,17 +28,17 @@ export function handleStakeAdded(event: StakeAdded): void {
     arbitratorInfo.save();
 }
 
+/**
+ * NOTE: withdraw operation takes out everything.
+ */
 export function handleStakeWithdrawn(event: StakeWithdrawn): void {
     const arbitratorAddress = event.params.arbitrator.toHexString();
-    const assetAddress = event.params.assetAddress.toHexString();
-    const amount = event.params.amount;
 
     const arbitratorInfo = getArbitratorInfo(event.block, arbitratorAddress);
 
-    if (assetAddress == ZERO_ADDRESS) // Native token staked - strict equality doesn't work here
-        arbitratorInfo.ethAmount = arbitratorInfo.ethAmount.minus(amount);
-    else
-        throw new Error(`Non native withdraw stake not implemented yet, asset address ${assetAddress}`);
+    arbitratorInfo.ethAmount = new BigInt(0);
+
+    // TODO: NFT
 
     arbitratorInfo.save();
 }
