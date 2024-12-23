@@ -1,23 +1,32 @@
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
-import { useCallback, useEffect, useState } from "react";
+import { useBehaviorSubject } from "@/utils/useBehaviorSubject";
+import { useCallback, useEffect } from "react";
+import { BehaviorSubject } from "rxjs";
 import { fetchCompensations } from "../compensations.service";
 import { CompensationClaim } from "../model/compensation-claim";
 
-export const useCompensations = (): { compensations: CompensationClaim[] } => {
-  const activeChain = useActiveEVMChainConfig();
-  const [compensations, setCompensations] = useState<CompensationClaim[]>([]);
+const state$ = new BehaviorSubject<{
+  wasFetched: boolean; // Fetching has been tried once
+  isPending: boolean; // Fetching is in progress
+  compensations?: CompensationClaim[];
+}>({ isPending: false, wasFetched: false });
 
-  const refreshCompensations = useCallback(() => {
+export const useCompensations = () => {
+  const activeChain = useActiveEVMChainConfig();
+  const state = useBehaviorSubject(state$);
+
+  const refreshCompensations = useCallback(async () => {
+    state$.next({ isPending: true, wasFetched: false });
     if (activeChain) {
-      void fetchCompensations(activeChain, 0, 100).then(({ compensations: _compensations }) => {
-        setCompensations(_compensations);
-      });
+      const { compensations } = await fetchCompensations(activeChain, 0, 100);
+      state$.next({ wasFetched: true, isPending: false, compensations });
     }
   }, [activeChain]);
 
   useEffect(() => {
-    refreshCompensations();
-  }, [refreshCompensations]);
+    if (!state.wasFetched && !state.isPending)
+      void refreshCompensations();
+  }, [refreshCompensations, state]);
 
-  return { compensations }
+  return { refreshCompensations, ...state }
 }

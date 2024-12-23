@@ -1,29 +1,33 @@
-import { ChainConfig } from "@/services/chains/chain-config";
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
-import { useCallback } from "react";
-import { create, useStore } from "zustand";
-import { fetchArbitrators } from "../arbitrators.service";
+import { useBehaviorSubject } from "@/utils/useBehaviorSubject";
+import { useCallback, useEffect } from "react";
+import { BehaviorSubject } from "rxjs";
+import { fetchArbitrators as fetchArbitratorsApi } from "../arbitrators.service";
 import { ArbitratorInfo } from "../model/arbitrator-info";
 
-const arbitratorsStore = create<{
-  arbitrators: ArbitratorInfo[];
-  fetchArbitrators: (activeChain: ChainConfig, start?: number, limit?: number) => void;
-}>((set) => ({
-  arbitrators: undefined,
-  fetchArbitrators: (activeChain: ChainConfig, start = 0, limit = 100) => {
-    set({ arbitrators: undefined });
-    void fetchArbitrators(activeChain, start, limit).then(set);
-  }
-}));
+const state$ = new BehaviorSubject<{
+  wasFetched: boolean; // Fetching has been tried once
+  isPending: boolean; // Fetching is in progress
+  arbitrators?: ArbitratorInfo[];
+}>({ isPending: false, wasFetched: false });
 
 export const useArbitrators = () => {
   const activeChain = useActiveEVMChainConfig();
-  const arbitrators = useStore(arbitratorsStore, state => state.arbitrators);
+  const state = useBehaviorSubject(state$);
 
-  const fetchArbitrators = useCallback(() => {
-    if (activeChain)
-      void arbitratorsStore.getState().fetchArbitrators(activeChain);
+  const fetchArbitrators = useCallback(async () => {
+    state$.next({ isPending: true, wasFetched: false });
+    if (activeChain) {
+      const { arbitrators } = await fetchArbitratorsApi(activeChain);
+      state$.next({ isPending: false, wasFetched: true, arbitrators });
+    }
   }, [activeChain]);
 
-  return { arbitrators, fetchArbitrators }
+  // Initial lazy fetch (first access)
+  useEffect(() => {
+    if (!state.wasFetched && !state.isPending)
+      void fetchArbitrators();
+  }, [fetchArbitrators, state]);
+
+  return { fetchArbitrators, ...state }
 }

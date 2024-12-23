@@ -43,7 +43,7 @@ export const EditStakingDialog: FC<{
         {/* Header */}
         <DialogHeader>
           <DialogTitle>Edit Arbitrator Staking</DialogTitle>
-          <DialogDescription>Increase or reduce staking amounts for your arbitrator.</DialogDescription>
+          <DialogDescription>Increase stake, or withdrawn everything, from your arbitrator.</DialogDescription>
         </DialogHeader>
 
         <ArbitratorStaking arbitrator={arbitrator} />

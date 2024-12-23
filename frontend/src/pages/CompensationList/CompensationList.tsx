@@ -10,6 +10,7 @@ import { PageTitleRow } from '@/components/base/PageTitleRow';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { StatusLabel } from '@/components/base/StatusLabel';
+import { RefreshCwIcon } from 'lucide-react';
 
 // TODO
 const compensationTypeMap = {
@@ -18,20 +19,22 @@ const compensationTypeMap = {
 };
 
 export default function CompensationList() {
-  const { compensations } = useCompensations();
+  const { refreshCompensations, compensations } = useCompensations();
   const [selectedCompensation, setSelectedCompensation] = useState<CompensationClaim | null>(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
 
   const loading = useMemo(() => !compensations, [compensations]);
-
-  if (loading)
-    return <Loading />
 
   return (
     <PageContainer>
       {/* Title header */}
       <PageTitleRow>
         <PageTitle>Compensations</PageTitle>
+        <div className="flex space-x-4 w-full sm:w-auto items-center">
+          <Button variant="outline" size="icon" onClick={refreshCompensations}>
+            <RefreshCwIcon />
+          </Button>
+        </div>
       </PageTitleRow>
 
       <div className="overflow-x-auto">
@@ -59,7 +62,7 @@ export default function CompensationList() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {compensations.map((compensation, index) => (
+            {compensations?.map((compensation, index) => (
               <TableRow key={compensation.id} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
                 <TableCell>
                   {compensation.id.slice(0, 10)}...

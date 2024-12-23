@@ -1,14 +1,9 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import {
-  MagnifyingGlassIcon,
   Squares2X2Icon,
   ListBulletIcon,
-  ChevronUpDownIcon,
-  ChevronUpIcon,
-  ChevronDownIcon
 } from '@heroicons/react/24/outline';
 import { useArbitrators } from '@/services/arbitrators/hooks/useArbitrators';
-import { ArbitratorInfo } from '@/services/arbitrators/model/arbitrator-info';
 import { ListView } from './ListView';
 import { GridView } from './GridView';
 import { PageTitle } from '@/components/base/PageTitle';
@@ -20,7 +15,6 @@ import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
 import { RefreshCwIcon } from 'lucide-react';
 import { useOwnedArbitrator } from '@/services/arbitrators/hooks/useOwnedArbitrator';
-import { useCall } from 'wagmi';
 
 type ViewMode = 'grid' | 'list';
 
@@ -36,7 +30,6 @@ export default function ArbitratorList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'stake', direction: 'desc' });
   const navigate = useNavigate();
-
 
   const handleSort = (key: SortConfig['key']) => {
     setSortConfig(prev => ({

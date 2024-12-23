@@ -3,13 +3,12 @@ import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
 import { PageTitle } from '@/components/base/PageTitle';
 import { Button } from '@/components/ui/button';
-import { PencilIcon } from '@heroicons/react/24/outline';
 import { ArbitratorPreview } from './ArbitratorPreview';
 import { Loading } from '@/components/base/Loading';
 import { useNavigate } from 'react-router-dom';
 import { EditOperatorDialog } from './dialogs/EditOperator';
 import { useOwnedArbitrator } from '@/services/arbitrators/hooks/useOwnedArbitrator';
-import { Heading1Icon, Layers2Icon, StarIcon } from 'lucide-react';
+import { Layers2Icon, StarIcon } from 'lucide-react';
 import { EditStakingDialog } from './dialogs/EditStaking';
 import { EnsureWalletNetwork } from '@/components/base/EnsureWalletNetwork/EnsureWalletNetwork';
 

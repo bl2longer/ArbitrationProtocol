@@ -1,41 +1,37 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
-import { ChainConfig } from '@/services/chains/chain-config';
 import { useActiveEVMChainConfig } from '@/services/chains/hooks/useActiveEVMChainConfig';
-import { useCallback } from 'react';
-import { create, useStore } from 'zustand';
+import { useBehaviorSubject } from '@/utils/useBehaviorSubject';
+import { useCallback, useEffect } from 'react';
+import { BehaviorSubject } from 'rxjs';
 import { fetchArbitrators } from '../arbitrators.service';
 import { ArbitratorInfo } from '../model/arbitrator-info';
 
-// Shared state
-const ownedArbitratorStore = create<{
-  ownedArbitrator?: ArbitratorInfo;
-  isPending: boolean;
-  fetchOwnedArbitrator: (activeChain: ChainConfig, evmAccount: string) => Promise<void>;
-}>((set) => ({
-  ownedArbitrator: undefined,
+const state$ = new BehaviorSubject<{ ownedArbitrator?: ArbitratorInfo; isPending: boolean, wasFetched: boolean }>({
   isPending: false,
-  fetchOwnedArbitrator: async (activeChain: ChainConfig, evmAccount: string) => {
-    set({ isPending: true });
-    if (activeChain && evmAccount) {
-      const { arbitrators } = await fetchArbitrators(activeChain, 0, 100, { creatorEvmAddress: evmAccount });
-      set({ ownedArbitrator: arbitrators?.[0], isPending: false });
-    } else {
-      set({ ownedArbitrator: undefined, isPending: false });
-    }
-  },
-}));
+  wasFetched: false
+});
 
 export const useOwnedArbitrator = () => {
   const activeChain = useActiveEVMChainConfig();
   const { evmAccount } = useWalletContext();
-  const ownedArbitrator = useStore(ownedArbitratorStore, state => state.ownedArbitrator)
-  const isPending = useStore(ownedArbitratorStore, state => state.isPending)
+  const state = useBehaviorSubject(state$);
 
-  const fetchOwnedArbitrator = useCallback(
-    () => ownedArbitratorStore.getState().fetchOwnedArbitrator(activeChain, evmAccount),
-    [activeChain, evmAccount]
-  );
+  const fetchOwnedArbitrator = useCallback(async () => {
+    state$.next({ isPending: true, wasFetched: false });
+    if (activeChain && evmAccount) {
+      const { arbitrators } = await fetchArbitrators(activeChain, 0, 100, { creatorEvmAddress: evmAccount });
+      state$.next({ ownedArbitrator: arbitrators?.[0], isPending: false, wasFetched: true });
+    } else {
+      state$.next({ ownedArbitrator: undefined, isPending: false, wasFetched: true });
+    }
+  }, [activeChain, evmAccount]);
 
-  return { ownedArbitrator, isPending, fetchOwnedArbitrator }
-}
+  // Initial lazy fetch (first access)
+  useEffect(() => {
+    if (!state.wasFetched && !state.isPending)
+      void fetchOwnedArbitrator();
+  }, [fetchOwnedArbitrator, state]);
+
+  return { fetchOwnedArbitrator, ...state };
+};

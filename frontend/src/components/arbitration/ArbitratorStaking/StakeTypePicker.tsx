@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,24 +17,36 @@ import {
 import { cn } from "@/utils/shadcn";
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
 
-export type StakeType = "coin" | "nft";
+export type StakeType = "coin" | "nft" | "unstake";
 
 export const StakeTypePicker: FC<{
-  value: string;
+  canUnstake?: boolean;
+  value: StakeType;
   onChange: (value: StakeType) => void;
-}> = ({ value, onChange }) => {
+}> = ({ value, onChange, canUnstake = false }) => {
   const activeChain = useActiveEVMChainConfig();
 
-  const stakeTypes: { value: StakeType, label: string }[] = [
-    {
-      value: "coin",
-      label: `Stake ${activeChain?.nativeCurrency.symbol}`,
-    },
-    {
-      value: "nft",
-      label: "Stake NFT",
+  const stakeTypes: { value: StakeType, label: string }[] = useMemo(() => {
+    const types: { value: StakeType, label: string }[] = [
+      {
+        value: "coin",
+        label: `Stake ${activeChain?.nativeCurrency.symbol}`,
+      },
+      {
+        value: "nft",
+        label: "Stake NFT",
+      }
+    ];
+
+    if (canUnstake) {
+      types.push({
+        value: "unstake",
+        label: "Withdraw everything",
+      });
     }
-  ]
+
+    return types;
+  }, []);
 
   const [open, setOpen] = useState(false);
 

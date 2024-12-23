@@ -14,7 +14,7 @@
 - register dapp:
   - use Form and form schema + validate evm address for dapp value
 - Compensations list:
-  - zustand store for compensations
+  - global state
 - arbitrator list:
   - list view: show a opearator column (evm, btc addr, btc pub key), possibly foldable
   - grid view: group operator values together

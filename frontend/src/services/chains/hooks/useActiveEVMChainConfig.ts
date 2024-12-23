@@ -1,5 +1,6 @@
 import { defaultChainConfig } from "@/config/chains";
 import { useWalletContext } from "@/contexts/WalletContext/WalletContext";
+import { useMemo } from "react";
 import { getChainConfigById } from "../chains";
 
 /**
@@ -9,7 +10,8 @@ import { getChainConfigById } from "../chains";
  */
 export const useActiveEVMChainConfig = (useDefaultIfNeeded = true) => {
   const { evmChainId } = useWalletContext();
-  const chainConfig = getChainConfigById(evmChainId);
+  const chainConfig = useMemo(() => getChainConfigById(evmChainId), [evmChainId]);
+
   if (chainConfig)
     return chainConfig;
 

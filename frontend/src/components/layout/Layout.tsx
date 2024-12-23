@@ -1,20 +1,7 @@
-import { useOwnedArbitrator } from '@/services/arbitrators/hooks/useOwnedArbitrator';
 import Navbar from './Navbar';
-import { FC, useEffect } from 'react';
-import { useArbitrators } from '@/services/arbitrators/hooks/useArbitrators';
+import { FC } from 'react';
 
 const Layout: FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { fetchArbitrators } = useArbitrators();
-  const { fetchOwnedArbitrator } = useOwnedArbitrator();
-
-  useEffect(() => {
-    void fetchOwnedArbitrator();
-  }, [fetchOwnedArbitrator]);
-
-  useEffect(() => {
-    void fetchArbitrators();
-  }, [fetchArbitrators]);
-
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Top navigation */}
