@@ -54,7 +54,7 @@ library DataTypes {
         address operator;          // Operator address
         bytes operatorBtcPubKey;   // Bitcoin public key
         string operatorBtcAddress; // Bitcoin address
-        uint256 lastArbitrationTime; // Last arbitration time , deadline
+        uint256 deadLine; // Last arbitration time , deadline
         bytes revenueBtcPubKey;   // Bitcoin public key for receiving arbitrator earnings
         string revenueBtcAddress; // Bitcoin address for receiving arbitrator earnings
         address revenueETHAddress; // ETH address for receiving arbitrator earnings

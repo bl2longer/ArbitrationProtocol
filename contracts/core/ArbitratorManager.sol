@@ -149,7 +149,7 @@ contract ArbitratorManager is
         arbitrator.currentFeeRate = feeRate;
 
         // Set the arbitrator's deadline
-        arbitrator.lastArbitrationTime = deadline;
+        arbitrator.deadLine = deadline;
 
         // Update the arbitrator's ETH amount
         arbitrator.ethAmount += msg.value;
@@ -213,7 +213,7 @@ contract ArbitratorManager is
         arbitrator.operatorBtcAddress = btcAddress;
         arbitrator.operatorBtcPubKey = btcPubKey;
         arbitrator.currentFeeRate = feeRate;
-        arbitrator.lastArbitrationTime = deadline;
+        arbitrator.deadLine = deadline;
 
        // Calculate total NFT value
         uint256 totalNftValue = _calculateNFTValue(tokenIds);
@@ -453,7 +453,7 @@ contract ArbitratorManager is
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
         if (arbitrator.arbitrator == address(0)) revert(Errors.ARBITRATOR_NOT_REGISTERED);
         arbitrator.currentFeeRate = feeRate;
-        arbitrator.lastArbitrationTime = deadline;
+        arbitrator.deadLine = deadline;
         
         emit ArbitratorParamsSet(msg.sender, feeRate, deadline);
     }
@@ -513,10 +513,12 @@ contract ArbitratorManager is
         if (arbitrator.status != DataTypes.ArbitratorStatus.Active) {
             return false;
         }
-        if (arbitrator.lastArbitrationTime == 0) {
+        // no set deadline
+        if (arbitrator.deadLine == 0) {
             return false;
         }
-        if (arbitrator.lastArbitrationTime <= block.timestamp) {
+        // check deadline time in life circle
+        if (arbitrator.deadLine <= block.timestamp) {
             return false;
         }
         // freeze lock time
