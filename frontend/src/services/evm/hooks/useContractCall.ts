@@ -47,6 +47,8 @@ export const useContractCall = () => {
   const writeContract = useCallback(async (params: WriteContractParams, waitForReceipt = true): Promise<{ hash: string, receipt?: WaitForTransactionReceiptReturnType }> => {
     setIsPending(true);
 
+    console.log("WRITE CONTRACT")
+
     let _hash: `0x${string}`;
     try {
       _hash = await wagmiWriteContract(wagmiConfig, {

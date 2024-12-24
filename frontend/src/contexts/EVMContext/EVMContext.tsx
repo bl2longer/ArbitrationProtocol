@@ -131,7 +131,7 @@ export const EVMProviderInternal: React.FC<EVMProviderProps> = ({ children }) =>
       }
     }
   }, [switchNetwork, defaultNetworkToUse, connector]);
-
+  console.log("address", address)
   useEffect(() => {
     setEvmAccount(address);
   }, [address, setEvmAccount]);

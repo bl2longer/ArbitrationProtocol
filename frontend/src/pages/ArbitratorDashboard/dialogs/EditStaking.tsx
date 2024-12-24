@@ -1,4 +1,4 @@
-import { ArbitratorStaking } from "@/components/arbitration/ArbitratorStaking/ArbitratorStaking";
+import { ArbitratorStakingEditor } from "@/pages/ArbitratorDashboard/dialogs/ArbitratorStakingEditor/ArbitratorStakingEditor";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -46,7 +46,7 @@ export const EditStakingDialog: FC<{
           <DialogDescription>Increase stake, or withdrawn everything, from your arbitrator.</DialogDescription>
         </DialogHeader>
 
-        <ArbitratorStaking arbitrator={arbitrator} onOperationComplete={onHandleClose} />
+        <ArbitratorStakingEditor onOperationComplete={onHandleClose} />
       </DialogContent>
     </Dialog>
   )

@@ -51,6 +51,55 @@
           "type": "address"
         },
         {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "revenueAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "btcAddress",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "btcPubKey",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "feeRate",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "deadline",
+          "type": "uint256"
+        }
+      ],
+      "name": "ArbitratorRegistered",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "arbitrator",
+          "type": "address"
+        },
+        {
           "indexed": false,
           "internalType": "enum DataTypes.ArbitratorStatus",
           "name": "status",
@@ -250,7 +299,7 @@
           "type": "address"
         }
       ],
-      "name": "canUnstake",
+      "name": "canUnStake",
       "outputs": [
         {
           "internalType": "bool",
@@ -335,7 +384,7 @@
             },
             {
               "internalType": "uint256",
-              "name": "lastArbitrationTime",
+              "name": "deadLine",
               "type": "uint256"
             },
             {
@@ -352,6 +401,11 @@
               "internalType": "address",
               "name": "revenueETHAddress",
               "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lastCompletedWorkTime",
+              "type": "uint256"
             }
           ],
           "internalType": "struct DataTypes.ArbitratorInfo",
@@ -483,6 +537,87 @@
     {
       "inputs": [],
       "name": "pause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "revenueAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "btcAddress",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes",
+          "name": "btcPubKey",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint256",
+          "name": "feeRate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "deadline",
+          "type": "uint256"
+        }
+      ],
+      "name": "registerArbitratorByStakeETH",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "tokenIds",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "revenueAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "btcAddress",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes",
+          "name": "btcPubKey",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint256",
+          "name": "feeRate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "deadline",
+          "type": "uint256"
+        }
+      ],
+      "name": "registerArbitratorByStakeNFT",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

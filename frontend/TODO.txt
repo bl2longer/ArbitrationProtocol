@@ -1,20 +1,23 @@
 ===> Target release date: dec 30
 
-- update contracts, add frozen arbitrator state
-- bug: register arbitrator, operator seems null, and dashboard shows nothing
+- NFT list: compute nft value:
+  - 1 vote = 1 ELA, 8 decimals
+- NFT staking: approve ERC721 transfer to the [ArbitratorManager] before trying to register or stake
 
-- arbitrator dashboard:
-  - wait for contract new register() method that will merge oeprator/revenue/params in one call
-    - registers sets all fields at once. But updating later should call individual methods
 - arbitrator list:
   - list view: show a operator column (evm, btc addr, btc pub key), possibly foldable
   - grid view: group operator values together
 - arbitrator staking component:
   - Stake NFT
+- Tooltips:
+  - arbitrator term end
+    - "Date set by the arbitrator, after which he will be able to become inactive and withdraw staked assets. dApps that require longer periods for their proofs validations don't use arbitrators with too short term expirations."
 
 - Mobile view: header menu is broken
+- bug: register arbitrator, operator seems null, and dashboard shows nothing
 
 P2:
+- Natice coin stake: show current ELA balance
 - Handle subgraph api errors, forward to hooks and pages
 - Finish to replace headless UI components with https://ui.shadcn.com/
 - register dapp: intro about what a dapp is
@@ -29,3 +32,14 @@ elastos testnet contract address: {
     "TRANSACTION_MANAGER": "0xD206be45b53Fa5C2065049c7a70B1aa1755a9475",
     "COMPENSATION_MANAGER": "0x7c31A7185660d5c40B1A02D60dbcCfd221d40787"
 }
+
+NFT INFO:
+- https://github.com/BeL2Labs/BNFT_Info_Contract
+
+ERC721 NFT:
+- source code: https://github.com/elastos/Elastos.ELA.StakeTicket.Solidity/blob/master/contracts/ERC721MinterBurnerPauser.sol
+- https://esc-testnet.elastos.io/api?module=account&action=tokenlist&address=0x0aD689150EB4a3C541B7a37E6c69c1510BCB27A4
+
+Claim contract : 
+  0x95c87f9c2381d43fc7019A2F7A2EA1dd8CA47230
+  Solidity: https://github.com/elastos/Elastos.ELA.StakeTicket.Solidity/blob/master/contracts/StakeTicket.sol

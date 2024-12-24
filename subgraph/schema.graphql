@@ -99,3 +99,10 @@ type DApp @entity {
     owner: String
     status: DAppStatus!
 }
+
+type BPosNFT @entity {
+    id: ID!
+    createdAt: BigInt! # Timestamp, DB side only, not on chain - block time at which the bpos nft was first found (first event)
+    owner: String! # EVM address
+    tokenId: BigInt!
+}

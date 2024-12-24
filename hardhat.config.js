@@ -4,6 +4,7 @@ require("hardhat-deploy");
 require("dotenv").config();
 
 const { staging_key, prod_key, operator_key } = process.env;
+
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: {
@@ -31,9 +32,9 @@ module.exports = {
     hardhat: {
       chainId: 100,
       accounts: [
-        { privateKey: staging_key, balance: "10000000000000000000000" },
-        { privateKey: prod_key, balance: "10000000000000000000000" },
-        { privateKey: operator_key, balance: "10000000000000000000000" }
+        ...(staging_key ? [{ privateKey: staging_key, balance: "10000000000000000000000" }] : []),
+        ...(prod_key ? [{ privateKey: prod_key, balance: "10000000000000000000000" }] : []),
+        ...(operator_key ? [{ privateKey: operator_key, balance: "10000000000000000000000" }] : []),
       ],
       blockGasLimit: 8000000
     }

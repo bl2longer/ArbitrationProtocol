@@ -7,9 +7,7 @@ import { Button } from '@/components/ui/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useActiveEVMChainConfig } from '@/services/chains/hooks/useActiveEVMChainConfig';
-import { useArbitratorRegister } from '@/services/arbitrators/hooks/contract/useArbitratorRegister';
-import { useToasts } from '@/services/ui/hooks/useToasts';
-import { useNavigate } from 'react-router-dom';
+import { useArbitratorStake } from '@/services/arbitrators/hooks/contract/useArbitratorStake';
 import { useConfigManager } from '@/services/config-manager/hooks/useConfigManager';
 
 export const StakeCoinForm: FC<{
@@ -18,14 +16,12 @@ export const StakeCoinForm: FC<{
 }> = ({ actionLabel, onStaked }) => {
   const activeChain = useActiveEVMChainConfig();
   const { configSettings } = useConfigManager();
-  const { stakeETH, isPending: isRegistering } = useArbitratorRegister();
+  const { stakeETH, isPending: isRegistering } = useArbitratorStake();
 
-  // Forms
   const stakeCoinFormSchema = useMemo(() => z.object({
-    coinAmount: z.coerce.number()
-      .min(Number(configSettings?.minStake))
-      .max(Number(configSettings?.maxStake))
+    coinAmount: z.coerce.number().min(Number(configSettings?.minStake)).max(Number(configSettings?.maxStake))
   }), [configSettings]);
+
   const nativeCoinForm = useForm<z.infer<typeof stakeCoinFormSchema>>({
     resolver: zodResolver(stakeCoinFormSchema),
     defaultValues: {

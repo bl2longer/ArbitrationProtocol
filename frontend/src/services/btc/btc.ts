@@ -1,13 +1,12 @@
 import { reverseHexString } from "@/services/evm/conversions";
-import { doubleSha256 } from "@/utils/crypto/sha256";
-import ecc from '@bitcoinerlab/secp256k1';
+// import ecc from '@bitcoinerlab/secp256k1';
 import BigNumber from "bignumber.js";
 import 'bip66';
 import { encode } from "bip66";
-import { initEccLib } from "bitcoinjs-lib";
+// import { initEccLib } from "bitcoinjs-lib";
 
 // Init curve for BTC taproot address support
-initEccLib(ecc);
+// initEccLib(ecc);
 
 export const satsPerBTC = new BigNumber("100000000");
 
@@ -85,10 +84,50 @@ export const rsSignatureToDer = (rs: string): string => {
 }
 
 /**
- * From a fully signed btc txid with witnesses, returns the wtxid
- * (witness txid). 
- * NOTE: if there is no witness, wtxid == txid.
+ * Checks if a string is a valid BTC address.
  */
-export const fullBTCTransactionToWTxId = (fullBtcTxHex: string): string => {
-  return doubleSha256(Buffer.from(fullBtcTxHex, "hex")).reverse().toString("hex");
+export const isValidBitcoinAddress = (address: string): boolean => {
+  // Regular expressions for different Bitcoin address formats
+  const p2pkhRegex = /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/;
+  const p2shRegex = /^3[a-km-zA-HJ-NP-Z1-9]{25,34}$/;
+  const bech32Regex = /^(bc1)[a-z0-9]{39,59}$/;
+  const bech32mRegex = /^(bc1p)[a-z0-9]{56}$/;
+
+  // Check against each regex
+  if (p2pkhRegex.test(address)) {
+    return true;
+  }
+
+  if (p2shRegex.test(address)) {
+    return true;
+  }
+
+  if (bech32Regex.test(address) || bech32mRegex.test(address)) {
+    return true;
+  }
+
+  return false;
+}
+
+export const isValidBitcoinPublicKey = (publicKey: string): boolean => {
+  // Check if the public key is a valid hexadecimal string
+  const hexRegex = /^[0-9a-fA-F]+$/;
+  if (!hexRegex.test(publicKey)) {
+    return false;
+  }
+
+  // Convert the public key to a byte array
+  const publicKeyBytes = Buffer.from(publicKey, 'hex');
+
+  // Check for compressed public key (33 bytes, starting with 02 or 03)
+  if (publicKeyBytes.length === 33 && (publicKeyBytes[0] === 0x02 || publicKeyBytes[0] === 0x03)) {
+    return true;
+  }
+
+  // Check for uncompressed public key (65 bytes, starting with 04)
+  if (publicKeyBytes.length === 65 && publicKeyBytes[0] === 0x04) {
+    return true;
+  }
+
+  return false;
 }

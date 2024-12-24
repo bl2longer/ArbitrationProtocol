@@ -1,5 +1,4 @@
 import { useWalletContext } from "@/contexts/WalletContext/WalletContext";
-import { isMainnetNetworkInUse } from "@/services/network/network";
 import { useCallback, useEffect } from "react";
 
 /**
@@ -7,7 +6,7 @@ import { useCallback, useEffect } from "react";
  */
 export const useOkxWallet = () => {
   const { bitcoinAccount, setBitcoinAccount, bitcoinProvider, setBitcoinProvider } = useWalletContext();
-  const okxwallet = isMainnetNetworkInUse() ? window.okxwallet?.bitcoin : window.okxwallet?.bitcoinTestnet;
+  const okxwallet = window.okxwallet?.bitcoin;//isMainnetNetworkInUse() ? window.okxwallet?.bitcoin : window.okxwallet?.bitcoinTestnet;
 
   useEffect(() => {
     if (!okxwallet)

@@ -1,5 +1,4 @@
 import { WalletContext } from "@/contexts/WalletContext/WalletContext";
-import { isMainnetNetworkInUse } from "@/services/network/network";
 import BigNumber from "bignumber.js";
 import { useCallback, useContext } from "react";
 
@@ -8,7 +7,7 @@ import { useCallback, useContext } from "react";
  */
 export const useBitcoinWalletAction = () => {
   const { bitcoinProvider, setBitcoinAccount, setBitcoinProvider } = useContext(WalletContext);
-  const okxwallet = isMainnetNetworkInUse() ? window.okxwallet?.bitcoin : window.okxwallet?.bitcoinTestnet;
+  const okxwallet = window.okxwallet?.bitcoin; //isMainnetNetworkInUse() ? window.okxwallet?.bitcoin : window.okxwallet?.bitcoinTestnet;
 
   const getProvider = useCallback(() => {
     switch (bitcoinProvider) {

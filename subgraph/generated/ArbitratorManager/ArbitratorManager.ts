@@ -54,6 +54,48 @@ export class ArbitratorPaused__Params {
   }
 }
 
+export class ArbitratorRegistered extends ethereum.Event {
+  get params(): ArbitratorRegistered__Params {
+    return new ArbitratorRegistered__Params(this);
+  }
+}
+
+export class ArbitratorRegistered__Params {
+  _event: ArbitratorRegistered;
+
+  constructor(event: ArbitratorRegistered) {
+    this._event = event;
+  }
+
+  get arbitrator(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get operator(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get revenueAddress(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get btcAddress(): string {
+    return this._event.parameters[3].value.toString();
+  }
+
+  get btcPubKey(): Bytes {
+    return this._event.parameters[4].value.toBytes();
+  }
+
+  get feeRate(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+
+  get deadline(): BigInt {
+    return this._event.parameters[6].value.toBigInt();
+  }
+}
+
 export class ArbitratorStatusChanged extends ethereum.Event {
   get params(): ArbitratorStatusChanged__Params {
     return new ArbitratorStatusChanged__Params(this);
@@ -361,7 +403,7 @@ export class ArbitratorManager__getArbitratorInfoResultValue0Struct extends ethe
     return this[11].toString();
   }
 
-  get lastArbitrationTime(): BigInt {
+  get deadLine(): BigInt {
     return this[12].toBigInt();
   }
 
@@ -376,6 +418,10 @@ export class ArbitratorManager__getArbitratorInfoResultValue0Struct extends ethe
   get revenueETHAddress(): Address {
     return this[15].toAddress();
   }
+
+  get lastCompletedWorkTime(): BigInt {
+    return this[16].toBigInt();
+  }
 }
 
 export class ArbitratorManager extends ethereum.SmartContract {
@@ -383,16 +429,16 @@ export class ArbitratorManager extends ethereum.SmartContract {
     return new ArbitratorManager("ArbitratorManager", address);
   }
 
-  canUnstake(arbitrator: Address): boolean {
-    let result = super.call("canUnstake", "canUnstake(address):(bool)", [
+  canUnStake(arbitrator: Address): boolean {
+    let result = super.call("canUnStake", "canUnStake(address):(bool)", [
       ethereum.Value.fromAddress(arbitrator),
     ]);
 
     return result[0].toBoolean();
   }
 
-  try_canUnstake(arbitrator: Address): ethereum.CallResult<boolean> {
-    let result = super.tryCall("canUnstake", "canUnstake(address):(bool)", [
+  try_canUnStake(arbitrator: Address): ethereum.CallResult<boolean> {
+    let result = super.tryCall("canUnStake", "canUnStake(address):(bool)", [
       ethereum.Value.fromAddress(arbitrator),
     ]);
     if (result.reverted) {
@@ -449,7 +495,7 @@ export class ArbitratorManager extends ethereum.SmartContract {
   ): ArbitratorManager__getArbitratorInfoResultValue0Struct {
     let result = super.call(
       "getArbitratorInfo",
-      "getArbitratorInfo(address):((address,uint256,uint256,uint8,bytes32,uint256,address,address,uint256[],address,bytes,string,uint256,bytes,string,address))",
+      "getArbitratorInfo(address):((address,uint256,uint256,uint8,bytes32,uint256,address,address,uint256[],address,bytes,string,uint256,bytes,string,address,uint256))",
       [ethereum.Value.fromAddress(arbitratorAddress)],
     );
 
@@ -463,7 +509,7 @@ export class ArbitratorManager extends ethereum.SmartContract {
   ): ethereum.CallResult<ArbitratorManager__getArbitratorInfoResultValue0Struct> {
     let result = super.tryCall(
       "getArbitratorInfo",
-      "getArbitratorInfo(address):((address,uint256,uint256,uint8,bytes32,uint256,address,address,uint256[],address,bytes,string,uint256,bytes,string,address))",
+      "getArbitratorInfo(address):((address,uint256,uint256,uint8,bytes32,uint256,address,address,uint256[],address,bytes,string,uint256,bytes,string,address,uint256))",
       [ethereum.Value.fromAddress(arbitratorAddress)],
     );
     if (result.reverted) {
@@ -803,6 +849,110 @@ export class PauseCall__Outputs {
   _call: PauseCall;
 
   constructor(call: PauseCall) {
+    this._call = call;
+  }
+}
+
+export class RegisterArbitratorByStakeETHCall extends ethereum.Call {
+  get inputs(): RegisterArbitratorByStakeETHCall__Inputs {
+    return new RegisterArbitratorByStakeETHCall__Inputs(this);
+  }
+
+  get outputs(): RegisterArbitratorByStakeETHCall__Outputs {
+    return new RegisterArbitratorByStakeETHCall__Outputs(this);
+  }
+}
+
+export class RegisterArbitratorByStakeETHCall__Inputs {
+  _call: RegisterArbitratorByStakeETHCall;
+
+  constructor(call: RegisterArbitratorByStakeETHCall) {
+    this._call = call;
+  }
+
+  get operator(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get revenueAddress(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
+  get btcAddress(): string {
+    return this._call.inputValues[2].value.toString();
+  }
+
+  get btcPubKey(): Bytes {
+    return this._call.inputValues[3].value.toBytes();
+  }
+
+  get feeRate(): BigInt {
+    return this._call.inputValues[4].value.toBigInt();
+  }
+
+  get deadline(): BigInt {
+    return this._call.inputValues[5].value.toBigInt();
+  }
+}
+
+export class RegisterArbitratorByStakeETHCall__Outputs {
+  _call: RegisterArbitratorByStakeETHCall;
+
+  constructor(call: RegisterArbitratorByStakeETHCall) {
+    this._call = call;
+  }
+}
+
+export class RegisterArbitratorByStakeNFTCall extends ethereum.Call {
+  get inputs(): RegisterArbitratorByStakeNFTCall__Inputs {
+    return new RegisterArbitratorByStakeNFTCall__Inputs(this);
+  }
+
+  get outputs(): RegisterArbitratorByStakeNFTCall__Outputs {
+    return new RegisterArbitratorByStakeNFTCall__Outputs(this);
+  }
+}
+
+export class RegisterArbitratorByStakeNFTCall__Inputs {
+  _call: RegisterArbitratorByStakeNFTCall;
+
+  constructor(call: RegisterArbitratorByStakeNFTCall) {
+    this._call = call;
+  }
+
+  get tokenIds(): Array<BigInt> {
+    return this._call.inputValues[0].value.toBigIntArray();
+  }
+
+  get operator(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
+  get revenueAddress(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+
+  get btcAddress(): string {
+    return this._call.inputValues[3].value.toString();
+  }
+
+  get btcPubKey(): Bytes {
+    return this._call.inputValues[4].value.toBytes();
+  }
+
+  get feeRate(): BigInt {
+    return this._call.inputValues[5].value.toBigInt();
+  }
+
+  get deadline(): BigInt {
+    return this._call.inputValues[6].value.toBigInt();
+  }
+}
+
+export class RegisterArbitratorByStakeNFTCall__Outputs {
+  _call: RegisterArbitratorByStakeNFTCall;
+
+  constructor(call: RegisterArbitratorByStakeNFTCall) {
     this._call = call;
   }
 }

@@ -102,6 +102,7 @@ export class CompensationManager__claimsResult {
   value4: BigInt;
   value5: boolean;
   value6: i32;
+  value7: Address;
 
   constructor(
     value0: Address,
@@ -111,6 +112,7 @@ export class CompensationManager__claimsResult {
     value4: BigInt,
     value5: boolean,
     value6: i32,
+    value7: Address,
   ) {
     this.value0 = value0;
     this.value1 = value1;
@@ -119,6 +121,7 @@ export class CompensationManager__claimsResult {
     this.value4 = value4;
     this.value5 = value5;
     this.value6 = value6;
+    this.value7 = value7;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
@@ -133,6 +136,7 @@ export class CompensationManager__claimsResult {
       "value6",
       ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value6)),
     );
+    map.set("value7", ethereum.Value.fromAddress(this.value7));
     return map;
   }
 
@@ -162,6 +166,10 @@ export class CompensationManager__claimsResult {
 
   getClaimType(): i32 {
     return this.value6;
+  }
+
+  getReceivedCompensationAddress(): Address {
+    return this.value7;
   }
 }
 
@@ -313,7 +321,7 @@ export class CompensationManager extends ethereum.SmartContract {
   claims(param0: Bytes): CompensationManager__claimsResult {
     let result = super.call(
       "claims",
-      "claims(bytes32):(address,address,uint256,address,uint256,bool,uint8)",
+      "claims(bytes32):(address,address,uint256,address,uint256,bool,uint8,address)",
       [ethereum.Value.fromFixedBytes(param0)],
     );
 
@@ -325,6 +333,7 @@ export class CompensationManager extends ethereum.SmartContract {
       result[4].toBigInt(),
       result[5].toBoolean(),
       result[6].toI32(),
+      result[7].toAddress(),
     );
   }
 
@@ -333,7 +342,7 @@ export class CompensationManager extends ethereum.SmartContract {
   ): ethereum.CallResult<CompensationManager__claimsResult> {
     let result = super.tryCall(
       "claims",
-      "claims(bytes32):(address,address,uint256,address,uint256,bool,uint8)",
+      "claims(bytes32):(address,address,uint256,address,uint256,bool,uint8,address)",
       [ethereum.Value.fromFixedBytes(param0)],
     );
     if (result.reverted) {
@@ -349,6 +358,7 @@ export class CompensationManager extends ethereum.SmartContract {
         value[4].toBigInt(),
         value[5].toBoolean(),
         value[6].toI32(),
+        value[7].toAddress(),
       ),
     );
   }

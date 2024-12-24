@@ -44,7 +44,8 @@ export const EnsureWalletNetwork: FC<{
   }, []);
 
   const handleUnsupportedNetwork = useCallback(() => {
-    void handleConnectEVM().then(switchNetworkOrAddDefault);
+    void handleConnectEVM();
+    void switchNetworkOrAddDefault();
   }, [handleConnectEVM, switchNetworkOrAddDefault]);
 
   const handleConnectBitcoinWallet = useCallback(() => {

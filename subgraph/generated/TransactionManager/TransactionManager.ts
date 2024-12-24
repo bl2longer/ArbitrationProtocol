@@ -248,6 +248,28 @@ export class TransactionManager__getTransactionResultValue0Struct extends ethere
   get timeoutCompensationReceiver(): Address {
     return this[10].toAddress();
   }
+
+  get utxos(): Array<TransactionManager__getTransactionResultValue0UtxosStruct> {
+    return this[11].toTupleArray<TransactionManager__getTransactionResultValue0UtxosStruct>();
+  }
+}
+
+export class TransactionManager__getTransactionResultValue0UtxosStruct extends ethereum.Tuple {
+  get txHash(): Bytes {
+    return this[0].toBytes();
+  }
+
+  get index(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get script(): Bytes {
+    return this[2].toBytes();
+  }
+
+  get amount(): BigInt {
+    return this[3].toBigInt();
+  }
 }
 
 export class TransactionManager__getTransactionByIdResultValue0Struct extends ethereum.Tuple {
@@ -293,6 +315,28 @@ export class TransactionManager__getTransactionByIdResultValue0Struct extends et
 
   get timeoutCompensationReceiver(): Address {
     return this[10].toAddress();
+  }
+
+  get utxos(): Array<TransactionManager__getTransactionByIdResultValue0UtxosStruct> {
+    return this[11].toTupleArray<TransactionManager__getTransactionByIdResultValue0UtxosStruct>();
+  }
+}
+
+export class TransactionManager__getTransactionByIdResultValue0UtxosStruct extends ethereum.Tuple {
+  get txHash(): Bytes {
+    return this[0].toBytes();
+  }
+
+  get index(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get script(): Bytes {
+    return this[2].toBytes();
+  }
+
+  get amount(): BigInt {
+    return this[3].toBigInt();
   }
 }
 
@@ -509,12 +553,44 @@ export class TransactionManager extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  getRegisterTransactionFee(deadline: BigInt, arbitrator: Address): BigInt {
+    let result = super.call(
+      "getRegisterTransactionFee",
+      "getRegisterTransactionFee(uint256,address):(uint256)",
+      [
+        ethereum.Value.fromUnsignedBigInt(deadline),
+        ethereum.Value.fromAddress(arbitrator),
+      ],
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getRegisterTransactionFee(
+    deadline: BigInt,
+    arbitrator: Address,
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getRegisterTransactionFee",
+      "getRegisterTransactionFee(uint256,address):(uint256)",
+      [
+        ethereum.Value.fromUnsignedBigInt(deadline),
+        ethereum.Value.fromAddress(arbitrator),
+      ],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   getTransaction(
     txHash: Bytes,
   ): TransactionManager__getTransactionResultValue0Struct {
     let result = super.call(
       "getTransaction",
-      "getTransaction(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address))",
+      "getTransaction(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[]))",
       [ethereum.Value.fromFixedBytes(txHash)],
     );
 
@@ -528,7 +604,7 @@ export class TransactionManager extends ethereum.SmartContract {
   ): ethereum.CallResult<TransactionManager__getTransactionResultValue0Struct> {
     let result = super.tryCall(
       "getTransaction",
-      "getTransaction(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address))",
+      "getTransaction(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[]))",
       [ethereum.Value.fromFixedBytes(txHash)],
     );
     if (result.reverted) {
@@ -547,7 +623,7 @@ export class TransactionManager extends ethereum.SmartContract {
   ): TransactionManager__getTransactionByIdResultValue0Struct {
     let result = super.call(
       "getTransactionById",
-      "getTransactionById(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address))",
+      "getTransactionById(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[]))",
       [ethereum.Value.fromFixedBytes(id)],
     );
 
@@ -561,7 +637,7 @@ export class TransactionManager extends ethereum.SmartContract {
   ): ethereum.CallResult<TransactionManager__getTransactionByIdResultValue0Struct> {
     let result = super.tryCall(
       "getTransactionById",
-      "getTransactionById(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address))",
+      "getTransactionById(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[]))",
       [ethereum.Value.fromFixedBytes(id)],
     );
     if (result.reverted) {
@@ -573,6 +649,29 @@ export class TransactionManager extends ethereum.SmartContract {
         value[0].toTuple(),
       ),
     );
+  }
+
+  isAbleCompletedTransaction(id: Bytes): boolean {
+    let result = super.call(
+      "isAbleCompletedTransaction",
+      "isAbleCompletedTransaction(bytes32):(bool)",
+      [ethereum.Value.fromFixedBytes(id)],
+    );
+
+    return result[0].toBoolean();
+  }
+
+  try_isAbleCompletedTransaction(id: Bytes): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "isAbleCompletedTransaction",
+      "isAbleCompletedTransaction(bytes32):(bool)",
+      [ethereum.Value.fromFixedBytes(id)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
   owner(): Address {
@@ -837,16 +936,20 @@ export class RegisterTransactionCall__Inputs {
     this._call = call;
   }
 
+  get utxos(): Array<RegisterTransactionCallUtxosStruct> {
+    return this._call.inputValues[0].value.toTupleArray<RegisterTransactionCallUtxosStruct>();
+  }
+
   get arbitrator(): Address {
-    return this._call.inputValues[0].value.toAddress();
+    return this._call.inputValues[1].value.toAddress();
   }
 
   get deadline(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
+    return this._call.inputValues[2].value.toBigInt();
   }
 
   get compensationReceiver(): Address {
-    return this._call.inputValues[2].value.toAddress();
+    return this._call.inputValues[3].value.toAddress();
   }
 }
 
@@ -857,8 +960,26 @@ export class RegisterTransactionCall__Outputs {
     this._call = call;
   }
 
-  get value0(): BigInt {
-    return this._call.outputValues[0].value.toBigInt();
+  get value0(): Bytes {
+    return this._call.outputValues[0].value.toBytes();
+  }
+}
+
+export class RegisterTransactionCallUtxosStruct extends ethereum.Tuple {
+  get txHash(): Bytes {
+    return this[0].toBytes();
+  }
+
+  get index(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get script(): Bytes {
+    return this[2].toBytes();
+  }
+
+  get amount(): BigInt {
+    return this[3].toBigInt();
   }
 }
 

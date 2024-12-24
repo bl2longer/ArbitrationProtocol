@@ -6,16 +6,16 @@ import { FC, createContext, memo, useCallback, useMemo, useState } from "react";
 // import { WalletIcon, WalletRow } from "./BitcoinWalletChooser.styles";
 import { useOkxWallet } from "@/services/btc/hooks/useOkxWallet";
 import { useUnisatWallet } from "@/services/btc/hooks/useUnisatWallet";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
-import { ModalRootCard } from "../ModalRootCard";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { WalletRow } from "./WalletRow";
 import { WalletIcon } from "./WalletIcon";
+import { DialogProps } from "@radix-ui/react-dialog";
 
 /**
  * Modal to let user choose his bitcoin wallet
  */
-export const BitcoinWalletChooserModal: FC<Omit<typeof Dialog, "children"> & {
+export const BitcoinWalletChooserModal: FC<Omit<DialogProps, "children"> & {
   onHandleClose: () => void;
 }> = (props) => {
   const { onHandleClose, ...rest } = props;
@@ -37,26 +37,30 @@ export const BitcoinWalletChooserModal: FC<Omit<typeof Dialog, "children"> & {
   }, [connectOkx, onHandleClose]);
 
   return (
-    <Dialog {...rest} onOpenChange={isOpen => isOpen && onHandleClose()}>
-      <DialogTrigger>Open</DialogTrigger>
+    <Dialog {...rest} onOpenChange={onHandleClose}>
       <DialogContent>
         {/* Header */}
-        <DialogHeader /* onClose={() => onHandleClose()}  */><>Pick a Bitcoin Wallet</></DialogHeader>
+        <DialogHeader /* onClose={() => onHandleClose()}  */>
+          <DialogTitle>Pick a Bitcoin Wallet</DialogTitle>
+          <DialogDescription>
+            Choose your preferred Bitcoin wallet to connect to the Arbitration Protocol.
+          </DialogDescription>
+        </DialogHeader>
 
         {/* Main form */}
         <div> {/* MainContentStack */}
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-2">
             {isInsideEssentials &&
               <WalletRow onClick={handleConnectUnisat}>
                 <WalletIcon src={EssentialsWallet} />
                 Essentials
               </WalletRow>
             }
-            <WalletRow onClick={handleConnectUnisat} style={{ opacity: (window.unisat ? 1 : 0.3) }}>
+            <WalletRow disabled={!window.unisat} onClick={handleConnectUnisat} style={{ opacity: (window.unisat ? 1 : 0.3) }}>
               <WalletIcon src={UnisatWallet} />
               Unisat Wallet
             </WalletRow>
-            <WalletRow onClick={handleConnectOKX} style={{ opacity: (window.okxwallet ? 1 : 0.3) }}>
+            <WalletRow disabled={!window.okxwallet} onClick={handleConnectOKX} style={{ opacity: (window.okxwallet ? 1 : 0.3) }}>
               <WalletIcon src={OkxWallet} />
               OKX Wallet
             </WalletRow>
@@ -88,7 +92,7 @@ export const BitcoinWalletChooserProvider = memo(({ children }: Web3ProviderProp
   return (
     <BitcoinWalletChooserContext.Provider value={{ promptBitcoinWallet }}>
       {children}
-      {isOpen && <BitcoinWalletChooserModal onHandleClose={() => setIsOpen(false)} />}
+      <BitcoinWalletChooserModal open={isOpen} onHandleClose={() => setIsOpen(false)} />
     </BitcoinWalletChooserContext.Provider>
   );
 });

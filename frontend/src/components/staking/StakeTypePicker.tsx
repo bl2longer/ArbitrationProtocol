@@ -22,8 +22,9 @@ export type StakeType = "coin" | "nft" | "unstake";
 export const StakeTypePicker: FC<{
   canUnstake?: boolean;
   value: StakeType;
+  className?: string;
   onChange: (value: StakeType) => void;
-}> = ({ value, onChange, canUnstake = false }) => {
+}> = ({ value, onChange, canUnstake = false, className }) => {
   const activeChain = useActiveEVMChainConfig();
 
   const stakeTypes: { value: StakeType, label: string }[] = useMemo(() => {
@@ -57,7 +58,7 @@ export const StakeTypePicker: FC<{
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className={cn("w-full justify-between", className)}
         >
           {value
             ? stakeTypes.find((framework) => framework.value === value)?.label

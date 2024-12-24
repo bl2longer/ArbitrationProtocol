@@ -19,6 +19,33 @@
           "type": "bytes"
         },
         {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "txHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "index",
+              "type": "uint32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "script",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct DataTypes.UTXO[]",
+          "name": "utxos",
+          "type": "tuple[]"
+        },
+        {
           "internalType": "bytes",
           "name": "pubKey",
           "type": "bytes"

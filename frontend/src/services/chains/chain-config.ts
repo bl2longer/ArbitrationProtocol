@@ -22,6 +22,7 @@ export type ChainConfig = {
     configManager: string;
     dappRegistry: string;
     transactionManager: string;
+    nftInfo: string;
   },
   // List of supported tokens for deposits
   tokens: TokenOrNative[];

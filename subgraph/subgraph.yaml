@@ -8,8 +8,8 @@ dataSources:
     network: esc-testnet
     source:
       abi: ArbitratorManager
-      address: "0x42FcB0c75D3FE234EFD1d529Cd31c9A8Ab1EB4C6"
-      startBlock: 21033337
+      address: "0xFd3b0FD49df58a465Ac8E62f35d913b27cfc04B3"
+      startBlock: 21099754
     mapping:
       file: ./src/event-handlers/ArbitratorManager.ts
       language: wasm/assemblyscript
@@ -40,6 +40,9 @@ dataSources:
           handler: handleStakeWithdrawn
         - event: OperatorSet(indexed address,indexed address,bytes,string)
           handler: handleOperatorSet
+        - event: ArbitratorRegistered(indexed address,indexed
+            address,address,string,bytes,uint256,uint256)
+          handler: handleArbitratorRegistered
   - name: TransactionManager
     kind: ethereum/contract
     network: esc-testnet
@@ -119,3 +122,24 @@ dataSources:
           handler: handleDAppRegistered
         - event: DAppSuspended(indexed address)
           handler: handleDAppSuspended
+  - name: BPosNFT
+    kind: ethereum/contract
+    network: esc-testnet
+    source:
+      abi: BPosNFT
+      address: "0x6C91352F89b169843D8B50E1A34B60a46e363841"
+      startBlock: 18888206
+    mapping:
+      file: ./src/event-handlers/BPosNFT.ts
+      language: wasm/assemblyscript
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      entities:
+        - Transaction
+        - User
+      abis:
+        - name: BPosNFT
+          file: ./src/abis/ERC721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleNFTTransferred

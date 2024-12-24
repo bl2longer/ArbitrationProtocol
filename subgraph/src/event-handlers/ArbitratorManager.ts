@@ -1,7 +1,21 @@
 import { BigInt, ethereum } from "@graphprotocol/graph-ts";
-import { ArbitratorParamsSet, ArbitratorPaused, ArbitratorStatusChanged, ArbitratorUnpaused, OperatorSet, OwnershipTransferred, RevenueAddressesSet, StakeAdded, StakeWithdrawn } from "../../generated/ArbitratorManager/ArbitratorManager";
+import { ArbitratorParamsSet, ArbitratorPaused, ArbitratorRegistered, ArbitratorStatusChanged, ArbitratorUnpaused, OperatorSet, OwnershipTransferred, RevenueAddressesSet, StakeAdded, StakeWithdrawn } from "../../generated/ArbitratorManager/ArbitratorManager";
 import { ArbitratorInfo } from "../../generated/schema";
 import { ZERO_ADDRESS } from "../constants";
+
+export function handleArbitratorRegistered(event: ArbitratorRegistered): void {
+    const arbitratorAddress = event.params.arbitrator.toHexString();
+    const arbitratorInfo = getArbitratorInfo(event.block, arbitratorAddress);
+
+    arbitratorInfo.status = "Active";
+    arbitratorInfo.operatorEvmAddress = event.params.operator.toHexString();
+    arbitratorInfo.operatorBtcAddress = event.params.btcAddress;
+    arbitratorInfo.operatorBtcPubKey = event.params.btcPubKey.toHexString();
+    arbitratorInfo.currentFeeRate = event.params.feeRate;
+    arbitratorInfo.revenueEvmAddress = event.params.revenueAddress.toHexString();
+
+    arbitratorInfo.save();
+}
 
 export function handleArbitratorStatusChanged(event: ArbitratorStatusChanged): void {
     const arbitratorAddress = event.params.arbitrator.toHexString();
