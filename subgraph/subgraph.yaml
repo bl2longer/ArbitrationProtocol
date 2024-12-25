@@ -16,7 +16,7 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.6
       entities:
-        - ArbitratorInfo
+        - ArbiterInfo
         - User
       abis:
         - name: ArbitratorManager
@@ -128,7 +128,7 @@ dataSources:
     source:
       abi: BPosNFT
       address: "0x6C91352F89b169843D8B50E1A34B60a46e363841"
-      startBlock: 18888206
+      startBlock: 17291352
     mapping:
       file: ./src/event-handlers/BPosNFT.ts
       language: wasm/assemblyscript

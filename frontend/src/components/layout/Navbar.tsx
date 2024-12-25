@@ -1,9 +1,8 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Disclosure } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useEVMContext } from '@/contexts/EVMContext/EVMContext';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
-import { WalletIcon } from '@heroicons/react/24/outline';
+import { Disclosure } from '@headlessui/react';
+import { Bars3Icon, WalletIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '../ui/button';
 
 function classNames(...classes: string[]) {
@@ -16,7 +15,7 @@ export default function Navbar() {
   const location = useLocation();
 
   const navigation = [
-    { name: 'Arbitrators', href: '/' },
+    { name: 'Arbiters', href: '/' },
     { name: 'Transactions', href: '/transactions' },
     { name: 'Compensations', href: '/compensations' },
     { name: 'DApps', href: '/dapps' },
@@ -32,7 +31,7 @@ export default function Navbar() {
               <div className="flex">
                 <div className="flex flex-shrink-0 items-center">
                   <span className="text-xl font-bold text-gray-800">
-                    Arbitrator Portal
+                    Arbiter Portal
                   </span>
                 </div>
                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">

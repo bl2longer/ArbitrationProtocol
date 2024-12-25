@@ -5,7 +5,7 @@ export class Transaction implements TransactionDTO {
   @Expose() public id: string;
   @Expose() public txId: string;
   @Expose() public dapp: string;
-  @Expose() public arbitrator: string;
+  @Expose() public arbiter: string;
   @Expose() public status: string;
   @Expose() public startTime: string;
   @Expose() public deadline: string;

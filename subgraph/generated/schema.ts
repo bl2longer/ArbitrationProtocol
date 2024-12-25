@@ -11,7 +11,7 @@ import {
   BigDecimal,
 } from "@graphprotocol/graph-ts";
 
-export class ArbitratorInfo extends Entity {
+export class ArbiterInfo extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -19,24 +19,24 @@ export class ArbitratorInfo extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save ArbitratorInfo entity without an ID");
+    assert(id != null, "Cannot save ArbiterInfo entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type ArbitratorInfo must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type ArbiterInfo must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("ArbitratorInfo", id.toString(), this);
+      store.set("ArbiterInfo", id.toString(), this);
     }
   }
 
-  static loadInBlock(id: string): ArbitratorInfo | null {
-    return changetype<ArbitratorInfo | null>(
-      store.get_in_block("ArbitratorInfo", id),
+  static loadInBlock(id: string): ArbiterInfo | null {
+    return changetype<ArbiterInfo | null>(
+      store.get_in_block("ArbiterInfo", id),
     );
   }
 
-  static load(id: string): ArbitratorInfo | null {
-    return changetype<ArbitratorInfo | null>(store.get("ArbitratorInfo", id));
+  static load(id: string): ArbiterInfo | null {
+    return changetype<ArbiterInfo | null>(store.get("ArbiterInfo", id));
   }
 
   get id(): string {
@@ -410,8 +410,8 @@ export class Transaction extends Entity {
     }
   }
 
-  get arbitrator(): string | null {
-    let value = this.get("arbitrator");
+  get arbiter(): string | null {
+    let value = this.get("arbiter");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
@@ -419,11 +419,11 @@ export class Transaction extends Entity {
     }
   }
 
-  set arbitrator(value: string | null) {
+  set arbiter(value: string | null) {
     if (!value) {
-      this.unset("arbitrator");
+      this.unset("arbiter");
     } else {
-      this.set("arbitrator", Value.fromString(<string>value));
+      this.set("arbiter", Value.fromString(<string>value));
     }
   }
 
@@ -798,8 +798,8 @@ export class CompensationClaim extends Entity {
     this.set("withdrawn", Value.fromBoolean(value));
   }
 
-  get arbitrator(): string | null {
-    let value = this.get("arbitrator");
+  get arbiter(): string | null {
+    let value = this.get("arbiter");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
@@ -807,11 +807,11 @@ export class CompensationClaim extends Entity {
     }
   }
 
-  set arbitrator(value: string | null) {
+  set arbiter(value: string | null) {
     if (!value) {
-      this.unset("arbitrator");
+      this.unset("arbiter");
     } else {
-      this.set("arbitrator", Value.fromString(<string>value));
+      this.set("arbiter", Value.fromString(<string>value));
     }
   }
 

@@ -1,6 +1,6 @@
 import { BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { ArbitratorParamsSet, ArbitratorPaused, ArbitratorRegistered, ArbitratorStatusChanged, ArbitratorUnpaused, OperatorSet, OwnershipTransferred, RevenueAddressesSet, StakeAdded, StakeWithdrawn } from "../../generated/ArbitratorManager/ArbitratorManager";
-import { ArbitratorInfo } from "../../generated/schema";
+import { ArbiterInfo } from "../../generated/schema";
 import { ZERO_ADDRESS } from "../constants";
 
 export function handleArbitratorRegistered(event: ArbitratorRegistered): void {
@@ -116,13 +116,13 @@ export function handleOperatorSet(event: OperatorSet): void {
 /**
  * Gets the existing arbitrator info if any, otherwise creates a new one.
  */
-function getArbitratorInfo(block: ethereum.Block, arbitratorAddress: string): ArbitratorInfo {
-    let existingArbitrator = ArbitratorInfo.load(arbitratorAddress);
+function getArbitratorInfo(block: ethereum.Block, arbitratorAddress: string): ArbiterInfo {
+    let existingArbitrator = ArbiterInfo.load(arbitratorAddress);
 
     if (existingArbitrator)
         return existingArbitrator;
 
-    const arbitratorInfo = new ArbitratorInfo(arbitratorAddress);
+    const arbitratorInfo = new ArbiterInfo(arbitratorAddress);
     arbitratorInfo.createdAt = block.timestamp;
     arbitratorInfo.address = arbitratorAddress;
     arbitratorInfo.status = "Paused"; // Default state is paused at creation. Owner must set operator, revenue, params info first

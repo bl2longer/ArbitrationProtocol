@@ -4,16 +4,16 @@ import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitle } from '@/components/base/PageTitle';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
 import { Button } from '@/components/ui/button';
-import { useOwnedArbitrator } from '@/services/arbitrators/hooks/useOwnedArbitrator';
+import { useOwnedArbiter } from '@/services/arbiters/hooks/useOwnedArbiter';
 import { Layers2Icon, StarIcon } from 'lucide-react';
 import { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArbitratorPreview } from './ArbitratorPreview';
+import { ArbiterPreview } from './ArbiterPreview';
 import { EditOperatorDialog } from './dialogs/EditOperator';
 import { EditStakingDialog } from './dialogs/EditStaking';
 
-const ArbitratorDashboard: FC = () => {
-  const { ownedArbitrator, isPending } = useOwnedArbitrator();
+const ArbiterDashboard: FC = () => {
+  const { ownedArbiter, isPending } = useOwnedArbiter();
   const navigate = useNavigate();
   const [editOperatorIsOpen, setEditOperatorIsOpen] = useState(false);
   const [editStakingIsOpen, setEditStakingIsOpen] = useState(false);
@@ -21,21 +21,21 @@ const ArbitratorDashboard: FC = () => {
   return (
     <PageContainer>
       <PageTitleRow>
-        <PageTitle>My arbitrator</PageTitle>
+        <PageTitle>My arbiter</PageTitle>
         <div className='flex gap-4'>
           <EnsureWalletNetwork continuesTo=''>
             {
-              ownedArbitrator && <>
+              ownedArbiter && <>
                 <Button onClick={() => setEditStakingIsOpen(true)} disabled={isPending}><Layers2Icon />Edit staking</Button>
               </>
             }
             {
-              ownedArbitrator && <>
+              ownedArbiter && <>
                 <Button onClick={() => setEditOperatorIsOpen(true)} disabled={isPending}><StarIcon />Edit operator</Button>
               </>
             }
             {
-              !isPending && !ownedArbitrator && <Button onClick={() => navigate("/register-arbitrator")}>Register arbitrator</Button>
+              !isPending && !ownedArbiter && <Button onClick={() => navigate("/register-arbiter")}>Register arbiter</Button>
             }
           </EnsureWalletNetwork>
         </div>
@@ -43,16 +43,16 @@ const ArbitratorDashboard: FC = () => {
       {isPending && <Loading />}
       {
         !isPending && <>
-          {ownedArbitrator && <ArbitratorPreview arbitrator={ownedArbitrator} />}
-          {!ownedArbitrator && <div>No arbitrator owned yet</div>}
+          {ownedArbiter && <ArbiterPreview arbiter={ownedArbiter} />}
+          {!ownedArbiter && <div>No arbiter owned yet</div>}
         </>
       }
 
-      {ownedArbitrator && <EditOperatorDialog arbitrator={ownedArbitrator} isOpen={editOperatorIsOpen} onHandleClose={() => setEditOperatorIsOpen(false)} />}
-      {ownedArbitrator && <EditStakingDialog arbiter={ownedArbitrator} isOpen={editStakingIsOpen} onHandleClose={() => setEditStakingIsOpen(false)} />}
+      {ownedArbiter && <EditOperatorDialog arbiter={ownedArbiter} isOpen={editOperatorIsOpen} onHandleClose={() => setEditOperatorIsOpen(false)} />}
+      {ownedArbiter && <EditStakingDialog arbiter={ownedArbiter} isOpen={editStakingIsOpen} onHandleClose={() => setEditStakingIsOpen(false)} />}
     </PageContainer>
   );
 }
 
 
-export default ArbitratorDashboard;
+export default ArbiterDashboard;

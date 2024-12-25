@@ -3,7 +3,7 @@ export interface Transaction {
   id: string;
   txId: string;
   dapp: string;
-  arbitrator: string;
+  arbiter: string;
   startTime: string;
   deadline: string;
   btcTx: string;

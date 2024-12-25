@@ -1,23 +1,23 @@
-import { useState, useMemo, FC } from 'react';
-import { Transaction } from '@/services/transactions/model/transaction';
-import { useTransactions } from '@/services/transactions/hooks/useTransactions';
-import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
-import { PageTitle } from '@/components/base/PageTitle';
-import { SearchInput } from '@/components/base/SearchInput';
 import { Loading } from '@/components/base/Loading';
-import { Button } from '@/components/ui/button';
 import { PageContainer } from '@/components/base/PageContainer';
+import { PageTitle } from '@/components/base/PageTitle';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
-import { RefreshCwIcon } from 'lucide-react';
-import { SubmitArbitrationDialog } from './dialogs/SubmitArbitrationDialog';
-import { formatAddress } from '@/utils/formatAddress';
-import { formatDateWithoutYear } from '@/utils/dates';
+import { SearchInput } from '@/components/base/SearchInput';
 import { StatusLabel } from '@/components/base/StatusLabel';
+import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useTransactions } from '@/services/transactions/hooks/useTransactions';
+import { Transaction } from '@/services/transactions/model/transaction';
+import { formatDateWithoutYear } from '@/utils/dates';
+import { formatAddress } from '@/utils/formatAddress';
+import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
+import { RefreshCwIcon } from 'lucide-react';
+import { FC, useMemo, useState } from 'react';
+import { SubmitArbitrationDialog } from './dialogs/SubmitArbitrationDialog';
 
 const fieldLabels: Partial<Record<keyof Transaction, string>> = {
   dapp: 'DApp',
-  arbitrator: 'Arbitrator',
+  arbiter: 'Arbiter',
   startTime: 'Start Time',
   deadline: 'Deadline',
   btcTx: 'BTC Tx',
@@ -37,7 +37,7 @@ export default function TransactionList() {
       const searchLower = searchTerm.toLowerCase();
       return (
         tx.dapp?.toLowerCase().includes(searchLower) ||
-        tx.arbitrator?.toLowerCase().includes(searchLower) ||
+        tx.arbiter?.toLowerCase().includes(searchLower) ||
         tx.btcTx?.toLowerCase().includes(searchLower)
       );
     });
@@ -103,7 +103,7 @@ const TransactionRow: FC<{
     if (key === 'status')
       return <StatusLabel title={value} color={value === "Completed" ? "green" : "red"} />
 
-    if (key === 'dapp' || key === 'arbitrator')
+    if (key === 'dapp' || key === 'arbiter')
       return formatAddress(value);
 
     if (key === 'btcTx')

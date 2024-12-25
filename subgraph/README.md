@@ -1,4 +1,4 @@
-# Subgraph for the arbitrators contract
+# Subgraph for arbiters contracts
 
 ## Setup a local graph node
 

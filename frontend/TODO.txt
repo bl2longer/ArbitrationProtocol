@@ -1,15 +1,14 @@
 ===> Target release date: dec 30
 
-- Rename Arbitrator to Arbiter everywhere
 - NFT list: compute nft value:
   - 1 vote = 1 ELA, 8 decimals
-- arbitrator list:
+- arbiter list:
   - "created at" date
 - My dashboard:
   - Ability to stake NFT (incl approval)
 - Tooltips:
-  - arbitrator term end
-    - "Date set by the arbitrator, after which he will be able to become inactive and withdraw staked assets. dApps that require longer periods for their proofs validations don't use arbitrators with too short term expirations."
+  - arbiter term end
+    - "Date set by the arbiter, after which he will be able to become inactive and withdraw staked assets. dApps that require longer periods for their proofs validations don't use arbiters with too short term expirations."
 
 - Mobile view: header menu is broken
 

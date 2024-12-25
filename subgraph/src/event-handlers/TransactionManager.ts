@@ -5,7 +5,7 @@ import { Transaction } from "../../generated/schema";
 export function handleTransactionRegistered(event: TransactionRegistered): void {
   const transaction = getTransaction(event.block, event.params.id.toHexString());
   transaction.status = "Active";
-  transaction.arbitrator = event.params.arbitrator.toHexString();
+  transaction.arbiter = event.params.arbitrator.toHexString();
   transaction.save();
 }
 

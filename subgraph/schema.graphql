@@ -1,8 +1,8 @@
-enum ArbitratorStatus {
-    Active     # Arbitrator is available for new transactions
-    Working    # Arbitrator is currently working on a transaction
-    Paused     # Arbitrator is temporarily paused
-    Terminated  # Arbitrator has been terminated
+enum ArbiterStatus {
+    Active     # Arbiter is available for new transactions
+    Working    # Arbiter is currently working on a transaction
+    Paused     # Arbiter is temporarily paused
+    Terminated  # Arbiter has been terminated
 }
 
 enum DAppStatus {
@@ -26,18 +26,18 @@ enum CompensationType {
     IllegalSignature,
     Timeout,
     FailedArbitration,
-    ArbitratorFee
+    ArbiterFee
 }
 
-type ArbitratorInfo @entity {
+type ArbiterInfo @entity {
     id: ID! # required by the graph
-    createdAt: BigInt! # Timestamp, DB side only, not on chain - block time at which the arbitrator info was first found (first event)
-    lastArbitrationTime: BigInt # Timestamp at which this arbitrator term ends
-    address: String! @id # Arbitrator Ethereum address
+    createdAt: BigInt! # Timestamp, DB side only, not on chain - block time at which the arbiter info was first found (first event)
+    lastArbitrationTime: BigInt # Timestamp at which this arbiter term ends
+    address: String! @id # Arbiter Ethereum address
     currentFeeRate: BigInt # Current fee rate
     pendingFeeRate: BigInt # Pending new fee rate
-    status: ArbitratorStatus! # Arbitrator status
-    activeTransactionId: Bytes # ID of the transaction that made the arbitrator "working". 0 address if not working.
+    status: ArbiterStatus! # Arbiter status
+    activeTransactionId: Bytes # ID of the transaction that made the arbiter "working". 0 address if not working.
     ethAmount: BigInt! # Native token stake amount
     erc20Token: String # ERC20 token address
     nftContract: String # NFT contract address
@@ -59,14 +59,14 @@ type Transaction @entity {
     createdAt: BigInt! # Timestamp, DB side only, not on chain - block time at which the transaction was first found (first event)
     txId: String! # Transaction ID, same as ID
     dapp: String # DApp address
-    arbitrator: String
+    arbiter: String
     startTime: BigInt
     deadline: BigInt
     btcTx: Bytes # Unsigned Bitcoin transaction
     btcTxHash: Bytes # Hash of the Bitcoin transaction with empty input scripts
     status: TransactionStatus!
     depositedFee: BigInt
-    signature: Bytes # Arbitrator's signature
+    signature: Bytes # Arbiter's signature
     compensationReceiver: String
     timeoutCompensationReceiver: String
 }
@@ -87,7 +87,7 @@ type CompensationClaim @entity {
     claimer: String
     claimType: CompensationType!
     withdrawn: Boolean!
-    arbitrator: String
+    arbiter: String
     amount: BigInt
     evidence: Bytes
 }

@@ -2,7 +2,7 @@
 export interface CompensationClaim {
   id: string;
   dapp: string;
-  arbitrator: string;
+  arbiter: string;
   ethAmount: string;
   nftContract: string;
   nftTokenIds: string[];

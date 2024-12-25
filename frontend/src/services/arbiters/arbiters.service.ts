@@ -1,21 +1,35 @@
 import { ChainConfig } from '@/services/chains/chain-config';
 import { dtoToClass } from "../class-transformer/class-transformer-utils";
-import { CompensationClaim } from '../compensations/model/compensation-claim';
-import { CompensationClaim as CompensationClaimDTO } from '../subgraph/dto/compensation-claim';
+import { ArbiterInfo as ArbiterInfoDTO } from '../subgraph/dto/arbiter-info';
 import { SubgraphGQLResponse } from '../subgraph/gql-response';
+import { ArbiterInfo } from './model/arbiter-info';
 
-type FetchCompensationsResponse = SubgraphGQLResponse<{
-  compensations: CompensationClaimDTO[];
+type FetchArbitersResponse = SubgraphGQLResponse<{
+  arbiterInfos: ArbiterInfoDTO[];
 }>;
 
+export type FetchArbitersQueryParams = {
+  creatorEvmAddress?: string;
+  operatorEvmAddress?: string
+}
+
 /**
- * Fetch all arbiters from the subgraph.
+ * Fetch all arbiters from the subsgraph.
  */
-export const fetchCompensations = async (chain: ChainConfig, start = 0, limit = 100): Promise<{ compensations: CompensationClaim[], total: number }> => {
+export const fetchArbiters = async (chain: ChainConfig, start = 0, limit = 100, queryParams: FetchArbitersQueryParams = {}): Promise<{ arbiters: ArbiterInfo[], total: number }> => {
+  let whereQuery = "";
+
+  if (queryParams.creatorEvmAddress)
+    whereQuery += ` address: "${queryParams.creatorEvmAddress.toLowerCase()}"`;
+  if (queryParams.operatorEvmAddress)
+    whereQuery += ` operatorEvmAddress: "${queryParams.operatorEvmAddress.toLowerCase()}"`;
+
+  let whereClause: string = !whereQuery ? "" : `where: { ${whereQuery} }`;
+
   try {
     const resultsPerPage = 1000;
     let startAt = 0;
-    let pageCompensations: CompensationClaimDTO[] = [];
+    let pageArbiters: ArbiterInfoDTO[] = [];
     let total = 0;
 
     // eslint-disable-next-line no-constant-condition
@@ -26,6 +40,7 @@ export const fetchCompensations = async (chain: ChainConfig, start = 0, limit = 
           first:${resultsPerPage}
           orderBy: createdAt,
           orderDirection: desc
+          ${whereClause}
         ) { 
           id 
           createdAt 
@@ -48,7 +63,7 @@ export const fetchCompensations = async (chain: ChainConfig, start = 0, limit = 
         headers: new Headers({ 'Content-Type': 'application/json' })
       });
 
-      const gqlResponse: FetchCompensationsResponse = await response.json();
+      const gqlResponse: FetchArbitersResponse = await response.json();
 
       if (gqlResponse.errors?.length > 0) {
         for (const error of gqlResponse.errors)
@@ -56,10 +71,10 @@ export const fetchCompensations = async (chain: ChainConfig, start = 0, limit = 
       }
 
       const data = gqlResponse?.data;
-      pageCompensations.push(...(data?.compensations || []));
-      total += pageCompensations?.length || 0;
+      pageArbiters.push(...(data?.arbiterInfos || []));
+      total += pageArbiters?.length || 0;
 
-      if (pageCompensations.length < resultsPerPage) {
+      if (pageArbiters.length < resultsPerPage) {
         // No more page to fetch
         break;
       }
@@ -67,16 +82,16 @@ export const fetchCompensations = async (chain: ChainConfig, start = 0, limit = 
       startAt += resultsPerPage;
     }
 
-    const compensations = pageCompensations.slice(start, start + limit);
+    const arbiterInfos = pageArbiters.slice(start, start + limit);
 
-    console.log("Fetched compensations:", compensations);
+    console.log("Fetched arbiterss", arbiterInfos);
 
     return {
-      compensations: compensations.map(c => dtoToClass(c, CompensationClaim)),
+      arbiters: arbiterInfos.map(a => dtoToClass(a, ArbiterInfo)),
       total
     };
   } catch (error) {
-    console.error("Error fetching compensations:", error);
+    console.error("Error fetching arbiters:", error);
     return undefined;
   }
 }
