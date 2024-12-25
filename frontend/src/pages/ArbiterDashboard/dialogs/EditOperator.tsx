@@ -4,22 +4,14 @@ import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/
 import { Input } from "@/components/ui/input";
 import { useArbiterOperatorUpdate } from "@/services/arbiters/hooks/contract/useArbiterOperatorUpdate";
 import { ArbiterInfo } from "@/services/arbiters/model/arbiter-info";
+import { isValidBitcoinAddress, isValidBitcoinPublicKey } from "@/services/btc/btc";
 import { useResetFormOnOpen } from "@/services/ui/hooks/useResetFormOnOpen";
 import { useToasts } from "@/services/ui/hooks/useToasts";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FC, useCallback } from "react";
+import { FC, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { isAddress } from "viem";
 import { z } from "zod";
-
-const formSchema = z.object({
-  operatorEVMAddress: z.string().refine(
-    (value) => isAddress(value),
-    "Not a valid EVM address"
-  ),
-  operatorBTCAddress: z.string(),
-  operatorBTCPubKey: z.string()
-});
 
 export const EditOperatorDialog: FC<{
   arbiter: ArbiterInfo;
@@ -28,6 +20,12 @@ export const EditOperatorDialog: FC<{
 }> = ({ arbiter, isOpen, onHandleClose, ...rest }) => {
   const { isPending, updateOperatorInfo } = useArbiterOperatorUpdate();
   const { successToast } = useToasts();
+
+  const formSchema = useMemo(() => z.object({
+    operatorEVMAddress: z.string().refine((value) => isAddress(value), "Not a valid EVM address"),
+    operatorBTCAddress: z.string().refine(isValidBitcoinAddress, "Not a valid Bitcoin address"),
+    operatorBTCPubKey: z.string().refine(isValidBitcoinPublicKey, "Not a valid Bitcoin public key"),
+  }), []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

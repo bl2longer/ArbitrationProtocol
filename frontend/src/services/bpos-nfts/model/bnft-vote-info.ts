@@ -17,6 +17,7 @@ export class BNFTVoteInfo implements BNFTVoteInfoDTO {
    * Returns the native coin value of the NFT based on the number of votes.
    */
   public getCoinValue(): number {
-    return 1;
+    // NOTE: for now, we're assuming 8 decimals only
+    return Number(this.infos.reduce((acc, info) => acc + info.votes, 0n) / 8000000n);
   }
 }

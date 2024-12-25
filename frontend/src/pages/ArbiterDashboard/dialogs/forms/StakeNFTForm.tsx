@@ -13,18 +13,16 @@ export const StakeNFTForm: FC<{
   }, [form]);
 
   return (
-    <>
-      <FormField
-        control={form.control}
-        name="tokenIds"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>NFTs to stake</FormLabel>
-            <BPosNFTSelector onSelectionChanged={handleNFTSelectionChanged} />
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </>
+    <FormField
+      control={form.control}
+      name="tokenIds"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>NFTs to stake</FormLabel>
+          <BPosNFTSelector onSelectionChanged={handleNFTSelectionChanged} />
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   )
 }

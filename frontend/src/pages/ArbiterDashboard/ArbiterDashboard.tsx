@@ -5,7 +5,7 @@ import { PageTitle } from '@/components/base/PageTitle';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
 import { Button } from '@/components/ui/button';
 import { useOwnedArbiter } from '@/services/arbiters/hooks/useOwnedArbiter';
-import { Layers2Icon, StarIcon } from 'lucide-react';
+import { Layers2Icon, RefreshCwIcon, StarIcon } from 'lucide-react';
 import { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArbiterPreview } from './ArbiterPreview';
@@ -13,7 +13,7 @@ import { EditOperatorDialog } from './dialogs/EditOperator';
 import { EditStakingDialog } from './dialogs/EditStaking';
 
 const ArbiterDashboard: FC = () => {
-  const { ownedArbiter, isPending } = useOwnedArbiter();
+  const { fetchOwnedArbiter, ownedArbiter, isPending } = useOwnedArbiter();
   const navigate = useNavigate();
   const [editOperatorIsOpen, setEditOperatorIsOpen] = useState(false);
   const [editStakingIsOpen, setEditStakingIsOpen] = useState(false);
@@ -23,6 +23,9 @@ const ArbiterDashboard: FC = () => {
       <PageTitleRow>
         <PageTitle>My arbiter</PageTitle>
         <div className='flex gap-4'>
+          <Button variant="outline" size="icon" onClick={fetchOwnedArbiter}>
+            <RefreshCwIcon />
+          </Button>
           <EnsureWalletNetwork continuesTo=''>
             {
               ownedArbiter && <>

@@ -12,7 +12,11 @@ export const useArbiterOperatorUpdate = () => {
       contractAddress: activeChain?.contracts.arbitratorManager,
       abi,
       functionName: 'setOperator',
-      args: [evmAddress, btcPubKey, btcAddress]
+      args: [
+        evmAddress,
+        `0x${btcPubKey}`,
+        btcAddress
+      ]
     });
 
     console.log("Update operator result:", hash, receipt)

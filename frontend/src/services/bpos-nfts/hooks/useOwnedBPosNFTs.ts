@@ -21,7 +21,7 @@ export const useOwnedBPosNFTs = () => {
     state$.next({ isPending: true, wasFetched: false });
     if (activeChain && evmAccount) {
       // TMP HARDCODED ADDRESS
-      const { bposNfts } = await fetchBPosNfts(activeChain, 0, 100, { ownerAddress: "0x0ad689150eb4a3c541b7a37e6c69c1510bcb27a4" /* evmAccount */ });
+      const { bposNfts } = await fetchBPosNfts(activeChain, 0, 100, { ownerAddress: evmAccount });
       state$.next({ ownedBPosNFTs: bposNfts, isPending: false, wasFetched: true });
     } else {
       state$.next({ ownedBPosNFTs: [], isPending: false, wasFetched: true });
@@ -33,6 +33,12 @@ export const useOwnedBPosNFTs = () => {
     if (!state.wasFetched && !state.isPending)
       void fetchOwnedBPosNFTs();
   }, [fetchOwnedBPosNFTs, state]);
+
+  // Reset when chain of wallet changes
+  useEffect(() => {
+    state$.next({ isPending: false, wasFetched: false, ownedBPosNFTs: undefined });
+    void fetchOwnedBPosNFTs();
+  }, [activeChain, evmAccount, fetchOwnedBPosNFTs]);
 
   return { fetchOwnedBPosNFTs, ...state };
 };

@@ -1,14 +1,14 @@
 ===> Target release date: dec 30
 
-- NFT list: compute nft value:
-  - 1 vote = 1 ELA, 8 decimals
-- arbiter list:
-  - "created at" date
 - My dashboard:
   - Ability to stake NFT (incl approval)
+  - Withdraw stake: show current stake (coin, NFTs)
+  - Edit fee rate and term end
 - Tooltips:
   - arbiter term end
     - "Date set by the arbiter, after which he will be able to become inactive and withdraw staked assets. dApps that require longer periods for their proofs validations don't use arbiters with too short term expirations."
+- Transaction list:
+  - Submit arbitration dialog is broken + styling
 
 - Mobile view: header menu is broken
 

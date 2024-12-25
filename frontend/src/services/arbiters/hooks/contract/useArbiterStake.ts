@@ -25,5 +25,20 @@ export const useArbiterStake = () => {
     return !!receipt;
   }, [activeChain, writeContract]);
 
-  return { stakeETH, isPending, isSuccess, error };
+  /**
+   * Stakes NFTs
+   */
+  const stakeNFT = useCallback(async (tokenIds: string[]): Promise<boolean> => {
+    const { hash, receipt } = await writeContract({
+      contractAddress: activeChain?.contracts.arbitratorManager,
+      abi,
+      functionName: 'stakeNFT',
+      args: [tokenIds]
+    });
+
+    console.log("StakeNFT result:", hash, receipt)
+    return !!receipt;
+  }, [activeChain, writeContract]);
+
+  return { stakeETH, stakeNFT, isPending, isSuccess, error };
 };
