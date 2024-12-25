@@ -1,23 +1,21 @@
 ===> Target release date: dec 30
 
+- Rename Arbitrator to Arbiter everywhere
 - NFT list: compute nft value:
   - 1 vote = 1 ELA, 8 decimals
-- NFT staking: approve ERC721 transfer to the [ArbitratorManager] before trying to register or stake
-
 - arbitrator list:
-  - list view: show a operator column (evm, btc addr, btc pub key), possibly foldable
-  - grid view: group operator values together
-- arbitrator staking component:
-  - Stake NFT
+  - "created at" date
+- My dashboard:
+  - Ability to stake NFT (incl approval)
 - Tooltips:
   - arbitrator term end
     - "Date set by the arbitrator, after which he will be able to become inactive and withdraw staked assets. dApps that require longer periods for their proofs validations don't use arbitrators with too short term expirations."
 
 - Mobile view: header menu is broken
-- bug: register arbitrator, operator seems null, and dashboard shows nothing
 
 P2:
-- Natice coin stake: show current ELA balance
+- unregister dapp: from dapps list of from my dashboard?
+- Native coin stake: show current ELA balance
 - Handle subgraph api errors, forward to hooks and pages
 - Finish to replace headless UI components with https://ui.shadcn.com/
 - register dapp: intro about what a dapp is

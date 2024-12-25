@@ -10,7 +10,7 @@ export function handleArbitratorRegistered(event: ArbitratorRegistered): void {
     arbitratorInfo.status = "Active";
     arbitratorInfo.operatorEvmAddress = event.params.operator.toHexString();
     arbitratorInfo.operatorBtcAddress = event.params.btcAddress;
-    arbitratorInfo.operatorBtcPubKey = event.params.btcPubKey.toHexString();
+    arbitratorInfo.operatorBtcPubKey = event.params.btcPubKey.toHexString().slice(2);
     arbitratorInfo.currentFeeRate = event.params.feeRate;
     arbitratorInfo.revenueEvmAddress = event.params.revenueAddress.toHexString();
 
@@ -108,7 +108,7 @@ export function handleOperatorSet(event: OperatorSet): void {
     const arbitratorInfo = getArbitratorInfo(event.block, arbitratorAddress);
     arbitratorInfo.operatorEvmAddress = event.params.operator.toHexString();
     arbitratorInfo.operatorBtcAddress = event.params.btcAddress;
-    arbitratorInfo.operatorBtcPubKey = event.params.btcPubKey.toHexString();
+    arbitratorInfo.operatorBtcPubKey = event.params.btcPubKey.toHexString().slice(2);
 
     arbitratorInfo.save();
 }

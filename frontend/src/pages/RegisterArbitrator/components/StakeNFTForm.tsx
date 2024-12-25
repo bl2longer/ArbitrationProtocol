@@ -16,10 +16,12 @@ import { ArbitratorInfo } from '@/services/arbitrators/model/arbitrator-info';
 import { useConfigManager } from '@/services/config-manager/hooks/useConfigManager';
 import { useOwnedBPosNFTs } from '@/services/bpos-nfts/hooks/useOwnedBPosNFTs';
 import { BPosNFTSelector } from '@/components/staking/BPosNFTSelector';
+import { useERC721CheckApproval } from '@/services/erc721/hooks/useERC721CheckApproval';
 
 export const StakeNFTForm: FC<{
   form: UseFormReturn<{ tokenIds?: string[] }>;
 }> = ({ form }) => {
+  const activeChain = useActiveEVMChainConfig();
   const { configSettings } = useConfigManager();
   const { ownedBPosNFTs } = useOwnedBPosNFTs();
 

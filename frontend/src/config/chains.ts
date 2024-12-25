@@ -28,7 +28,8 @@ const escMainnet: ChainConfig = {
     configManager: "",
     dappRegistry: "",
     transactionManager: "",
-    nftInfo: ""
+    nftInfo: "",
+    bPoSNFT: ""
   },
   tokens: [
     escBtcToken,
@@ -58,7 +59,8 @@ const escTestnet: ChainConfig = {
     compensationManager: "0x7c31A7185660d5c40B1A02D60dbcCfd221d40787",
     dappRegistry: "0xC9B498e769e1A7670f747beBB3A3b5172DD122D1",
     transactionManager: "0xD206be45b53Fa5C2065049c7a70B1aa1755a9475",
-    nftInfo: "0x3fB20197AD095724662bF0AD499F3994bfD222D3"
+    nftInfo: "0x3fB20197AD095724662bF0AD499F3994bfD222D3",
+    bPoSNFT: "0x6C91352F89b169843D8B50E1A34B60a46e363841"
   },
   tokens: [
     escTestnetBtcToken,

@@ -30,7 +30,7 @@ enum CompensationType {
 }
 
 type ArbitratorInfo @entity {
-    id: ID! # required by thegraph
+    id: ID! # required by the graph
     createdAt: BigInt! # Timestamp, DB side only, not on chain - block time at which the arbitrator info was first found (first event)
     lastArbitrationTime: BigInt # Timestamp at which this arbitrator term ends
     address: String! @id # Arbitrator Ethereum address
@@ -55,7 +55,7 @@ type ArbitratorInfo @entity {
 }
 
 type Transaction @entity {
-    id: ID! # required by thegraph
+    id: ID! # required by the graph
     createdAt: BigInt! # Timestamp, DB side only, not on chain - block time at which the transaction was first found (first event)
     txId: String! # Transaction ID, same as ID
     dapp: String # DApp address

@@ -33,5 +33,11 @@ export const useOwnedArbitrator = () => {
       void fetchOwnedArbitrator();
   }, [fetchOwnedArbitrator, state]);
 
+  // Reset when chain of wallet changes
+  useEffect(() => {
+    state$.next({ isPending: false, wasFetched: false, ownedArbitrator: undefined });
+    void fetchOwnedArbitrator();
+  }, [activeChain, evmAccount, fetchOwnedArbitrator]);
+
   return { fetchOwnedArbitrator, ...state };
 };

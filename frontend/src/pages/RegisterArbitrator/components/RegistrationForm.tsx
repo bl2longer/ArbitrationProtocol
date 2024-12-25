@@ -8,10 +8,8 @@ import { Button } from '@/components/ui/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useActiveEVMChainConfig } from '@/services/chains/hooks/useActiveEVMChainConfig';
-import { useArbitratorStake } from '@/services/arbitrators/hooks/contract/useArbitratorStake';
 import { useToasts } from '@/services/ui/hooks/useToasts';
-import { useFormAction, useNavigate } from 'react-router-dom';
-import { ArbitratorInfo } from '@/services/arbitrators/model/arbitrator-info';
+import { useNavigate } from 'react-router-dom';
 import { useConfigManager } from '@/services/config-manager/hooks/useConfigManager';
 import { StakeNFTForm } from './StakeNFTForm';
 import { StakeCoinForm } from './StakeCoinForm';
@@ -27,10 +25,14 @@ import { IconTooltip } from '@/components/base/IconTooltip';
 import { BoxTitle } from '@/components/base/BoxTitle';
 import { useBitcoinWalletAction } from '@/services/btc/hooks/useBitcoinWalletAction';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
+import { useERC721CheckApproval } from '@/services/erc721/hooks/useERC721CheckApproval';
+import { useInterval } from 'usehooks-ts';
+import { useERC721Approve } from '@/services/erc721/hooks/useERC721Approve';
 
 export const RegistrationForm: FC<{
   onOperationComplete?: () => void; // A chain operation has just completed (stake, unstake...)
 }> = ({ onOperationComplete }) => {
+  const activeChain = useActiveEVMChainConfig();
   const [stakeType, setStakeType] = useState<StakeType>("coin");
   const { successToast } = useToasts();
   const navigate = useNavigate();
@@ -38,6 +40,10 @@ export const RegistrationForm: FC<{
   const { registerArbitratorByStakeETH, registerArbitratorByStakeNFT, isPending: isRegistering } = useArbitratorRegister();
   const { bitcoinAccount } = useWalletContext();
   const { getPublicKey } = useBitcoinWalletAction();
+  const { checkApproved, isApproved: nftTransferIsApproved, isPending: isCheckingTransferApproval } = useERC721CheckApproval(activeChain?.contracts.bPoSNFT, activeChain?.contracts.arbitratorManager);
+  const { approveNFTTransfer, isPending: isApprovingTokenTransfer } = useERC721Approve(activeChain?.contracts.bPoSNFT, activeChain?.contracts.arbitratorManager);
+
+  useInterval(checkApproved, 3000);
 
   const baseSchema = z.object({
     operatorBTCAddress: z.string().refine(isValidBitcoinAddress, "Not a valid Bitcoin address"),
@@ -52,7 +58,7 @@ export const RegistrationForm: FC<{
   });
 
   const nftSchemaExtension = z.object({
-    tokenIds: z.array(z.string()).min(1, "Select at least one NFT"),
+    tokenIds: z.array(z.string()).min(1, "Select at least one NFT")
   });
 
   const formSchema = useMemo(() => {
@@ -130,6 +136,11 @@ export const RegistrationForm: FC<{
     // Revalidate the form
     void form.trigger();
   }, [bitcoinAccount, getPublicKey, form]);
+
+  const handleApproveNFTTransfer = useCallback(async () => {
+    await approveNFTTransfer();
+    void checkApproved();
+  }, [approveNFTTransfer, checkApproved]);
 
   return (
     <Form {...form}>
@@ -253,7 +264,16 @@ export const RegistrationForm: FC<{
         </div>
 
         <div className="mt-6 flex justify-end space-x-3">
-          <EnsureWalletNetwork continuesTo='Register'>
+          {nftTransferIsApproved === false && stakeType === "nft" && <EnsureWalletNetwork continuesTo='Approve NFT Transfer'>
+            <Button
+              type="button"
+              onClick={handleApproveNFTTransfer}
+              disabled={isApprovingTokenTransfer}>
+              Approve NFT Transfer
+            </Button>
+          </EnsureWalletNetwork>
+          }
+          {(nftTransferIsApproved === true || stakeType !== "nft") && <EnsureWalletNetwork continuesTo='Register'>
             <Button
               type="submit"
               disabled={!configSettings || isRegistering}
@@ -261,6 +281,7 @@ export const RegistrationForm: FC<{
               Register
             </Button>
           </EnsureWalletNetwork>
+          }
         </div>
       </form>
     </Form>

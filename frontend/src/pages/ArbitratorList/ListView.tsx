@@ -6,6 +6,9 @@ import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMCha
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatAddress } from "@/utils/formatAddress";
 import { StatusLabel } from "@/components/base/StatusLabel";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Button } from "@/components/ui/button";
+import { ChevronsUpDown } from "lucide-react";
 
 export const ListView: FC<{
   arbitrators: ArbitratorInfo[];
@@ -31,6 +34,7 @@ export const ListView: FC<{
               {getSortIcon('address')}
             </div>
           </TableHead>
+          <TableHead scope="col">Operator</TableHead>
           <TableHead scope="col" className="cursor-pointer" onClick={() => handleSort('currentFeeRate')}>
             <div className="flex items-center space-x-1">
               <span>Fee Rate</span>
@@ -43,9 +47,7 @@ export const ListView: FC<{
               {getSortIcon('stake')}
             </div>
           </TableHead>
-          <TableHead scope="col">
-            Status
-          </TableHead>
+          <TableHead scope="col">Status</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -54,6 +56,7 @@ export const ListView: FC<{
             <TableCell className="whitespace-nowrap font-mono text-sm">
               {formatAddress(arbitrator.address)}
             </TableCell>
+            <TableCell><OperatorInfo arbitrator={arbitrator} /></TableCell>
             <TableCell className="whitespace-nowrap">
               <div className="text-sm">{Number(arbitrator.currentFeeRate) / 100}%</div>
             </TableCell>
@@ -72,3 +75,29 @@ export const ListView: FC<{
     </Table>
   </div>
 };
+
+const OperatorInfo: FC<{ arbitrator: ArbitratorInfo }> = ({ arbitrator }) => {
+  return (
+    <Collapsible className="w-full">
+      <CollapsibleTrigger className="w-72">
+        <div className="flex justify-between items-center w-full">
+          <span className="text-gray-600">EVM Address</span>
+          <div className="flex items-center">
+            <span className="font-mono">{formatAddress(arbitrator.operatorEvmAddress)}</span>
+            <Button variant="ghost" className="-mr-6" size="sm"><ChevronsUpDown className="h-3 w-3" /></Button>
+          </div>
+        </div>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="pr-4 w-72">
+        <div className="flex justify-between items-center">
+          <span className="text-gray-600">BTC Address</span>
+          <span className="font-mono">{formatAddress(arbitrator.operatorBtcAddress)}</span>
+        </div>
+        <div className="flex justify-between items-center mt-1">
+          <span className="text-gray-600">BTC Pub Key</span>
+          <span className="font-mono">{formatAddress(arbitrator.operatorBtcPubKey)}</span>
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  )
+}
