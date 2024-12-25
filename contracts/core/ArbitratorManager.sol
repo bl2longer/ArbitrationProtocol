@@ -148,12 +148,8 @@ contract ArbitratorManager is
         uint256 deadline
     ) external payable override {
         _validateInputs(operator, revenueAddress, btcAddress, btcPubKey, feeRate, deadline);
-        // Check total stake is within limits
-        uint256 minStake = configManager.getConfig(configManager.MIN_STAKE());
-        uint256 maxStake = configManager.getConfig(configManager.MAX_STAKE());
 
-        if (msg.value < minStake) revert(Errors.INSUFFICIENT_STAKE);
-        if (msg.value > maxStake) revert(Errors.STAKE_EXCEEDS_MAX);
+        _validateStakeAmount(msg.value, 0);
 
         // Create a new arbitrator info struct
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
@@ -225,7 +221,7 @@ contract ArbitratorManager is
         _transferAndStoreNFTs(arbitrator, tokenIds);
 
         // Validate total stake
-        _validateStakeAmount(arbitrator, totalNftValue);
+        _validateStakeAmount(arbitrator.ethAmount, totalNftValue);
 
         // Set or validate NFT contract
         _setOrValidateNFTContract(arbitrator);
@@ -258,14 +254,9 @@ contract ArbitratorManager is
         // Update ETH amount and calculate total stake
         uint256 newEthAmount = arbitrator.ethAmount + msg.value;
         arbitrator.ethAmount = newEthAmount;
-        uint256 totalStakeValue = newEthAmount + totalNftValue;
+ 
+        _validateStakeAmount(newEthAmount, totalNftValue);
 
-        // Check total stake is within limits
-        uint256 minStake = configManager.getConfig(configManager.MIN_STAKE());
-        uint256 maxStake = configManager.getConfig(configManager.MAX_STAKE());
-        
-        if (totalStakeValue < minStake) revert(Errors.INSUFFICIENT_STAKE);
-        if (totalStakeValue > maxStake) revert(Errors.STAKE_EXCEEDS_MAX);
         emit StakeAdded(arbitrator.arbitrator, address(0), msg.value,new uint256[](0));
     }
 
@@ -290,7 +281,7 @@ contract ArbitratorManager is
         _transferAndStoreNFTs(arbitrator, tokenIds);
 
         // Validate total stake
-        _validateStakeAmount(arbitrator, totalNftValue);
+        _validateStakeAmount(arbitrator.ethAmount, totalNftValue);
 
         // Set or validate NFT contract
         _setOrValidateNFTContract(arbitrator);
@@ -331,14 +322,14 @@ contract ArbitratorManager is
 
     /**
      * @dev Validate total stake amount
-     * @param arbitrator Arbitrator storage reference
+     * @param ethAmount Arbitrator's ethAmount
      * @param totalNftValue Total value of NFTs being staked
      */
     function _validateStakeAmount(
-        DataTypes.ArbitratorInfo storage arbitrator, 
+        uint256 ethAmount, 
         uint256 totalNftValue
     ) internal view {
-        uint256 totalStakeValue = arbitrator.ethAmount + totalNftValue;
+        uint256 totalStakeValue = ethAmount + totalNftValue;
         uint256 minStake = configManager.getConfig(configManager.MIN_STAKE());
         uint256 maxStake = configManager.getConfig(configManager.MAX_STAKE());
         
