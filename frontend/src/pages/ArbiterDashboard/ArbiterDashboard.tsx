@@ -5,16 +5,18 @@ import { PageTitle } from '@/components/base/PageTitle';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
 import { Button } from '@/components/ui/button';
 import { useOwnedArbiter } from '@/services/arbiters/hooks/useOwnedArbiter';
-import { Layers2Icon, RefreshCwIcon, StarIcon } from 'lucide-react';
+import { Layers2Icon, RefreshCwIcon, SettingsIcon, StarIcon } from 'lucide-react';
 import { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArbiterPreview } from './ArbiterPreview';
 import { EditOperatorDialog } from './dialogs/EditOperator';
+import { EditSettingsDialog } from './dialogs/EditSettings';
 import { EditStakingDialog } from './dialogs/EditStaking';
 
 const ArbiterDashboard: FC = () => {
   const { fetchOwnedArbiter, ownedArbiter, isPending } = useOwnedArbiter();
   const navigate = useNavigate();
+  const [editSettingsIsOpen, setEditSettingsIsOpen] = useState(false);
   const [editOperatorIsOpen, setEditOperatorIsOpen] = useState(false);
   const [editStakingIsOpen, setEditStakingIsOpen] = useState(false);
 
@@ -27,6 +29,11 @@ const ArbiterDashboard: FC = () => {
             <RefreshCwIcon />
           </Button>
           <EnsureWalletNetwork continuesTo=''>
+            {
+              ownedArbiter && <>
+                <Button onClick={() => setEditSettingsIsOpen(true)} disabled={isPending}><SettingsIcon />Edit settings</Button>
+              </>
+            }
             {
               ownedArbiter && <>
                 <Button onClick={() => setEditStakingIsOpen(true)} disabled={isPending}><Layers2Icon />Edit staking</Button>
@@ -51,6 +58,7 @@ const ArbiterDashboard: FC = () => {
         </>
       }
 
+      {ownedArbiter && <EditSettingsDialog arbiter={ownedArbiter} isOpen={editSettingsIsOpen} onHandleClose={() => setEditSettingsIsOpen(false)} />}
       {ownedArbiter && <EditOperatorDialog arbiter={ownedArbiter} isOpen={editOperatorIsOpen} onHandleClose={() => setEditOperatorIsOpen(false)} />}
       {ownedArbiter && <EditStakingDialog arbiter={ownedArbiter} isOpen={editStakingIsOpen} onHandleClose={() => setEditStakingIsOpen(false)} />}
     </PageContainer>

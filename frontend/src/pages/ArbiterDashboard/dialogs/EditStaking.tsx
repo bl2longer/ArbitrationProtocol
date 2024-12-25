@@ -116,7 +116,7 @@ export const EditStakingDialog: FC<{
     } catch (error) {
       console.error('Error during arbiter registration:', error);
     }
-  }, [stakeETH, stakeNFT, unstake, stakeType, successToast]);
+  }, [stakeType, stakeETH, successToast, onHandleClose, stakeNFT, unstake]);
 
   const actionButtonLabel = useMemo(() => {
     switch (stakeType) {

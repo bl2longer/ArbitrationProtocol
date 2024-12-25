@@ -104,7 +104,7 @@ const TransactionRow: FC<{
       return <StatusLabel title={value} color={value === "Completed" ? "green" : "red"} />
 
     if (key === 'dapp' || key === 'arbiter')
-      return formatAddress(value);
+      return value ? formatAddress(value) : "Not set";
 
     if (key === 'btcTx')
       return formatAddress(value) || "Not set";

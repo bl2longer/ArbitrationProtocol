@@ -24,6 +24,10 @@ export const ArbiterPreview: FC<{
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow divide-y">
         <InfoRow title="Address" value={arbiter.address} />
+        <InfoRow title="Status" value={<StatusLabel
+          title={arbiter.isPaused() ? 'Paused' : 'Active'}
+          color={arbiter.isPaused() ? 'red' : 'green'}
+        />} />
         <InfoRow title="Fee Rate" value={`${Number(arbiter.currentFeeRate) / 100}%`} />
         <InfoRow title="Term End" value={termEnd ? formatDateWithoutYear(termEnd) : "Not set"} />
         <InfoRow title="Operator EVM Address" value={arbiter.operatorEvmAddress || "Not set"} />
@@ -33,10 +37,6 @@ export const ArbiterPreview: FC<{
         <InfoRow title="Revenue EVM Address" value={arbiter.revenueEvmAddress || "Not set"} />
         <InfoRow title="Revenue BTC Address" value={arbiter.revenueBtcAddress || "Not set"} />
         <InfoRow title="Revenue BTC Public Key" value={arbiter.revenueBtcPubKey || "Not set"} />
-        <InfoRow title="Status" value={<StatusLabel
-          title={arbiter.isPaused() ? 'Paused' : 'Active'}
-          color={arbiter.isPaused() ? 'red' : 'green'}
-        />} />
       </div>
     </div >
   )

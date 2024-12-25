@@ -25,7 +25,7 @@ export const useNFTInfo = (tokenId: string) => {
 
     const convertedNftInfo: BNFTVoteInfo = dtoToClass(contractInfoResult[1], BNFTVoteInfo);
 
-    console.log("nft Info", contractInfoResult, convertedNftInfo);
+    console.log("nft Info for token id", tokenId, ":", contractInfoResult, convertedNftInfo);
 
     setNFTInfo(convertedNftInfo);
     return contractInfoResult;

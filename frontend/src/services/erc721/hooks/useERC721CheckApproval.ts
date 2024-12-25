@@ -14,6 +14,11 @@ export const useERC721CheckApproval = (nftContractAddress: string, operator: str
   const [isApproved, setIsApproved] = useState<boolean>(undefined);
 
   const checkApproved = useCallback(async () => {
+    if (!operator || operator === "") {
+      setIsApproved(false);
+      return;
+    }
+
     const approved: boolean = await readContract({
       contractAddress: nftContractAddress,
       abi,

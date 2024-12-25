@@ -1,3 +1,4 @@
+import { tokenToReadableValue } from "@/services/tokens/tokens";
 import { Expose } from "class-transformer";
 import { BNFTVoteInfo as BNFTVoteInfoDTO, VotesWithLockTime as VotesWithLockTimeDTO } from "../dto/nft-info";
 
@@ -18,6 +19,6 @@ export class BNFTVoteInfo implements BNFTVoteInfoDTO {
    */
   public getCoinValue(): number {
     // NOTE: for now, we're assuming 8 decimals only
-    return Number(this.infos.reduce((acc, info) => acc + info.votes, 0n) / 8000000n);
+    return tokenToReadableValue(Number(this.infos.reduce((acc, info) => acc + info.votes, 0n)), 8).toNumber();
   }
 }

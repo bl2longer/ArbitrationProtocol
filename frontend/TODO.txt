@@ -1,12 +1,12 @@
 ===> Target release date: dec 30
 
 - My dashboard:
-  - Ability to stake NFT (incl approval)
   - Withdraw stake: show current stake (coin, NFTs)
-  - Edit fee rate and term end
+    - need subgraph to save nft info
+      - need contract events to return staked token ids
+  - Ability to stake NFT (incl approval)
 - Tooltips:
   - arbiter term end
-    - "Date set by the arbiter, after which he will be able to become inactive and withdraw staked assets. dApps that require longer periods for their proofs validations don't use arbiters with too short term expirations."
 - Transaction list:
   - Submit arbitration dialog is broken + styling
 

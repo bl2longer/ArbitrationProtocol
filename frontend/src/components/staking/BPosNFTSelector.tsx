@@ -5,6 +5,7 @@ import { formatAddress } from "@/utils/formatAddress";
 import { FC, useState } from "react";
 import { Checkbox } from "../ui/checkbox";
 import { FormLabel } from "../ui/form";
+import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
 
 export const BPosNFTSelector: FC<{
   onSelectionChanged: (selectedNFTs: BPosNFT[]) => void;
@@ -37,6 +38,7 @@ const BPosNFTEntry: FC<{
   nft: BPosNFT;
   onSelectionChanged: (selected: boolean) => void;
 }> = ({ nft, onSelectionChanged }) => {
+  const activeChain = useActiveEVMChainConfig();
   const { nftInfo, isPending, isSuccess } = useNFTInfo(nft.tokenId);
 
   return <div className="flex flex-row items-center gap-2 my-2">
@@ -44,7 +46,7 @@ const BPosNFTEntry: FC<{
     <div className="flex flex-col">
       <label htmlFor={nft.id} className="text-xs">
         BPoS NFT #{formatAddress(nft.tokenId, [8, 8])}
-        {!isPending && <span className="text-primary"> {nftInfo?.getCoinValue()} votes</span>}
+        {!isPending && <span className="text-primary"> {nftInfo?.getCoinValue()} {activeChain.nativeCurrency.symbol} votes</span>}
       </label>
     </div>
   </div>
