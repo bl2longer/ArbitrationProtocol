@@ -85,6 +85,7 @@ library Errors {
     string constant SIGNATURE_ALREADY_SUBMITTED = "Signature already submitted";
     string constant SIGNATURE_NOT_SUBMITTED = "Signature not submitted";
     string constant SIGNATURE_MISMATCH = "Signature mismatch";
+    string constant SIGNATURE_VERIFIED = "Signature verified";
     string constant STILL_IN_FROZEN_PERIOD = "Still in frozen period";
     string constant NO_FEE_AVAILABLE = "No fee available";
     string constant COMPENSATION_WITHDRAWN = "Compensation withdrawn";
@@ -96,4 +97,5 @@ library Errors {
     string constant CANNOT_CLAIM_ARBITRATOR_FEE = "cannot claim arbitrator fee";
     string constant NO_ACTIVE_TRANSACTION = "No active transaction";
     string constant INVALID_VERIFICATION_DATA = "Invalid verification data";
+    string constant COMPENSATION_ALREADY_CLAIMED = "Compensation already claimed";
 }
