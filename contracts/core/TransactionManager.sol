@@ -369,6 +369,12 @@ contract TransactionManager is
         bytes32 id
     ) external override onlyCompensationManager returns (uint256 arbitratorFee, uint256 systemFee) {
         DataTypes.Transaction storage transaction = transactions[id];
+        if (transaction.status != DataTypes.TransactionStatus.Submitted) {
+            revert(Errors.INVALID_TRANSACTION_STATUS);
+        }
+        if(arbitratorManager.isFrozenStatus(transaction.arbitrator)) {
+            revert(Errors.ARBITRATOR_FROZEN);
+        }
         return _completeTransaction(id, transaction);
     }
 

@@ -54,6 +54,7 @@ library Errors {
     string constant IS_FROZEN = "Is frozen";
     string constant INVALID_OPERATOR = "Invalid operator";
     string constant INVALID_REVENUE_ADDRESS = "Invalid revenue address";
+    string constant ARBITRATOR_FROZEN = "Arbitrator frozen";
 
     // Config related errors
     string constant INVALID_CONFIG_KEY = "Invalid config key";
