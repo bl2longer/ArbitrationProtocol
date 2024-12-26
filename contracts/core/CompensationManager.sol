@@ -129,7 +129,7 @@ contract CompensationManager is
         bytes32 evidence
     ) external override returns (bytes32 claimId) {
         // Generate claim ID
-        claimId = keccak256(abi.encodePacked(evidence, arbitrator, msg.sender, "IllegalSignature"));
+        claimId = keccak256(abi.encodePacked(evidence, arbitrator, msg.sender, CompensationType.IllegalSignature));
         if (claims[claimId].dapp != address(0)) {
             revert (Errors.COMPENSATION_ALREADY_CLAIMED);
         }
@@ -202,7 +202,7 @@ contract CompensationManager is
         DataTypes.Transaction memory transaction = transactionManager.getTransactionById(id);
 
         // Generate claim ID
-        claimId = keccak256(abi.encodePacked(id, transaction.arbitrator, msg.sender, "Timeout"));
+        claimId = keccak256(abi.encodePacked(id, transaction.arbitrator, msg.sender, CompensationType.Timeout));
         if (claims[claimId].dapp != address(0)) {
             revert (Errors.COMPENSATION_ALREADY_CLAIMED);
         }
@@ -253,7 +253,7 @@ contract CompensationManager is
         DataTypes.Transaction memory transaction = transactionManager.getTransaction(verification.txHash);
 
         // Generate claim ID
-        claimId = keccak256(abi.encodePacked(evidence, transaction.arbitrator, msg.sender, "FailedArbitration"));
+        claimId = keccak256(abi.encodePacked(evidence, transaction.arbitrator, msg.sender, CompensationType.FailedArbitration));
         if (claims[claimId].dapp != address(0)) {
             revert (Errors.COMPENSATION_ALREADY_CLAIMED);
         }
@@ -299,7 +299,7 @@ contract CompensationManager is
         (uint256 arbitratorFee, ) = transactionManager.transferArbitrationFee(txId);
 
         // Generate claim ID
-        bytes32 claimId = keccak256(abi.encodePacked(txId, transaction.arbitrator, msg.sender, "ArbitratorFee"));
+        bytes32 claimId = keccak256(abi.encodePacked(txId, transaction.arbitrator, msg.sender, CompensationType.ArbitratorFee));
         if (claims[claimId].dapp != address(0)) {
             revert (Errors.COMPENSATION_ALREADY_CLAIMED);
         }
