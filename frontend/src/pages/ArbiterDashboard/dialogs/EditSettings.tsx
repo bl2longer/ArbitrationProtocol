@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { tooltips } from "@/config/tooltips";
 import { useArbiterParamsUpdate } from "@/services/arbiters/hooks/contract/useArbiterParamsUpdate";
 import { ArbiterInfo } from "@/services/arbiters/model/arbiter-info";
 import { useResetFormOnOpen } from "@/services/ui/hooks/useResetFormOnOpen";
@@ -79,7 +80,7 @@ export const EditSettingsDialog: FC<{
               name="feeRate"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Fee rate (1-100%) <IconTooltip tooltip='todo' iconClassName='ml-1' iconSize={12} /></FormLabel>
+                  <FormLabel>Fee rate (1-100%) <IconTooltip title="Fee rate" tooltip={tooltips.arbiterFeeRate} iconClassName='ml-1' iconSize={12} /></FormLabel>
                   <Input type='number' step="0.01" {...field} />
                   <FormMessage />
                 </FormItem>
@@ -92,7 +93,7 @@ export const EditSettingsDialog: FC<{
               name="deadline"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Term end <IconTooltip tooltip='todo' iconClassName='ml-1' iconSize={12} /></FormLabel>
+                  <FormLabel>Term end <IconTooltip title="Term end" tooltip={tooltips.arbiterDeadline} iconClassName='ml-1' iconSize={12} /></FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>

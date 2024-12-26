@@ -90,7 +90,7 @@ export const EVMProviderInternal: React.FC<EVMProviderProps> = ({ children }) =>
   const { isConnected, address, connector, chainId } = useAccount();
   const { setEvmAccount, networkMode, setEvmChainId } = useWalletContext() || {};
   const { switchChain } = useSwitchChain();
-  const defaultNetworkToUse = chainList.find(c => c.networkMode === networkMode); // Use the first network of the list that supports the current network mode
+  const defaultNetworkToUse = chainList.find(c => c.isDefault); /* chainList.find(c => c.networkMode === networkMode); */ // Use the first network of the list that supports the current network mode
 
   const connect = useCallback(() => {
     if (address) {

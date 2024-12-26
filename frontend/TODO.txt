@@ -1,6 +1,5 @@
 ===> Target release date: dec 30
 
-- switch to mainnet staging
 - bug: arbiter createdAt in model should be int not string
 
 - My dashboard:

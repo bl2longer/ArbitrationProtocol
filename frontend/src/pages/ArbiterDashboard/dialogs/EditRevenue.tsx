@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { tooltips } from "@/config/tooltips";
 import { useArbiterRevenueUpdate } from "@/services/arbiters/hooks/contract/useArbiterRevenueUpdate";
 import { ArbiterInfo } from "@/services/arbiters/model/arbiter-info";
 import { isValidBitcoinAddress, isValidBitcoinPublicKey } from "@/services/btc/btc";
@@ -71,7 +72,7 @@ export const EditRevenueDialog: FC<{
             <FormField control={form.control} name="revenueEVMAddress"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Revenue EVM Address</FormLabel>
+                  <FormLabel>Revenue EVM Address <IconTooltip title="Revenue address" tooltip={tooltips.revenueAddress} iconClassName='ml-1' iconSize={12} /></FormLabel>
                   <Input type='text' {...field} />
                   <FormMessage />
                 </FormItem>

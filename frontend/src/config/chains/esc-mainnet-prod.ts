@@ -32,5 +32,6 @@ export const escMainnetProd: ChainConfig = {
     escBtcToken,
     escUSDTToken,
     escUSDCToken
-  ]
+  ],
+  isDefault: true
 }
