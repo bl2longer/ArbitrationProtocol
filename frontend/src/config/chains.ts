@@ -72,7 +72,7 @@ const escTestnet: ChainConfig = {
  * List of supported EVMs the work can run on.
  */
 export const chainList: ChainConfig[] = [
-  escMainnet,
+  // escMainnet,
   escTestnet
 ];
 

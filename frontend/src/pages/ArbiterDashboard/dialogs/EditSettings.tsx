@@ -1,3 +1,4 @@
+import { EnsureWalletNetwork } from "@/components/base/EnsureWalletNetwork/EnsureWalletNetwork";
 import { IconTooltip } from "@/components/base/IconTooltip";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -126,9 +127,11 @@ export const EditSettingsDialog: FC<{
             />
 
             <DialogFooter className="mt-6">
-              <Button type="submit" className={!form.formState.isValid && "opacity-30"} disabled={isPending}>
-                Update
-              </Button>
+              <EnsureWalletNetwork continuesTo="Update" evmConnectedNeeded>
+                <Button type="submit" className={!form.formState.isValid && "opacity-30"} disabled={isPending}>
+                  Update
+                </Button>
+              </EnsureWalletNetwork>
             </DialogFooter>
           </form>
         </Form>

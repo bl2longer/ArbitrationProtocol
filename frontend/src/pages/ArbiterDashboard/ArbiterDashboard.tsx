@@ -5,22 +5,14 @@ import { PageTitle } from '@/components/base/PageTitle';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
 import { Button } from '@/components/ui/button';
 import { useOwnedArbiter } from '@/services/arbiters/hooks/useOwnedArbiter';
-import { DollarSignIcon, Layers2Icon, RefreshCwIcon, SettingsIcon, StarIcon } from 'lucide-react';
-import { FC, useState } from 'react';
+import { RefreshCwIcon } from 'lucide-react';
+import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArbiterPreview } from './ArbiterPreview';
-import { EditOperatorDialog } from './dialogs/EditOperator';
-import { EditRevenueDialog } from './dialogs/EditRevenue';
-import { EditSettingsDialog } from './dialogs/EditSettings';
-import { EditStakingDialog } from './dialogs/EditStaking';
 
 const ArbiterDashboard: FC = () => {
   const { fetchOwnedArbiter, ownedArbiter, isPending } = useOwnedArbiter();
   const navigate = useNavigate();
-  const [editSettingsIsOpen, setEditSettingsIsOpen] = useState(false);
-  const [editOperatorIsOpen, setEditOperatorIsOpen] = useState(false);
-  const [editStakingIsOpen, setEditStakingIsOpen] = useState(false);
-  const [editRevenueIsOpen, setEditRevenueIsOpen] = useState(false);
 
   return (
     <PageContainer>
@@ -30,27 +22,7 @@ const ArbiterDashboard: FC = () => {
           <Button variant="outline" size="icon" onClick={fetchOwnedArbiter}>
             <RefreshCwIcon />
           </Button>
-          <EnsureWalletNetwork continuesTo=''>
-            {
-              ownedArbiter && <>
-                <Button onClick={() => setEditSettingsIsOpen(true)} disabled={isPending}><SettingsIcon />Edit settings</Button>
-              </>
-            }
-            {
-              ownedArbiter && <>
-                <Button onClick={() => setEditStakingIsOpen(true)} disabled={isPending}><Layers2Icon />Edit staking</Button>
-              </>
-            }
-            {
-              ownedArbiter && <>
-                <Button onClick={() => setEditOperatorIsOpen(true)} disabled={isPending}><StarIcon />Edit operator</Button>
-              </>
-            }
-            {
-              ownedArbiter && <>
-                <Button onClick={() => setEditRevenueIsOpen(true)} disabled={isPending}><DollarSignIcon />Edit revenue</Button>
-              </>
-            }
+          <EnsureWalletNetwork continuesTo='Register Arbiter'>
             {
               !isPending && !ownedArbiter && <Button onClick={() => navigate("/register-arbiter")}>Register arbiter</Button>
             }
@@ -64,11 +36,6 @@ const ArbiterDashboard: FC = () => {
           {!ownedArbiter && <div>No arbiter owned yet</div>}
         </>
       }
-
-      {ownedArbiter && <EditSettingsDialog arbiter={ownedArbiter} isOpen={editSettingsIsOpen} onHandleClose={() => setEditSettingsIsOpen(false)} />}
-      {ownedArbiter && <EditOperatorDialog arbiter={ownedArbiter} isOpen={editOperatorIsOpen} onHandleClose={() => setEditOperatorIsOpen(false)} />}
-      {ownedArbiter && <EditStakingDialog arbiter={ownedArbiter} isOpen={editStakingIsOpen} onHandleClose={() => setEditStakingIsOpen(false)} />}
-      {ownedArbiter && <EditRevenueDialog arbiter={ownedArbiter} isOpen={editRevenueIsOpen} onHandleClose={() => setEditRevenueIsOpen(false)} />}
     </PageContainer>
   );
 }

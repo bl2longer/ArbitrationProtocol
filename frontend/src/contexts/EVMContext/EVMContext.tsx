@@ -1,14 +1,12 @@
-import React, { createContext, useContext, ReactNode, useCallback, useEffect } from 'react';
-import { useAccount, useChainId, useConnect, useDisconnect, useReconnect, WagmiProvider } from 'wagmi';
-import { http, createConfig } from 'wagmi';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { injected } from 'wagmi/connectors';
-import { useWalletContext } from '../WalletContext/WalletContext';
-import { useSwitchChain } from "wagmi";
 import { chainList } from '@/config/chains';
 import { ChainConfig } from '@/services/chains/chain-config';
-import { MetaMaskErrorCode } from '../ErrorHandlerContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect } from 'react';
 import { Chain, toHex } from 'viem';
+import { createConfig, http, useAccount, useConnect, useDisconnect, useReconnect, useSwitchChain, WagmiProvider } from 'wagmi';
+import { injected } from 'wagmi/connectors';
+import { MetaMaskErrorCode } from '../ErrorHandlerContext';
+import { useWalletContext } from '../WalletContext/WalletContext';
 
 const injectedConnector = injected();
 
@@ -53,7 +51,14 @@ interface EVMContextProps {
   chainId: number;
 }
 
-const EVMContext = createContext<EVMContextProps | null>(null);
+const EVMContext = createContext<EVMContextProps | null>({
+  connect: () => { },
+  disconnect: () => { },
+  switchNetworkOrAddDefault: () => Promise.resolve(),
+  isConnected: false,
+  account: null,
+  chainId: -1
+});
 
 interface EVMProviderProps {
   children: ReactNode;
@@ -81,10 +86,9 @@ const addNetwork = async (provider: any, chain: ChainConfig) => {
 export const EVMProviderInternal: React.FC<EVMProviderProps> = ({ children }) => {
   const { connect: wagmiConnect } = useConnect();
   const { reconnect } = useReconnect();
-  const chainId = useChainId();
   const { disconnect } = useDisconnect();
-  const { isConnected, address, connector } = useAccount();
-  const { setEvmAccount, networkMode, setEvmChainId } = useWalletContext();
+  const { isConnected, address, connector, chainId } = useAccount();
+  const { setEvmAccount, networkMode, setEvmChainId } = useWalletContext() || {};
   const { switchChain } = useSwitchChain();
   const defaultNetworkToUse = chainList.find(c => c.networkMode === networkMode); // Use the first network of the list that supports the current network mode
 

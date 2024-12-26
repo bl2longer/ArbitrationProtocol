@@ -1,8 +1,8 @@
+import { BitcoinWalletChooserProvider } from "@/components/dialogs/BitcoinWalletChooser/BitcoinWalletChooser";
 import { NetworkMode, networkMode$ } from "@/services/network/network";
 import { createContext, FC, memo, ReactNode, useContext, useEffect, useState } from "react";
 import { BehaviorSubject } from "rxjs";
 import { EVMProvider, useEVMContext } from "../EVMContext/EVMContext";
-import { BitcoinWalletChooserProvider } from "@/components/dialogs/BitcoinWalletChooser/BitcoinWalletChooser";
 
 const EVM_ACCOUNT_STORAGE_KEY = "evm-account";
 const EVM_CHAIN_ID_STORAGE_KEY = "evm-chain-id";
@@ -128,7 +128,18 @@ type WalletContextProps = {
   setNetworkMode: (mode: NetworkMode) => void;
 }
 
-export const WalletContext = createContext<WalletContextProps>(null);
+export const WalletContext = createContext<WalletContextProps>({
+  evmAccount: null,
+  setEvmAccount: () => { },
+  bitcoinAccount: null,
+  setBitcoinAccount: () => { },
+  bitcoinProvider: null,
+  setBitcoinProvider: () => { },
+  evmChainId: -1,
+  setEvmChainId: () => { },
+  networkMode: null,
+  setNetworkMode: () => { },
+});
 
 export const useWalletContext = (): WalletContextProps => {
   const context = useContext(WalletContext);

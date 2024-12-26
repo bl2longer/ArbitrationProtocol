@@ -54,6 +54,9 @@ export const fetchArbiters = async (chain: ChainConfig, start = 0, limit = 100, 
           operatorEvmAddress 
           operatorBtcAddress 
           operatorBtcPubKey
+          revenueEvmAddress 
+          revenueBtcAddress 
+          revenueBtcPubKey
         }
       }`;
 

@@ -26,7 +26,7 @@ export const useConfigManagerSettings = () => {
   const fetchAllSettings = useCallback(async (): Promise<ConfigManagerSettings> => {
     // native coin fees to pay to register a dapp.
     const contractSettings: [bigint[], bigint[]] = await readContract({
-      contractAddress: activeChain?.contracts.configManager,
+      contractAddress: activeChain.contracts.configManager,
       abi,
       functionName: 'getAllConfigs',
       args: []

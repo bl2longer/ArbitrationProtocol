@@ -1,8 +1,16 @@
+import { BoxTitle } from "@/components/base/BoxTitle";
+import { EnsureWalletNetwork } from "@/components/base/EnsureWalletNetwork/EnsureWalletNetwork";
 import { StatusLabel } from "@/components/base/StatusLabel";
+import { Button } from "@/components/ui/button";
 import { ArbiterInfo } from "@/services/arbiters/model/arbiter-info";
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
 import { formatDateWithoutYear } from "@/utils/dates";
-import { FC, ReactNode } from "react";
+import { DollarSignIcon, Layers2Icon, SettingsIcon, StarIcon } from "lucide-react";
+import { FC, ReactNode, useState } from "react";
+import { EditOperatorDialog } from "./dialogs/EditOperator";
+import { EditRevenueDialog } from "./dialogs/EditRevenue";
+import { EditSettingsDialog } from "./dialogs/EditSettings";
+import { EditStakingDialog } from "./dialogs/EditStaking";
 
 const InfoRow: FC<{
   title: string;
@@ -19,25 +27,71 @@ export const ArbiterPreview: FC<{
 }> = ({ arbiter }) => {
   const termEnd = arbiter.getTermEndDate();
   const activeChain = useActiveEVMChainConfig();
+  const [editSettingsIsOpen, setEditSettingsIsOpen] = useState(false);
+  const [editOperatorIsOpen, setEditOperatorIsOpen] = useState(false);
+  const [editStakingIsOpen, setEditStakingIsOpen] = useState(false);
+  const [editRevenueIsOpen, setEditRevenueIsOpen] = useState(false);
 
   return (
     <div className="space-y-6">
+      {/* Fixed info */}
       <div className="bg-white rounded-lg shadow divide-y">
         <InfoRow title="Address" value={arbiter.address} />
         <InfoRow title="Status" value={<StatusLabel
           title={arbiter.isPaused() ? 'Paused' : 'Active'}
           color={arbiter.isPaused() ? 'red' : 'green'}
         />} />
+      </div>
+
+      <div className="bg-white rounded-lg shadow divide-y">
+        <div className='flex justify-between items-center mx-4 py-2'>
+          <BoxTitle>Stake</BoxTitle>
+          <EnsureWalletNetwork continuesTo="Edit" evmConnectedNeeded supportedNetworkNeeded>
+            <Button onClick={() => setEditStakingIsOpen(true)}><Layers2Icon />Edit</Button>
+          </EnsureWalletNetwork>
+        </div>
+        <InfoRow title="Stake Amount" value={`${arbiter.ethAmount.toString()} ${activeChain?.nativeCurrency.symbol}`} />
+      </div>
+
+      <div className="bg-white rounded-lg shadow divide-y">
+        <div className='flex justify-between items-center mx-4 py-2'>
+          <BoxTitle>Main Settings</BoxTitle>
+          <EnsureWalletNetwork continuesTo="Edit" evmConnectedNeeded supportedNetworkNeeded>
+            <Button onClick={() => setEditSettingsIsOpen(true)}><SettingsIcon />Edit</Button>
+          </EnsureWalletNetwork>
+        </div>
         <InfoRow title="Fee Rate" value={`${Number(arbiter.currentFeeRate) / 100}%`} />
         <InfoRow title="Term End" value={termEnd ? formatDateWithoutYear(termEnd) : "Not set"} />
-        <InfoRow title="Operator EVM Address" value={arbiter.operatorEvmAddress || "Not set"} />
-        <InfoRow title="Operator BTC Address" value={arbiter.operatorBtcAddress || "Not set"} />
-        <InfoRow title="Operator BTC Public Key" value={arbiter.operatorBtcPubKey || "Not set"} />
-        <InfoRow title="Stake Amount" value={`${arbiter.ethAmount.toString()} ${activeChain?.nativeCurrency.symbol}`} />
-        <InfoRow title="Revenue EVM Address" value={arbiter.revenueEvmAddress || "Not set"} />
-        <InfoRow title="Revenue BTC Address" value={arbiter.revenueBtcAddress || "Not set"} />
-        <InfoRow title="Revenue BTC Public Key" value={arbiter.revenueBtcPubKey || "Not set"} />
       </div>
+
+      <div className="bg-white rounded-lg shadow divide-y">
+        <div className='flex justify-between items-center mx-4 py-2'>
+          <BoxTitle>Operator</BoxTitle>
+          <EnsureWalletNetwork continuesTo="Edit" evmConnectedNeeded supportedNetworkNeeded>
+            <Button onClick={() => setEditOperatorIsOpen(true)}><StarIcon />Edit</Button>
+          </EnsureWalletNetwork>
+        </div>
+        <InfoRow title="EVM Address" value={arbiter.operatorEvmAddress || "Not set"} />
+        <InfoRow title="BTC Address" value={arbiter.operatorBtcAddress || "Not set"} />
+        <InfoRow title="BTC Public Key" value={arbiter.operatorBtcPubKey || "Not set"} />
+      </div>
+
+      <div className="bg-white rounded-lg shadow divide-y">
+        <div className='flex justify-between items-center mx-4 py-2'>
+          <BoxTitle>Revenue</BoxTitle>
+          <EnsureWalletNetwork continuesTo="Edit" evmConnectedNeeded supportedNetworkNeeded>
+            <Button onClick={() => setEditRevenueIsOpen(true)}><DollarSignIcon />Edit</Button>
+          </EnsureWalletNetwork>
+        </div>
+        <InfoRow title="EVM Address" value={arbiter.revenueEvmAddress || "Not set"} />
+        <InfoRow title="BTC Address" value={arbiter.revenueBtcAddress || "Not set"} />
+        <InfoRow title="BTC Public Key" value={arbiter.revenueBtcPubKey || "Not set"} />
+      </div>
+
+      <EditOperatorDialog arbiter={arbiter} isOpen={editOperatorIsOpen} onHandleClose={() => setEditOperatorIsOpen(false)} />
+      <EditSettingsDialog arbiter={arbiter} isOpen={editSettingsIsOpen} onHandleClose={() => setEditSettingsIsOpen(false)} />
+      <EditStakingDialog arbiter={arbiter} isOpen={editStakingIsOpen} onHandleClose={() => setEditStakingIsOpen(false)} />
+      <EditRevenueDialog arbiter={arbiter} isOpen={editRevenueIsOpen} onHandleClose={() => setEditRevenueIsOpen(false)} />
     </div >
   )
 }

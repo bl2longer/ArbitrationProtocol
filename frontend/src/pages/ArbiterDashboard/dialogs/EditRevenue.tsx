@@ -1,3 +1,4 @@
+import { EnsureWalletNetwork } from "@/components/base/EnsureWalletNetwork/EnsureWalletNetwork";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -97,9 +98,11 @@ export const EditRevenueDialog: FC<{
               )} />
 
             <DialogFooter className="mt-6">
-              <Button type="submit" className={!form.formState.isValid && "opacity-30"} disabled={isPending}>
-                Update
-              </Button>
+              <EnsureWalletNetwork continuesTo="Update" evmConnectedNeeded>
+                <Button type="submit" className={!form.formState.isValid && "opacity-30"} disabled={isPending}>
+                  Update
+                </Button>
+              </EnsureWalletNetwork>
             </DialogFooter>
           </form>
         </Form>
