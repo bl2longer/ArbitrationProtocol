@@ -4,8 +4,8 @@ export interface Transaction {
   txId: string;
   dapp: string;
   arbiter: string;
-  startTime: string;
-  deadline: string;
+  startTime: number;
+  deadline: number;
   btcTx: string;
   btcTxHash: string;
   status: string;

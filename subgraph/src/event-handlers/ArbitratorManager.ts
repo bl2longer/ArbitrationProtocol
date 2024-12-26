@@ -11,7 +11,7 @@ export function handleArbitratorRegistered(event: ArbitratorRegistered): void {
     arbitratorInfo.operatorEvmAddress = event.params.operator.toHexString();
     arbitratorInfo.operatorBtcAddress = event.params.btcAddress;
     arbitratorInfo.operatorBtcPubKey = event.params.btcPubKey.toHexString().slice(2);
-    arbitratorInfo.currentFeeRate = event.params.feeRate;
+    arbitratorInfo.currentFeeRate = event.params.feeRate.toI32();
     arbitratorInfo.revenueEvmAddress = event.params.revenueAddress.toHexString();
     arbitratorInfo.revenueBtcAddress = event.params.btcAddress;
     arbitratorInfo.revenueBtcPubKey = event.params.btcPubKey.toHexString().slice(2);
@@ -65,8 +65,8 @@ export function handleArbitratorParamsSet(event: ArbitratorParamsSet): void {
     const deadline = event.params.deadline;
 
     const arbitratorInfo = getArbitratorInfo(event.block, arbitratorAddress);
-    arbitratorInfo.currentFeeRate = feeRate;
-    arbitratorInfo.lastArbitrationTime = deadline;
+    arbitratorInfo.currentFeeRate = feeRate.toI32();
+    arbitratorInfo.lastArbitrationTime = deadline.toI32();
 
     arbitratorInfo.save();
 }
@@ -125,11 +125,11 @@ function getArbitratorInfo(block: ethereum.Block, arbitratorAddress: string): Ar
         return existingArbitrator;
 
     const arbitratorInfo = new ArbiterInfo(arbitratorAddress);
-    arbitratorInfo.createdAt = block.timestamp;
+    arbitratorInfo.createdAt = block.timestamp.toI32();
     arbitratorInfo.address = arbitratorAddress;
     arbitratorInfo.status = "Paused"; // Default state is paused at creation. Owner must set operator, revenue, params info first
     arbitratorInfo.ethAmount = new BigInt(0);
-    arbitratorInfo.currentFeeRate = new BigInt(0);
+    arbitratorInfo.currentFeeRate = 0;
 
     arbitratorInfo.operatorEvmAddress = null;
     arbitratorInfo.operatorBtcAddress = null;

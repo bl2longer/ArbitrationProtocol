@@ -242,6 +242,12 @@
           "internalType": "uint256",
           "name": "amount",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256[]",
+          "name": "nftTokenIds",
+          "type": "uint256[]"
         }
       ],
       "name": "StakeAdded",
@@ -544,23 +550,13 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "operator",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "revenueAddress",
-          "type": "address"
-        },
-        {
           "internalType": "string",
-          "name": "btcAddress",
+          "name": "defaultRevenueBtcAddress",
           "type": "string"
         },
         {
           "internalType": "bytes",
-          "name": "btcPubKey",
+          "name": "defaultRevenueBtcPubKey",
           "type": "bytes"
         },
         {
@@ -587,23 +583,13 @@
           "type": "uint256[]"
         },
         {
-          "internalType": "address",
-          "name": "operator",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "revenueAddress",
-          "type": "address"
-        },
-        {
           "internalType": "string",
-          "name": "btcAddress",
+          "name": "defaultRevenueBtcAddress",
           "type": "string"
         },
         {
           "internalType": "bytes",
-          "name": "btcPubKey",
+          "name": "defaultRevenueBtcPubKey",
           "type": "bytes"
         },
         {

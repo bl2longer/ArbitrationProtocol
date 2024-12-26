@@ -1,18 +1,6 @@
 ===> Target release date: dec 30
 
 - update register arbiters: use default btc info.
-- Email service for arbiters:
-  - "Arbiter can register an email for the arbitration notification, we need a background script to check the events"
-  - "new arbitration request" event. poll subgraph (better?) or listen to evm events.
-  - need to create a backend
-  - we already have bel2.org belayer2.org in zoho mail
-- PROD bug: 
-  - Invalid parameters were provided to the RPC method. Double check you have provided the correct parameters. URL: https://api2.elastos.net/esc Request body: {"method":"eth_call","params":[{"data":"0x63507956","to":""},"latest"]} Raw Call Arguments: to: data: 0x63507956 Contract Call: address: function: getAllConfigs() Docs: https://viem.sh/docs/contract/readContract Details: invalid argument 0: hex string has length 0, want 40 for common.Address Version: viem@2.21.55
-    - then cannot edit staking
-    - that's because of call to getAllConfigs without contract address, because wallet is on ESC mainnet
-      - Default arbiter list, esc mainnet
-      - If wrong network pls disappear a  wrong icon tip
-      - Testnet can't work, let us do test on mainnet
 - bug: arbiter createdAt in model should be int not string
 
 - My dashboard:
@@ -26,6 +14,12 @@
     - rename to "submit signature" dialog is broken + styling
     - There is a data that need to be signed, you should call the wallet to sign it
     - only the tx arbiter can see and do the action
+
+- Email service for arbiters:
+  - "Arbiter can register an email for the arbitration notification, we need a background script to check the events"
+  - "new arbitration request" event. poll subgraph (better?) or listen to evm events.
+  - need to create a backend
+  - we already have bel2.org belayer2.org in zoho mail
 
 - Mobile view: header menu is broken
 

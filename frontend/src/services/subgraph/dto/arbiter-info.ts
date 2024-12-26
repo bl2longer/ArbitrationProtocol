@@ -5,8 +5,7 @@ export interface ArbiterInfo {
   ethAmount: string;
   createdAt: number; // timestamp seconds
   lastArbitrationTime: number;
-  currentFeeRate: string;
-  pendingFeeRate: string;
+  currentFeeRate: number;
   status: string; // TODO: enum
   activeTransactionId: string;
 

@@ -14,56 +14,63 @@
       "name": "getZkVerification",
       "outputs": [
         {
-          "internalType": "bytes",
-          "name": "rawData",
-          "type": "bytes"
-        },
-        {
           "components": [
+            {
+              "internalType": "bytes",
+              "name": "rawData",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "pubKey",
+              "type": "bytes"
+            },
             {
               "internalType": "bytes32",
               "name": "txHash",
               "type": "bytes32"
             },
             {
-              "internalType": "uint32",
-              "name": "index",
-              "type": "uint32"
-            },
-            {
               "internalType": "bytes",
-              "name": "script",
+              "name": "signature",
               "type": "bytes"
             },
             {
-              "internalType": "uint256",
-              "name": "amount",
-              "type": "uint256"
+              "internalType": "bool",
+              "name": "verified",
+              "type": "bool"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "bytes32",
+                  "name": "txHash",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "uint32",
+                  "name": "index",
+                  "type": "uint32"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "script",
+                  "type": "bytes"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct DataTypes.UTXO[]",
+              "name": "utxos",
+              "type": "tuple[]"
             }
           ],
-          "internalType": "struct DataTypes.UTXO[]",
-          "name": "utxos",
-          "type": "tuple[]"
-        },
-        {
-          "internalType": "bytes",
-          "name": "pubKey",
-          "type": "bytes"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "hash",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "bytes",
-          "name": "signature",
-          "type": "bytes"
-        },
-        {
-          "internalType": "bool",
-          "name": "verified",
-          "type": "bool"
+          "internalType": "struct DataTypes.ZKVerification",
+          "name": "",
+          "type": "tuple"
         }
       ],
       "stateMutability": "view",

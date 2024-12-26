@@ -20,7 +20,7 @@ function getNFT(block: ethereum.Block, tokenId: BigInt): BPosNFT {
 
   const nft = new BPosNFT(tokenId.toHexString());
   nft.tokenId = tokenId;
-  nft.createdAt = block.timestamp;
+  nft.createdAt = block.timestamp.toI32();
 
   return nft;
 }

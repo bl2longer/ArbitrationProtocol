@@ -27,6 +27,7 @@ export const useArbiterRegister = () => {
       abi,
       functionName: 'registerArbitratorByStakeETH',
       args: [
+        3232, 32234, 234, 23432,
         evmAccount, // Default operator is the connected wallet
         revenueAddress,
         btcAddress,
@@ -57,6 +58,7 @@ export const useArbiterRegister = () => {
       abi,
       functionName: 'registerArbitratorByStakeNFT',
       args: [
+        212134,
         tokenIds,
         evmAccount, // Default operator is the connected wallet
         revenueAddress,

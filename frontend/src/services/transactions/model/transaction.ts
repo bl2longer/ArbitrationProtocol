@@ -1,14 +1,14 @@
 import { Transaction as TransactionDTO } from "@/services/subgraph/dto/transaction";
-import { Expose } from "class-transformer";
+import { Expose, Transform } from "class-transformer";
 
-export class Transaction implements TransactionDTO {
+export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline"> {
   @Expose() public id: string;
   @Expose() public txId: string;
   @Expose() public dapp: string;
   @Expose() public arbiter: string;
   @Expose() public status: string;
-  @Expose() public startTime: string;
-  @Expose() public deadline: string;
+  @Expose() @Transform(({ value }) => new Date(value * 1000)) public startTime: Date;
+  @Expose() @Transform(({ value }) => new Date(value * 1000)) public deadline: Date;
   @Expose() public btcTx: string;
   @Expose() public btcTxHash: string;
   @Expose() public depositedFee: string;

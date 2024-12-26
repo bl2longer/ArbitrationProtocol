@@ -1,13 +1,12 @@
 import { useErrorHandler } from "@/contexts/ErrorHandlerContext";
 import { wagmiConfig } from "@/contexts/EVMContext/EVMContext";
 import { readContract as wagmiReadContract, writeContract as wagmiWriteContract, waitForTransactionReceipt, WaitForTransactionReceiptReturnType } from '@wagmi/core';
-import { Abi } from "abitype";
 import { useCallback, useState } from "react";
 import { Address } from "viem";
 
 export type ReadContractParams = {
   contractAddress: string;
-  abi: Abi | readonly unknown[];
+  abi: unknown[];
   functionName: string;
   args: unknown[];
 }
@@ -54,9 +53,9 @@ export const useContractCall = () => {
       _hash = await wagmiWriteContract(wagmiConfig, {
         address: params.contractAddress as Address,
         abi: params.abi,
-        functionName: params.functionName,
-        args: params.args,
-        value: params.value as undefined,
+        functionName: params.functionName as any,
+        args: params.args as any,
+        value: params.value as any,
         chain: null,
         account: null
       });

@@ -44,7 +44,7 @@ function getTransaction(block: ethereum.Block, id: string): Transaction {
   }
 
   const transaction = new Transaction(id);
-  transaction.createdAt = block.timestamp;
+  transaction.createdAt = block.timestamp.toI32();
   transaction.status = "Active";
   transaction.txId = id;
 

@@ -31,11 +31,11 @@ enum CompensationType {
 
 type ArbiterInfo @entity {
     id: ID! # required by the graph
-    createdAt: BigInt! # Timestamp, DB side only, not on chain - block time at which the arbiter info was first found (first event)
-    lastArbitrationTime: BigInt # Timestamp at which this arbiter term ends
+    createdAt: Int! # Timestamp, DB side only, not on chain - block time at which the arbiter info was first found (first event)
+    lastArbitrationTime: Int # Timestamp at which this arbiter term ends
     address: String! @id # Arbiter Ethereum address
-    currentFeeRate: BigInt # Current fee rate
-    pendingFeeRate: BigInt # Pending new fee rate
+    currentFeeRate: Int # Current fee rate
+    pendingFeeRate: Int # Pending new fee rate
     status: ArbiterStatus! # Arbiter status
     activeTransactionId: Bytes # ID of the transaction that made the arbiter "working". 0 address if not working.
     ethAmount: BigInt! # Native token stake amount
@@ -56,12 +56,12 @@ type ArbiterInfo @entity {
 
 type Transaction @entity {
     id: ID! # required by the graph
-    createdAt: BigInt! # Timestamp, DB side only, not on chain - block time at which the transaction was first found (first event)
+    createdAt: Int! # Timestamp, DB side only, not on chain - block time at which the transaction was first found (first event)
     txId: String! # Transaction ID, same as ID
     dapp: String # DApp address
     arbiter: String
-    startTime: BigInt
-    deadline: BigInt
+    startTime: Int
+    deadline: Int
     btcTx: Bytes # Unsigned Bitcoin transaction
     btcTxHash: Bytes # Hash of the Bitcoin transaction with empty input scripts
     status: TransactionStatus!
@@ -75,15 +75,15 @@ type ArbitrationRequest @entity {
     id: ID!
     txId: BigInt!
     requester: String!
-    requestTime: BigInt!
-    deadline: BigInt!
+    requestTime: Int!
+    deadline: Int!
     timeoutCompensationReceiver: String!
     fulfilled: Boolean!
 }
 
 type CompensationClaim @entity {
     id: ID!
-    createdAt: BigInt! # Timestamp, DB side only, not on chain - block time at which the compensation was first found (first event)
+    createdAt: Int! # Timestamp, DB side only, not on chain - block time at which the compensation was first found (first event)
     claimer: String
     claimType: CompensationType!
     withdrawn: Boolean!
@@ -94,7 +94,7 @@ type CompensationClaim @entity {
 
 type DApp @entity {
     id: ID!
-    createdAt: BigInt! # Timestamp, DB side only, not on chain - block time at which the dapp was first found (first event)
+    createdAt: Int! # Timestamp, DB side only, not on chain - block time at which the dapp was first found (first event)
     address: String!
     owner: String
     status: DAppStatus!
@@ -102,7 +102,7 @@ type DApp @entity {
 
 type BPosNFT @entity {
     id: ID!
-    createdAt: BigInt! # Timestamp, DB side only, not on chain - block time at which the bpos nft was first found (first event)
+    createdAt: Int! # Timestamp, DB side only, not on chain - block time at which the bpos nft was first found (first event)
     owner: String! # EVM address
     tokenId: BigInt!
 }

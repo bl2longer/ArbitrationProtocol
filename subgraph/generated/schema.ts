@@ -52,34 +52,30 @@ export class ArbiterInfo extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get createdAt(): BigInt {
+  get createdAt(): i32 {
     let value = this.get("createdAt");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set createdAt(value: BigInt) {
-    this.set("createdAt", Value.fromBigInt(value));
+  set createdAt(value: i32) {
+    this.set("createdAt", Value.fromI32(value));
   }
 
-  get lastArbitrationTime(): BigInt | null {
+  get lastArbitrationTime(): i32 {
     let value = this.get("lastArbitrationTime");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set lastArbitrationTime(value: BigInt | null) {
-    if (!value) {
-      this.unset("lastArbitrationTime");
-    } else {
-      this.set("lastArbitrationTime", Value.fromBigInt(<BigInt>value));
-    }
+  set lastArbitrationTime(value: i32) {
+    this.set("lastArbitrationTime", Value.fromI32(value));
   }
 
   get address(): string {
@@ -95,38 +91,30 @@ export class ArbiterInfo extends Entity {
     this.set("address", Value.fromString(value));
   }
 
-  get currentFeeRate(): BigInt | null {
+  get currentFeeRate(): i32 {
     let value = this.get("currentFeeRate");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set currentFeeRate(value: BigInt | null) {
-    if (!value) {
-      this.unset("currentFeeRate");
-    } else {
-      this.set("currentFeeRate", Value.fromBigInt(<BigInt>value));
-    }
+  set currentFeeRate(value: i32) {
+    this.set("currentFeeRate", Value.fromI32(value));
   }
 
-  get pendingFeeRate(): BigInt | null {
+  get pendingFeeRate(): i32 {
     let value = this.get("pendingFeeRate");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set pendingFeeRate(value: BigInt | null) {
-    if (!value) {
-      this.unset("pendingFeeRate");
-    } else {
-      this.set("pendingFeeRate", Value.fromBigInt(<BigInt>value));
-    }
+  set pendingFeeRate(value: i32) {
+    this.set("pendingFeeRate", Value.fromI32(value));
   }
 
   get status(): string {
@@ -367,17 +355,17 @@ export class Transaction extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get createdAt(): BigInt {
+  get createdAt(): i32 {
     let value = this.get("createdAt");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set createdAt(value: BigInt) {
-    this.set("createdAt", Value.fromBigInt(value));
+  set createdAt(value: i32) {
+    this.set("createdAt", Value.fromI32(value));
   }
 
   get txId(): string {
@@ -427,38 +415,30 @@ export class Transaction extends Entity {
     }
   }
 
-  get startTime(): BigInt | null {
+  get startTime(): i32 {
     let value = this.get("startTime");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set startTime(value: BigInt | null) {
-    if (!value) {
-      this.unset("startTime");
-    } else {
-      this.set("startTime", Value.fromBigInt(<BigInt>value));
-    }
+  set startTime(value: i32) {
+    this.set("startTime", Value.fromI32(value));
   }
 
-  get deadline(): BigInt | null {
+  get deadline(): i32 {
     let value = this.get("deadline");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set deadline(value: BigInt | null) {
-    if (!value) {
-      this.unset("deadline");
-    } else {
-      this.set("deadline", Value.fromBigInt(<BigInt>value));
-    }
+  set deadline(value: i32) {
+    this.set("deadline", Value.fromI32(value));
   }
 
   get btcTx(): Bytes | null {
@@ -646,30 +626,30 @@ export class ArbitrationRequest extends Entity {
     this.set("requester", Value.fromString(value));
   }
 
-  get requestTime(): BigInt {
+  get requestTime(): i32 {
     let value = this.get("requestTime");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set requestTime(value: BigInt) {
-    this.set("requestTime", Value.fromBigInt(value));
+  set requestTime(value: i32) {
+    this.set("requestTime", Value.fromI32(value));
   }
 
-  get deadline(): BigInt {
+  get deadline(): i32 {
     let value = this.get("deadline");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set deadline(value: BigInt) {
-    this.set("deadline", Value.fromBigInt(value));
+  set deadline(value: i32) {
+    this.set("deadline", Value.fromI32(value));
   }
 
   get timeoutCompensationReceiver(): string {
@@ -742,17 +722,17 @@ export class CompensationClaim extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get createdAt(): BigInt {
+  get createdAt(): i32 {
     let value = this.get("createdAt");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set createdAt(value: BigInt) {
-    this.set("createdAt", Value.fromBigInt(value));
+  set createdAt(value: i32) {
+    this.set("createdAt", Value.fromI32(value));
   }
 
   get claimer(): string | null {
@@ -889,17 +869,17 @@ export class DApp extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get createdAt(): BigInt {
+  get createdAt(): i32 {
     let value = this.get("createdAt");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set createdAt(value: BigInt) {
-    this.set("createdAt", Value.fromBigInt(value));
+  set createdAt(value: i32) {
+    this.set("createdAt", Value.fromI32(value));
   }
 
   get address(): string {
@@ -985,17 +965,17 @@ export class BPosNFT extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get createdAt(): BigInt {
+  get createdAt(): i32 {
     let value = this.get("createdAt");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set createdAt(value: BigInt) {
-    this.set("createdAt", Value.fromBigInt(value));
+  set createdAt(value: i32) {
+    this.set("createdAt", Value.fromI32(value));
   }
 
   get owner(): string {

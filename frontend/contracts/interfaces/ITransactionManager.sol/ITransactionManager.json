@@ -59,6 +59,19 @@
       "inputs": [
         {
           "indexed": true,
+          "internalType": "address",
+          "name": "arbitratorManager",
+          "type": "address"
+        }
+      ],
+      "name": "SetArbitratorManager",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
           "internalType": "bytes32",
           "name": "id",
           "type": "bytes32"
@@ -509,6 +522,19 @@
         }
       ],
       "name": "requestArbitration",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_arbitratorManager",
+          "type": "address"
+        }
+      ],
+      "name": "setArbitratorManager",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
