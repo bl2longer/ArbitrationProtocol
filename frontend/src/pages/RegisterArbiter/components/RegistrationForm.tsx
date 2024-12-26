@@ -25,7 +25,6 @@ import { FC, useCallback, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useInterval } from 'usehooks-ts';
-import { isAddress } from 'viem';
 import { z } from 'zod';
 import { StakeCoinForm } from './StakeCoinForm';
 import { StakeNFTForm } from './StakeNFTForm';
@@ -50,8 +49,7 @@ export const RegistrationForm: FC<{
     operatorBTCAddress: z.string().refine(isValidBitcoinAddress, "Not a valid Bitcoin address"),
     operatorBTCPubKey: z.string().refine(isValidBitcoinPublicKey, "Not a valid Bitcoin public key"),
     feeRate: z.coerce.number().min(1).max(100),
-    deadline: z.date().min(new Date()),
-    revenueAddress: z.string().refine((value) => isAddress(value), "Not a valid EVM address"),
+    deadline: z.date().min(new Date())
   });
 
   const coinSchemaExtension = z.object({
@@ -79,7 +77,6 @@ export const RegistrationForm: FC<{
   const form = useForm<z.infer<PartialSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      revenueAddress: '0xa20f5A22eF423b0e5c2Db79A5475D9512d989971', // 0x
       operatorBTCAddress: '',
       operatorBTCPubKey: '',
       feeRate: 1,
@@ -146,19 +143,6 @@ export const RegistrationForm: FC<{
       <form onSubmit={form.handleSubmit(handleRegister)} className='flex flex-col gap-4 w-full items-center justify-center'>
         <div className="relative bg-white rounded-lg p-8 max-w-md w-full mx-4">
           <BoxTitle>Settings</BoxTitle>
-
-          {/* Revenue address */}
-          <FormField
-            control={form.control}
-            name="revenueAddress"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Revenue EVM address</FormLabel>
-                <Input {...field} />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
           {/* Fee rate */}
           <FormField

@@ -19,7 +19,7 @@
     },
     "BPosNFT": {
       "address": "0x8e286664c6B8811015F936592Dd654e94Af3F494",
-      "startBlock": 18033297
+      "startBlock": 26000000
     }
   },
   "esc-testnet": {

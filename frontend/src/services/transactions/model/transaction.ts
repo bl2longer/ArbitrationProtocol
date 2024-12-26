@@ -7,8 +7,8 @@ export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline
   @Expose() public dapp: string;
   @Expose() public arbiter: string;
   @Expose() public status: string;
-  @Expose() @Transform(({ value }) => new Date(value * 1000)) public startTime: Date;
-  @Expose() @Transform(({ value }) => new Date(value * 1000)) public deadline: Date;
+  @Expose() @Transform(({ value }) => value && new Date(value * 1000)) public startTime: Date;
+  @Expose() @Transform(({ value }) => value && new Date(value * 1000)) public deadline: Date;
   @Expose() public btcTx: string;
   @Expose() public btcTxHash: string;
   @Expose() public depositedFee: string;

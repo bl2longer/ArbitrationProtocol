@@ -1,11 +1,11 @@
 import { useNFTInfo } from "@/services/bpos-nfts/hooks/useNFTInfo";
 import { useOwnedBPosNFTs } from "@/services/bpos-nfts/hooks/useOwnedBPosNFTs";
 import { BPosNFT } from "@/services/bpos-nfts/model/bpos-nft";
+import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
 import { formatAddress } from "@/utils/formatAddress";
 import { FC, useState } from "react";
 import { Checkbox } from "../ui/checkbox";
 import { FormLabel } from "../ui/form";
-import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
 
 export const BPosNFTSelector: FC<{
   onSelectionChanged: (selectedNFTs: BPosNFT[]) => void;
@@ -39,10 +39,10 @@ const BPosNFTEntry: FC<{
   onSelectionChanged: (selected: boolean) => void;
 }> = ({ nft, onSelectionChanged }) => {
   const activeChain = useActiveEVMChainConfig();
-  const { nftInfo, isPending, isSuccess } = useNFTInfo(nft.tokenId);
+  const { nftInfo, isPending } = useNFTInfo(nft.tokenId);
 
   return <div className="flex flex-row items-center gap-2 my-2">
-    <Checkbox id={nft.id} onCheckedChange={onSelectionChanged} />
+    <Checkbox id={nft.id} onCheckedChange={onSelectionChanged} disabled={isPending || nftInfo?.getCoinValue() === 0} />
     <div className="flex flex-col">
       <label htmlFor={nft.id} className="text-xs">
         BPoS NFT #{formatAddress(nft.tokenId, [8, 8])}

@@ -3,20 +3,17 @@ import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitle } from '@/components/base/PageTitle';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
 import { SearchInput } from '@/components/base/SearchInput';
-import { StatusLabel } from '@/components/base/StatusLabel';
 import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useTransactions } from '@/services/transactions/hooks/useTransactions';
 import { Transaction } from '@/services/transactions/model/transaction';
-import { formatDateWithoutYear } from '@/utils/dates';
-import { formatAddress } from '@/utils/formatAddress';
 import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
 import { RefreshCwIcon } from 'lucide-react';
-import { FC, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { SubmitSignatureDialog } from './dialogs/SubmitSignatureDialog';
+import { TransactionRow } from './TransactionRow';
 
-const fieldLabels: Partial<Record<keyof Transaction, string>> = {
+export const transactionFieldLabels: Partial<Record<keyof Transaction, string>> = {
   dapp: 'DApp',
   arbiter: 'Arbiter',
   startTime: 'Start Time',
@@ -64,7 +61,7 @@ export default function TransactionList() {
         <Table>
           <TableHeader>
             <TableRow>
-              {Object.values(fieldLabels).map(field => (
+              {Object.values(transactionFieldLabels).map(field => (
                 <TableHead key={field}>
                   {field}
                 </TableHead>
@@ -92,42 +89,3 @@ export default function TransactionList() {
   );
 }
 
-const TransactionRow: FC<{
-  transaction: Transaction;
-  onSubmitArbitration: () => void;
-}> = ({ transaction, onSubmitArbitration }) => {
-  const { evmAccount } = useWalletContext();
-
-  const formatValue = (key: keyof typeof fieldLabels, value: any) => {
-    if (key === 'startTime' || key === 'deadline')
-      return value ? formatDateWithoutYear(value) : "Not set";
-
-    if (key === 'status')
-      return <StatusLabel title={value} color={value === "Completed" ? "green" : "red"} />
-
-    if (key === 'dapp' || key === 'arbiter')
-      return value ? formatAddress(value) : "Not set";
-
-    if (key === 'btcTx')
-      return formatAddress(value) || "Not set";
-
-    return value;
-  };
-
-  return (
-    <TableRow>
-      {Object.keys(fieldLabels).map((field: keyof Transaction) => (
-        <TableCell key={field}>
-          {formatValue(field, transaction[field as keyof Transaction])}
-        </TableCell>
-      ))}
-      <TableCell>
-        {/* Transaction's elected arbiter can sign.*/}
-        {
-          transaction.status === "Active" && transaction.arbiter === evmAccount &&
-          <Button onClick={onSubmitArbitration}>Submit signature</Button>
-        }
-      </TableCell>
-    </TableRow>
-  )
-}

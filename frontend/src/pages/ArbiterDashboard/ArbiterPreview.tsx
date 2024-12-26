@@ -61,7 +61,7 @@ export const ArbiterPreview: FC<{
           </EnsureWalletNetwork>
         </div>
         <InfoRow title="Fee Rate" value={`${Number(arbiter.currentFeeRate) / 100}%`} />
-        <InfoRow title="Term End" value={termEnd ? formatDateWithoutYear(termEnd) : "Not set"} />
+        <InfoRow title="Term End" value={termEnd ? formatDateWithoutYear(termEnd) : "-"} />
       </div>
 
       <div className="bg-white rounded-lg shadow divide-y">
@@ -71,9 +71,9 @@ export const ArbiterPreview: FC<{
             <Button onClick={() => setEditOperatorIsOpen(true)}><StarIcon />Edit</Button>
           </EnsureWalletNetwork>
         </div>
-        <InfoRow title="EVM Address" value={arbiter.operatorEvmAddress || "Not set"} />
-        <InfoRow title="BTC Address" value={arbiter.operatorBtcAddress || "Not set"} />
-        <InfoRow title="BTC Public Key" value={arbiter.operatorBtcPubKey || "Not set"} />
+        <InfoRow title="EVM Address" value={arbiter.operatorEvmAddress || "-"} />
+        <InfoRow title="BTC Address" value={arbiter.operatorBtcAddress || "-"} />
+        <InfoRow title="BTC Public Key" value={arbiter.operatorBtcPubKey || "-"} />
       </div>
 
       <div className="bg-white rounded-lg shadow divide-y">
@@ -83,9 +83,9 @@ export const ArbiterPreview: FC<{
             <Button onClick={() => setEditRevenueIsOpen(true)}><DollarSignIcon />Edit</Button>
           </EnsureWalletNetwork>
         </div>
-        <InfoRow title="EVM Address" value={arbiter.revenueEvmAddress || "Not set"} />
-        <InfoRow title="BTC Address" value={arbiter.revenueBtcAddress || "Not set"} />
-        <InfoRow title="BTC Public Key" value={arbiter.revenueBtcPubKey || "Not set"} />
+        <InfoRow title="EVM Address" value={arbiter.revenueEvmAddress || "-"} />
+        <InfoRow title="BTC Address" value={arbiter.revenueBtcAddress || "-"} />
+        <InfoRow title="BTC Public Key" value={arbiter.revenueBtcPubKey || "-"} />
       </div>
 
       <EditOperatorDialog arbiter={arbiter} isOpen={editOperatorIsOpen} onHandleClose={() => setEditOperatorIsOpen(false)} />

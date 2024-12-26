@@ -1,13 +1,5 @@
 ===> Target release date: dec 30
 
-- bug: arbiter createdAt in model should be int not string
-
-- My dashboard:
-  - Withdraw stake: show current stake (coin, NFTs)
-    - need subgraph to save nft info
-      - need contract events to return staked token ids
-  - Ability to stake NFT (incl approval)
-- Tooltips
 - Transaction list:
   - Submit arbitration:
     - There is a data that need to be signed, you should call the wallet to sign it
@@ -21,7 +13,12 @@
 - Mobile view: check and fix
 
 P2:
-- unregister dapp: from dapps list of from my dashboard?
+- bug: arbiter createdAt in model should be int not string
+- Withdraw stake: show current stake (coin, NFTs)
+    - need subgraph to save nft info
+      - need contract events to return staked token ids
+- Ability to unregister dapp: 
+  - TBD: from dapps list of from my dashboard?
 - Native coin stake: show current ELA balance
 - Handle subgraph api errors, forward to hooks and pages
 - Finish to replace headless UI components with https://ui.shadcn.com/

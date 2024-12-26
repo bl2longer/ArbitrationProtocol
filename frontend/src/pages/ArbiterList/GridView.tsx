@@ -39,7 +39,7 @@ const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
       </div>
       <div className="flex justify-between">
         <span className="text-gray-600">Term end</span>
-        <span>{termEnd ? formatDateWithoutYear(termEnd) : 'Not set'}</span>
+        <span>{termEnd ? formatDateWithoutYear(termEnd) : '-'}</span>
       </div>
       <div className="flex justify-between">
         <span className="text-gray-600">Stake</span>
