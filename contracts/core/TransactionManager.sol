@@ -211,12 +211,7 @@ contract TransactionManager is
 
     function _completeTransaction(bytes32 id, DataTypes.Transaction storage transaction) internal returns(uint256, uint256) {
         // Get arbitrator info and calculate duration-based fee
-        uint256 finalArbitratorFee = 0;
-        uint256 systemFee = 0;
-       
-        if (transaction.status != DataTypes.TransactionStatus.Active) {
-            (finalArbitratorFee, systemFee) = transferCompletedTransactionFee(transaction);
-        }
+        (uint256 finalArbitratorFee, uint256 systemFee) = transferCompletedTransactionFee(transaction);
         
         // Release arbitrator from working status
         arbitratorManager.releaseArbitrator(transaction.arbitrator, id);
@@ -230,11 +225,12 @@ contract TransactionManager is
     function transferCompletedTransactionFee(DataTypes.Transaction memory transaction) internal returns(uint256, uint256) {
         // Get arbitrator info and calculate duration-based fee
         DataTypes.ArbitratorInfo memory arbitratorInfo = arbitratorManager.getArbitratorInfo(transaction.arbitrator);
-        if (transaction.status == DataTypes.TransactionStatus.Active) {
-            revert("Can't transfer fee for active transaction");
+
+        uint256 duration = block.timestamp > transaction.deadline ? transaction.deadline - transaction.startTime : block.timestamp - transaction.startTime;
+        uint256 arbitratorFee = _getFee(transaction.arbitrator, arbitratorInfo.currentFeeRate, duration);
+        if (arbitratorFee > transaction.depositedFee) {
+            arbitratorFee = transaction.depositedFee;
         }
-        uint256 duration = block.timestamp - transaction.startTime;
-        uint256 arbitratorFee = (arbitratorInfo.ethAmount * duration * arbitratorInfo.currentFeeRate) / (SECONDS_PER_YEAR * FEE_RATE_MULTIPLIER);
 
         // Calculate system fee from arbitrator's fee and get fee collector
         uint256 systemFee = (arbitratorFee * configManager.getConfig(configManager.SYSTEM_FEE_RATE())) / 10000;
@@ -250,7 +246,7 @@ contract TransactionManager is
         if (!success2) revert(Errors.TRANSFER_FAILED);
 
         // Refund remaining balance to DApp
-        uint256 remainingBalance = address(this).balance;
+        uint256 remainingBalance = transaction.depositedFee - arbitratorFee;
         if (remainingBalance > 0) {
             (bool success3, ) = transaction.dapp.call{value: remainingBalance}("");
             if (!success3) revert(Errors.TRANSFER_FAILED);
@@ -285,6 +281,15 @@ contract TransactionManager is
 
         // Parse and validate Bitcoin transaction
         BTCUtils.BTCTransaction memory parsedTx = BTCUtils.parseBTCTransaction(btcTx);
+        if(parsedTx.inputs.length != transaction.utxos.length) {
+            revert(Errors.INVALID_TRANSACTION);
+        }
+        for(uint i = 0; i < parsedTx.inputs.length; i++) {
+            if(parsedTx.inputs[i].txid != transaction.utxos[i].txHash
+                || parsedTx.inputs[i].vout != transaction.utxos[i].index) {
+                revert(Errors.INVALID_TRANSACTION);
+            }
+        }
 
         // Calculate transaction hash with empty input scripts
         bytes memory serializedTx = BTCUtils.serializeBTCTransaction(parsedTx);
@@ -383,19 +388,16 @@ contract TransactionManager is
         if (arbitrator == address(0)) {
             revert(Errors.ZERO_ADDRESS);
         }
-
         DataTypes.ArbitratorInfo memory arbitratorInfo = arbitratorManager.getArbitratorInfo(arbitrator);
 
-        uint256 minFeeRate = configManager.getConfig(configManager.TRANSACTION_MIN_FEE_RATE());
-        if (arbitratorInfo.currentFeeRate < minFeeRate || arbitratorInfo.currentFeeRate > 10000) {
-            revert(Errors.INVALID_FEE_RATE);
-        }
+        return _getFee(arbitrator, arbitratorInfo.currentFeeRate, duration);
+    }
 
+    function _getFee(address arbitrator, uint256 arbitratorFeeRate, uint256 duration) internal view returns (uint256) {
         // Calculate and validate fee
         // fee = stake * (duration / secondsPerYear) * (feeRate / feeRateMultiplier)
-        fee = (arbitratorInfo.ethAmount * duration * arbitratorInfo.currentFeeRate) / (SECONDS_PER_YEAR * FEE_RATE_MULTIPLIER);
-        
-        return fee;
+        uint256 totalStake = arbitratorManager.getAvailableStake(arbitrator);
+        return (totalStake * duration * arbitratorFeeRate) / (SECONDS_PER_YEAR * FEE_RATE_MULTIPLIER);
     }
 
     function setArbitratorManager(address _arbitratorManager) external onlyOwner {
