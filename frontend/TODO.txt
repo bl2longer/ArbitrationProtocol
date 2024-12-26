@@ -1,14 +1,27 @@
 ===> Target release date: dec 30
 
+Email service for arbiters:
+  - "Arbiter can register an email for the arbitration notification, we need a background script to check the events"
+  - "new arbitration request" event. poll subgraph (better?) or listen to evm events.
+  - need to create a backend
+  - we already have bel2.org belayer2.org in zoho mail
+- TBD: need to be able to edit revenue addresses 
+- PROD bug: 
+  - Invalid parameters were provided to the RPC method. Double check you have provided the correct parameters. URL: https://api2.elastos.net/esc Request body: {"method":"eth_call","params":[{"data":"0x63507956","to":""},"latest"]} Raw Call Arguments: to: data: 0x63507956 Contract Call: address: function: getAllConfigs() Docs: https://viem.sh/docs/contract/readContract Details: invalid argument 0: hex string has length 0, want 40 for common.Address Version: viem@2.21.55
+    - then cannot edit staking
+- bug: arbiter createdAt in model should be int not string
+
 - My dashboard:
   - Withdraw stake: show current stake (coin, NFTs)
     - need subgraph to save nft info
       - need contract events to return staked token ids
   - Ability to stake NFT (incl approval)
-- Tooltips:
-  - arbiter term end
+- Tooltips
 - Transaction list:
-  - Submit arbitration dialog is broken + styling
+  - Submit arbitration:
+    - rename to "submit signature" dialog is broken + styling
+    - There is a data that need to be signed, you should call the wallet to sign it
+    - only the tx arbiter can see and do the action
 
 - Mobile view: header menu is broken
 

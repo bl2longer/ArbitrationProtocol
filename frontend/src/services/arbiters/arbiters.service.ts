@@ -84,7 +84,7 @@ export const fetchArbiters = async (chain: ChainConfig, start = 0, limit = 100, 
 
     const arbiterInfos = pageArbiters.slice(start, start + limit);
 
-    console.log("Fetched arbiterss", arbiterInfos);
+    console.log("Fetched arbiters", arbiterInfos);
 
     return {
       arbiters: arbiterInfos.map(a => dtoToClass(a, ArbiterInfo)),
