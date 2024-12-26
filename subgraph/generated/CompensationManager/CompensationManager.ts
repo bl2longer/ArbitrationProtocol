@@ -10,6 +10,24 @@ import {
   BigInt,
 } from "@graphprotocol/graph-ts";
 
+export class ArbitratorManagerUpdated extends ethereum.Event {
+  get params(): ArbitratorManagerUpdated__Params {
+    return new ArbitratorManagerUpdated__Params(this);
+  }
+}
+
+export class ArbitratorManagerUpdated__Params {
+  _event: ArbitratorManagerUpdated;
+
+  constructor(event: ArbitratorManagerUpdated) {
+    this._event = event;
+  }
+
+  get newArbitratorManager(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
 export class CompensationClaimed extends ethereum.Event {
   get params(): CompensationClaimed__Params {
     return new CompensationClaimed__Params(this);
@@ -54,6 +72,24 @@ export class CompensationWithdrawn__Params {
   }
 }
 
+export class ConfigManagerUpdated extends ethereum.Event {
+  get params(): ConfigManagerUpdated__Params {
+    return new ConfigManagerUpdated__Params(this);
+  }
+}
+
+export class ConfigManagerUpdated__Params {
+  _event: ConfigManagerUpdated;
+
+  constructor(event: ConfigManagerUpdated) {
+    this._event = event;
+  }
+
+  get newConfigManager(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
 export class Initialized extends ethereum.Event {
   get params(): Initialized__Params {
     return new Initialized__Params(this);
@@ -91,6 +127,42 @@ export class OwnershipTransferred__Params {
 
   get newOwner(): Address {
     return this._event.parameters[1].value.toAddress();
+  }
+}
+
+export class TransactionManagerUpdated extends ethereum.Event {
+  get params(): TransactionManagerUpdated__Params {
+    return new TransactionManagerUpdated__Params(this);
+  }
+}
+
+export class TransactionManagerUpdated__Params {
+  _event: TransactionManagerUpdated;
+
+  constructor(event: TransactionManagerUpdated) {
+    this._event = event;
+  }
+
+  get newTransactionManager(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
+export class ZkServiceUpdated extends ethereum.Event {
+  get params(): ZkServiceUpdated__Params {
+    return new ZkServiceUpdated__Params(this);
+  }
+}
+
+export class ZkServiceUpdated__Params {
+  _event: ZkServiceUpdated;
+
+  constructor(event: ZkServiceUpdated) {
+    this._event = event;
+  }
+
+  get newZkService(): Address {
+    return this._event.parameters[0].value.toAddress();
   }
 }
 
@@ -697,6 +769,126 @@ export class RenounceOwnershipCall__Outputs {
   _call: RenounceOwnershipCall;
 
   constructor(call: RenounceOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class SetArbitratorManagerCall extends ethereum.Call {
+  get inputs(): SetArbitratorManagerCall__Inputs {
+    return new SetArbitratorManagerCall__Inputs(this);
+  }
+
+  get outputs(): SetArbitratorManagerCall__Outputs {
+    return new SetArbitratorManagerCall__Outputs(this);
+  }
+}
+
+export class SetArbitratorManagerCall__Inputs {
+  _call: SetArbitratorManagerCall;
+
+  constructor(call: SetArbitratorManagerCall) {
+    this._call = call;
+  }
+
+  get _arbitratorManager(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetArbitratorManagerCall__Outputs {
+  _call: SetArbitratorManagerCall;
+
+  constructor(call: SetArbitratorManagerCall) {
+    this._call = call;
+  }
+}
+
+export class SetConfigManagerCall extends ethereum.Call {
+  get inputs(): SetConfigManagerCall__Inputs {
+    return new SetConfigManagerCall__Inputs(this);
+  }
+
+  get outputs(): SetConfigManagerCall__Outputs {
+    return new SetConfigManagerCall__Outputs(this);
+  }
+}
+
+export class SetConfigManagerCall__Inputs {
+  _call: SetConfigManagerCall;
+
+  constructor(call: SetConfigManagerCall) {
+    this._call = call;
+  }
+
+  get _configManager(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetConfigManagerCall__Outputs {
+  _call: SetConfigManagerCall;
+
+  constructor(call: SetConfigManagerCall) {
+    this._call = call;
+  }
+}
+
+export class SetTransactionManagerCall extends ethereum.Call {
+  get inputs(): SetTransactionManagerCall__Inputs {
+    return new SetTransactionManagerCall__Inputs(this);
+  }
+
+  get outputs(): SetTransactionManagerCall__Outputs {
+    return new SetTransactionManagerCall__Outputs(this);
+  }
+}
+
+export class SetTransactionManagerCall__Inputs {
+  _call: SetTransactionManagerCall;
+
+  constructor(call: SetTransactionManagerCall) {
+    this._call = call;
+  }
+
+  get _transactionManager(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetTransactionManagerCall__Outputs {
+  _call: SetTransactionManagerCall;
+
+  constructor(call: SetTransactionManagerCall) {
+    this._call = call;
+  }
+}
+
+export class SetZkServiceCall extends ethereum.Call {
+  get inputs(): SetZkServiceCall__Inputs {
+    return new SetZkServiceCall__Inputs(this);
+  }
+
+  get outputs(): SetZkServiceCall__Outputs {
+    return new SetZkServiceCall__Outputs(this);
+  }
+}
+
+export class SetZkServiceCall__Inputs {
+  _call: SetZkServiceCall;
+
+  constructor(call: SetZkServiceCall) {
+    this._call = call;
+  }
+
+  get _zkService(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetZkServiceCall__Outputs {
+  _call: SetZkServiceCall;
+
+  constructor(call: SetZkServiceCall) {
     this._call = call;
   }
 }

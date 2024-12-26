@@ -304,6 +304,10 @@ export class StakeAdded__Params {
   get amount(): BigInt {
     return this._event.parameters[2].value.toBigInt();
   }
+
+  get nftTokenIds(): Array<BigInt> {
+    return this._event.parameters[3].value.toBigIntArray();
+  }
 }
 
 export class StakeWithdrawn extends ethereum.Event {
@@ -419,7 +423,7 @@ export class ArbitratorManager__getArbitratorInfoResultValue0Struct extends ethe
     return this[15].toAddress();
   }
 
-  get lastCompletedWorkTime(): BigInt {
+  get lastSubmittedWorkTime(): BigInt {
     return this[16].toBigInt();
   }
 }
@@ -755,6 +759,36 @@ export class ConstructorCall__Outputs {
   }
 }
 
+export class FrozenArbitratorCall extends ethereum.Call {
+  get inputs(): FrozenArbitratorCall__Inputs {
+    return new FrozenArbitratorCall__Inputs(this);
+  }
+
+  get outputs(): FrozenArbitratorCall__Outputs {
+    return new FrozenArbitratorCall__Outputs(this);
+  }
+}
+
+export class FrozenArbitratorCall__Inputs {
+  _call: FrozenArbitratorCall;
+
+  constructor(call: FrozenArbitratorCall) {
+    this._call = call;
+  }
+
+  get arbitrator(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class FrozenArbitratorCall__Outputs {
+  _call: FrozenArbitratorCall;
+
+  constructor(call: FrozenArbitratorCall) {
+    this._call = call;
+  }
+}
+
 export class InitTransactionAndCompensationManagerCall extends ethereum.Call {
   get inputs(): InitTransactionAndCompensationManagerCall__Inputs {
     return new InitTransactionAndCompensationManagerCall__Inputs(this);
@@ -870,28 +904,20 @@ export class RegisterArbitratorByStakeETHCall__Inputs {
     this._call = call;
   }
 
-  get operator(): Address {
-    return this._call.inputValues[0].value.toAddress();
+  get defaultBtcAddress(): string {
+    return this._call.inputValues[0].value.toString();
   }
 
-  get revenueAddress(): Address {
-    return this._call.inputValues[1].value.toAddress();
-  }
-
-  get btcAddress(): string {
-    return this._call.inputValues[2].value.toString();
-  }
-
-  get btcPubKey(): Bytes {
-    return this._call.inputValues[3].value.toBytes();
+  get defaultBtcPubKey(): Bytes {
+    return this._call.inputValues[1].value.toBytes();
   }
 
   get feeRate(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
+    return this._call.inputValues[2].value.toBigInt();
   }
 
   get deadline(): BigInt {
-    return this._call.inputValues[5].value.toBigInt();
+    return this._call.inputValues[3].value.toBigInt();
   }
 }
 
@@ -924,28 +950,20 @@ export class RegisterArbitratorByStakeNFTCall__Inputs {
     return this._call.inputValues[0].value.toBigIntArray();
   }
 
-  get operator(): Address {
-    return this._call.inputValues[1].value.toAddress();
+  get defaultBtcAddress(): string {
+    return this._call.inputValues[1].value.toString();
   }
 
-  get revenueAddress(): Address {
-    return this._call.inputValues[2].value.toAddress();
-  }
-
-  get btcAddress(): string {
-    return this._call.inputValues[3].value.toString();
-  }
-
-  get btcPubKey(): Bytes {
-    return this._call.inputValues[4].value.toBytes();
+  get defaultBtcPubKey(): Bytes {
+    return this._call.inputValues[2].value.toBytes();
   }
 
   get feeRate(): BigInt {
-    return this._call.inputValues[5].value.toBigInt();
+    return this._call.inputValues[3].value.toBigInt();
   }
 
   get deadline(): BigInt {
-    return this._call.inputValues[6].value.toBigInt();
+    return this._call.inputValues[4].value.toBigInt();
   }
 }
 

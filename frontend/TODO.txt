@@ -1,6 +1,6 @@
 ===> Target release date: dec 30
 
-- update register arbiters: use default btc info.
+- switch to mainnet staging
 - bug: arbiter createdAt in model should be int not string
 
 - My dashboard:
@@ -11,9 +11,7 @@
 - Tooltips
 - Transaction list:
   - Submit arbitration:
-    - rename to "submit signature" dialog is broken + styling
     - There is a data that need to be signed, you should call the wallet to sign it
-    - only the tx arbiter can see and do the action
 
 - Email service for arbiters:
   - "Arbiter can register an email for the arbitration notification, we need a background script to check the events"
@@ -21,7 +19,7 @@
   - need to create a backend
   - we already have bel2.org belayer2.org in zoho mail
 
-- Mobile view: header menu is broken
+- Mobile view: check and fix
 
 P2:
 - unregister dapp: from dapps list of from my dashboard?
@@ -30,15 +28,15 @@ P2:
 - Finish to replace headless UI components with https://ui.shadcn.com/
 - register dapp: intro about what a dapp is
 
-elastos testnet contract address: {
-    "CONFIG_MANAGER": "0x941796c51443493d2F5C03D3c40d3ff0F0B0BD30",
-    "DAPP_REGISTRY": "0xC9B498e769e1A7670f747beBB3A3b5172DD122D1",
-    "ERC721_ADDRESS": "0x6C91352F89b169843D8B50E1A34B60a46e363841",
-    "BNFT_INFO": "0x3fB20197AD095724662bF0AD499F3994bfD222D3",
-    "ZK_SERVICE": "0x462FeA614D6Af68c8B72cB677EF0b66E33a0fB8A",
-    "ARBITRATOR_MANAGER": "0x42FcB0c75D3FE234EFD1d529Cd31c9A8Ab1EB4C6",
-    "TRANSACTION_MANAGER": "0xD206be45b53Fa5C2065049c7a70B1aa1755a9475",
-    "COMPENSATION_MANAGER": "0x7c31A7185660d5c40B1A02D60dbcCfd221d40787"
+staging contract is deployed : {
+    "ERC721_ADDRESS": "0x8e286664c6B8811015F936592Dd654e94Af3F494",
+    "BNFT_INFO": "0x0a218CC87C48BA26D60f438860710f6c0D4AA050",
+    "ZK_SERVICE": "0x8FD388522d542711cBc3A3c1067AcE768dab0B25",
+    "CONFIG_MANAGER": "0x4421c63241A262C423277FFA82C376953072d25f",
+    "DAPP_REGISTRY": "0x538f5e27299384c0FEF434d3359d948277E13C85",
+    "ARBITRATOR_MANAGER": "0x611E86f21ff95a36d0675D12c287db32B2B9DFa8",
+    "TRANSACTION_MANAGER": "0xA10b92006743Ef3B12077da67e465963743b03D3",
+    "COMPENSATION_MANAGER": "0x34832C9283f9915DCff196241d00D7306147e151"
 }
 
 NFT INFO:

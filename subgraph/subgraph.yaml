@@ -5,11 +5,11 @@ schema:
 dataSources:
   - name: ArbitratorManager
     kind: ethereum/contract
-    network: esc-testnet
+    network: esc-staging
     source:
       abi: ArbitratorManager
-      address: "0xFd3b0FD49df58a465Ac8E62f35d913b27cfc04B3"
-      startBlock: 21099754
+      address: "0x611E86f21ff95a36d0675D12c287db32B2B9DFa8"
+      startBlock: 28360443
     mapping:
       file: ./src/event-handlers/ArbitratorManager.ts
       language: wasm/assemblyscript
@@ -34,7 +34,7 @@ dataSources:
           handler: handleOwnershipTransferred
         - event: RevenueAddressesSet(indexed address,address,bytes,string)
           handler: handleRevenueAddressesSet
-        - event: StakeAdded(indexed address,indexed address,uint256)
+        - event: StakeAdded(indexed address,indexed address,uint256,uint256[])
           handler: handleStakeAdded
         - event: StakeWithdrawn(indexed address,indexed address,uint256)
           handler: handleStakeWithdrawn
@@ -45,11 +45,11 @@ dataSources:
           handler: handleArbitratorRegistered
   - name: TransactionManager
     kind: ethereum/contract
-    network: esc-testnet
+    network: esc-staging
     source:
       abi: TransactionManager
-      address: "0xD206be45b53Fa5C2065049c7a70B1aa1755a9475"
-      startBlock: 21033174
+      address: "0xA10b92006743Ef3B12077da67e465963743b03D3"
+      startBlock: 28330216
     mapping:
       file: ./src/event-handlers/TransactionManager.ts
       language: wasm/assemblyscript
@@ -74,11 +74,11 @@ dataSources:
           handler: handleTransactionRegistered
   - name: CompensationManager
     kind: ethereum/contract
-    network: esc-testnet
+    network: esc-staging
     source:
       abi: CompensationManager
-      address: "0x7c31A7185660d5c40B1A02D60dbcCfd221d40787"
-      startBlock: 21033067
+      address: "0x34832C9283f9915DCff196241d00D7306147e151"
+      startBlock: 28330302
     mapping:
       file: ./src/event-handlers/CompensationManager.ts
       language: wasm/assemblyscript
@@ -97,11 +97,11 @@ dataSources:
           handler: handleCompensationWithdrawn
   - name: DAppRegistry
     kind: ethereum/contract
-    network: esc-testnet
+    network: esc-staging
     source:
       abi: DAppRegistry
-      address: "0xC9B498e769e1A7670f747beBB3A3b5172DD122D1"
-      startBlock: 21033337
+      address: "0x538f5e27299384c0FEF434d3359d948277E13C85"
+      startBlock: 28329774
     mapping:
       file: ./src/event-handlers/DAppRegistry.ts
       language: wasm/assemblyscript
@@ -124,11 +124,11 @@ dataSources:
           handler: handleDAppSuspended
   - name: BPosNFT
     kind: ethereum/contract
-    network: esc-testnet
+    network: esc-staging
     source:
       abi: BPosNFT
-      address: "0x6C91352F89b169843D8B50E1A34B60a46e363841"
-      startBlock: 17291352
+      address: "0x8e286664c6B8811015F936592Dd654e94Af3F494"
+      startBlock: 18033297
     mapping:
       file: ./src/event-handlers/BPosNFT.ts
       language: wasm/assemblyscript

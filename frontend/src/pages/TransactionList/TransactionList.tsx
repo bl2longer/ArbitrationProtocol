@@ -6,6 +6,7 @@ import { SearchInput } from '@/components/base/SearchInput';
 import { StatusLabel } from '@/components/base/StatusLabel';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 import { useTransactions } from '@/services/transactions/hooks/useTransactions';
 import { Transaction } from '@/services/transactions/model/transaction';
 import { formatDateWithoutYear } from '@/utils/dates';
@@ -13,7 +14,7 @@ import { formatAddress } from '@/utils/formatAddress';
 import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
 import { RefreshCwIcon } from 'lucide-react';
 import { FC, useMemo, useState } from 'react';
-import { SubmitArbitrationDialog } from './dialogs/SubmitArbitrationDialog';
+import { SubmitSignatureDialog } from './dialogs/SubmitSignatureDialog';
 
 const fieldLabels: Partial<Record<keyof Transaction, string>> = {
   dapp: 'DApp',
@@ -85,7 +86,7 @@ export default function TransactionList() {
 
       {loading && <Loading />}
 
-      <SubmitArbitrationDialog transaction={selectedTransaction} isOpen={isSignDialogOpen} onHandleClose={() => setIsSignDialogOpen(false)} />
+      <SubmitSignatureDialog transaction={selectedTransaction} isOpen={isSignDialogOpen} onHandleClose={() => setIsSignDialogOpen(false)} />
 
     </PageContainer>
   );
@@ -95,6 +96,7 @@ const TransactionRow: FC<{
   transaction: Transaction;
   onSubmitArbitration: () => void;
 }> = ({ transaction, onSubmitArbitration }) => {
+  const { evmAccount } = useWalletContext();
 
   const formatValue = (key: keyof typeof fieldLabels, value: any) => {
     if (key === 'startTime' || key === 'deadline')
@@ -120,11 +122,11 @@ const TransactionRow: FC<{
         </TableCell>
       ))}
       <TableCell>
-        {transaction.status === "Active" && (
-          <Button onClick={onSubmitArbitration}>
-            Submit Arbitration
-          </Button>
-        )}
+        {/* Transaction's elected arbiter can sign.*/}
+        {
+          transaction.status === "Active" && transaction.arbiter === evmAccount &&
+          <Button onClick={onSubmitArbitration}>Submit signature</Button>
+        }
       </TableCell>
     </TableRow>
   )

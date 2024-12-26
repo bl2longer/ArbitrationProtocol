@@ -28,7 +28,7 @@ function getCompensationClaim(block: ethereum.Block, id: string): CompensationCl
 
   const compensationClaim = new CompensationClaim(id);
   compensationClaim.claimType = "Unknown";
-  compensationClaim.createdAt = block.timestamp;
+  compensationClaim.createdAt = block.timestamp.toI32();
 
   return compensationClaim;
 }

@@ -43,7 +43,7 @@ function getDApp(block: ethereum.Block, id: string): DApp {
 
   const dapp = new DApp(id);
   dapp.address = id;
-  dapp.createdAt = block.timestamp;
+  dapp.createdAt = block.timestamp.toI32();
   dapp.status = "None";
 
   return dapp;

@@ -16,7 +16,6 @@ export const useArbiterRegister = () => {
    */
   const registerArbiterByStakeETH = useCallback(async (
     stakeAmount: bigint,
-    revenueAddress: string,
     btcAddress: string,
     btcPubKey: string,
     feeRate: bigint,
@@ -27,9 +26,6 @@ export const useArbiterRegister = () => {
       abi,
       functionName: 'registerArbitratorByStakeETH',
       args: [
-        3232, 32234, 234, 23432,
-        evmAccount, // Default operator is the connected wallet
-        revenueAddress,
         btcAddress,
         `0x${btcPubKey}`,
         feeRate * 100n, // 1% must be encoded as 100
@@ -40,14 +36,13 @@ export const useArbiterRegister = () => {
 
     console.log("Register arbiter by staking ETH result:", hash, receipt)
     return !!receipt;
-  }, [activeChain, evmAccount, writeContract]);
+  }, [activeChain, writeContract]);
 
   /**
    * Registers by staking BPos NFTs
    */
   const registerArbiterByStakeNFT = useCallback(async (
     tokenIds: string[],
-    revenueAddress: string,
     btcAddress: string,
     btcPubKey: string,
     feeRate: bigint,
@@ -58,10 +53,7 @@ export const useArbiterRegister = () => {
       abi,
       functionName: 'registerArbitratorByStakeNFT',
       args: [
-        212134,
         tokenIds,
-        evmAccount, // Default operator is the connected wallet
-        revenueAddress,
         btcAddress,
         `0x${btcPubKey}`,
         feeRate * 100n, // 1% must be encoded as 100
@@ -71,7 +63,7 @@ export const useArbiterRegister = () => {
 
     console.log("Register arbiter by staking NFT result:", hash, receipt)
     return !!receipt;
-  }, [activeChain, evmAccount, writeContract]);
+  }, [activeChain, writeContract]);
 
   return {
     registerArbiterByStakeETH,

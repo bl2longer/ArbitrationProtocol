@@ -97,7 +97,6 @@ export const RegistrationForm: FC<{
 
         if (await registerArbiterByStakeETH(
           BigInt(values.coinAmount),
-          values.revenueAddress,
           values.operatorBTCAddress,
           values.operatorBTCPubKey,
           BigInt(values.feeRate),
@@ -112,7 +111,6 @@ export const RegistrationForm: FC<{
 
         if (await registerArbiterByStakeNFT(
           values.tokenIds,
-          values.revenueAddress,
           values.operatorBTCAddress,
           values.operatorBTCPubKey,
           BigInt(values.feeRate),

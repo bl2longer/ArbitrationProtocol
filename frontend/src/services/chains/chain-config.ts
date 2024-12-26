@@ -2,6 +2,7 @@ import { NetworkMode } from "@/services/network/network";
 import { TokenOrNative } from "@/services/tokens/token-or-native";
 
 export type ChainConfig = {
+  [x: string]: {};
   name: string; // Displayable chain name
   rpcs: string[]; // List of chain RPC endpoints
   explorers: string[]; // List of block explorer API endpoints

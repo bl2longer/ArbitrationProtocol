@@ -324,6 +324,19 @@
           "type": "address"
         }
       ],
+      "name": "frozenArbitrator",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "arbitrator",
+          "type": "address"
+        }
+      ],
       "name": "getArbitratorInfo",
       "outputs": [
         {
@@ -410,7 +423,7 @@
             },
             {
               "internalType": "uint256",
-              "name": "lastCompletedWorkTime",
+              "name": "lastSubmittedWorkTime",
               "type": "uint256"
             }
           ],
@@ -551,12 +564,12 @@
       "inputs": [
         {
           "internalType": "string",
-          "name": "defaultRevenueBtcAddress",
+          "name": "defaultBtcAddress",
           "type": "string"
         },
         {
           "internalType": "bytes",
-          "name": "defaultRevenueBtcPubKey",
+          "name": "defaultBtcPubKey",
           "type": "bytes"
         },
         {
@@ -584,12 +597,12 @@
         },
         {
           "internalType": "string",
-          "name": "defaultRevenueBtcAddress",
+          "name": "defaultBtcAddress",
           "type": "string"
         },
         {
           "internalType": "bytes",
-          "name": "defaultRevenueBtcPubKey",
+          "name": "defaultBtcPubKey",
           "type": "bytes"
         },
         {

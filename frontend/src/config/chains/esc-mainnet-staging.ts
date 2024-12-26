@@ -1,0 +1,23 @@
+import { ChainConfig } from '@/services/chains/chain-config';
+import { clone } from 'lodash';
+import { escMainnetProd } from './esc-mainnet-prod';
+
+export const escMainnetStaging: ChainConfig = clone<ChainConfig>(escMainnetProd);
+
+const hasCustomLocalSubgraphEndpoint = import.meta.env.VITE_APP_LOCAL_SUBGRAPH_ENDPOINT!.length > 0;
+const subgraphEndpoint = hasCustomLocalSubgraphEndpoint ? import.meta.env.VITE_APP_LOCAL_SUBGRAPH_ENDPOINT! : "https://graph.bel2.org/subgraphs/name/bel2-loan-esc-staging";
+
+// Start from prod config, and update a few things
+escMainnetStaging.subgraph = {
+  endpoint: subgraphEndpoint
+};
+
+escMainnetStaging.contracts = {
+  arbitratorManager: "0x611E86f21ff95a36d0675D12c287db32B2B9DFa8",
+  compensationManager: "0x34832C9283f9915DCff196241d00D7306147e151",
+  configManager: "0x4421c63241A262C423277FFA82C376953072d25f",
+  dappRegistry: "0x538f5e27299384c0FEF434d3359d948277E13C85",
+  transactionManager: "0xA10b92006743Ef3B12077da67e465963743b03D3",
+  nftInfo: "0x0a218CC87C48BA26D60f438860710f6c0D4AA050",
+  bPoSNFT: "0x8e286664c6B8811015F936592Dd654e94Af3F494"
+};

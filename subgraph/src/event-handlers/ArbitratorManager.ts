@@ -34,6 +34,8 @@ export function handleStakeAdded(event: StakeAdded): void {
     const assetAddress = event.params.assetAddress.toHexString();
     const amount = event.params.amount;
 
+    // TODO: save event.params.nftTokenIds so UI can easily get the list of staked NFTs
+
     const arbitratorInfo = getArbitratorInfo(event.block, arbitratorAddress);
 
     if (assetAddress == ZERO_ADDRESS) // Native token staked - strict equality doesn't work here

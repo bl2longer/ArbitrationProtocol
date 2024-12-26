@@ -112,6 +112,24 @@ export class OwnershipTransferred__Params {
   }
 }
 
+export class SetArbitratorManager extends ethereum.Event {
+  get params(): SetArbitratorManager__Params {
+    return new SetArbitratorManager__Params(this);
+  }
+}
+
+export class SetArbitratorManager__Params {
+  _event: SetArbitratorManager;
+
+  constructor(event: SetArbitratorManager) {
+    this._event = event;
+  }
+
+  get arbitratorManager(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
 export class TransactionCancelled extends ethereum.Event {
   get params(): TransactionCancelled__Params {
     return new TransactionCancelled__Params(this);
@@ -1043,6 +1061,36 @@ export class RequestArbitrationCall__Outputs {
   _call: RequestArbitrationCall;
 
   constructor(call: RequestArbitrationCall) {
+    this._call = call;
+  }
+}
+
+export class SetArbitratorManagerCall extends ethereum.Call {
+  get inputs(): SetArbitratorManagerCall__Inputs {
+    return new SetArbitratorManagerCall__Inputs(this);
+  }
+
+  get outputs(): SetArbitratorManagerCall__Outputs {
+    return new SetArbitratorManagerCall__Outputs(this);
+  }
+}
+
+export class SetArbitratorManagerCall__Inputs {
+  _call: SetArbitratorManagerCall;
+
+  constructor(call: SetArbitratorManagerCall) {
+    this._call = call;
+  }
+
+  get _arbitratorManager(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetArbitratorManagerCall__Outputs {
+  _call: SetArbitratorManagerCall;
+
+  constructor(call: SetArbitratorManagerCall) {
     this._call = call;
   }
 }
