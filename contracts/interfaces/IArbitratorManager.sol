@@ -94,6 +94,7 @@ interface IArbitratorManager {
      * @param arbitrator The address of the arbitrator to be frozen
      */
     function frozenArbitrator(address arbitrator) external;
+    function isFrozenStatus(address arbitrator) external view returns (bool);
 
     // Query interfaces
     function getArbitratorInfo(address arbitrator) external view returns (DataTypes.ArbitratorInfo memory);

@@ -506,12 +506,8 @@ contract ArbitratorManager is
         if (arbitrator.status != DataTypes.ArbitratorStatus.Active) {
             return false;
         }
-        // no set deadline
-        if (arbitrator.deadLine == 0) {
-            return false;
-        }
         // check deadline time in life circle
-        if (arbitrator.deadLine <= block.timestamp) {
+        if (arbitrator.deadLine > 0 && arbitrator.deadLine <= block.timestamp) {
             return false;
         }
         // freeze lock time
@@ -520,6 +516,12 @@ contract ArbitratorManager is
         }
         uint256 totalStakeValue = this.getAvailableStake(arbitratorAddress);
         return totalStakeValue >= configManager.getConfig(configManager.MIN_STAKE());
+    }
+
+    function isFrozenStatus(address arbitrator) external view returns (bool) {
+        DataTypes.ArbitratorInfo memory arbitrator = arbitrators[arbitrator];
+        require(arbitrator.arbitrator != address(0), Errors.ARBITRATOR_NOT_REGISTERED);
+        return isFrozenArbitrator(arbitrator);
     }
 
     function isFrozenArbitrator(DataTypes.ArbitratorInfo memory arbitrator) internal view returns(bool) {

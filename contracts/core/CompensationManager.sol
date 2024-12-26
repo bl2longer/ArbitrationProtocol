@@ -291,9 +291,6 @@ contract CompensationManager is
         // Get transaction details
         DataTypes.Transaction memory transaction = transactionManager.getTransactionById(txId);
         if (transaction.arbitrator != msg.sender) revert(Errors.NOT_TRANSACTION_ARBITRATOR);
-        if (!transactionManager.isAbleCompletedTransaction(txId)){
-            revert(Errors.CANNOT_CLAIM_ARBITRATOR_FEE);
-        }
         // Transfer fees and terminate transaction
         (uint256 arbitratorFee, ) = transactionManager.transferArbitrationFee(txId);
 
