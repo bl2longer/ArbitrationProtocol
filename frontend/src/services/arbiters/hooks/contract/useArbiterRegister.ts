@@ -1,6 +1,7 @@
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 import { useActiveEVMChainConfig } from '@/services/chains/hooks/useActiveEVMChainConfig';
 import { useContractCall } from '@/services/evm/hooks/useContractCall';
+import BigNumber from 'bignumber.js';
 import { useCallback } from 'react';
 import { parseEther } from 'viem';
 import { abi } from "../../../../../contracts/core/ArbitratorManager.sol/ArbitratorManager.json";
@@ -15,11 +16,11 @@ export const useArbiterRegister = () => {
    * @param stakeAmount human readable amount of native coins
    */
   const registerArbiterByStakeETH = useCallback(async (
-    stakeAmount: bigint,
+    stakeAmount: BigNumber,
     btcAddress: string,
     btcPubKey: string,
-    feeRate: bigint,
-    deadline: bigint
+    feeRate: number,
+    deadline: number
   ): Promise<boolean> => {
     const { hash, receipt } = await writeContract({
       contractAddress: activeChain?.contracts.arbitratorManager,
@@ -28,7 +29,7 @@ export const useArbiterRegister = () => {
       args: [
         btcAddress,
         `0x${btcPubKey}`,
-        feeRate * 100n, // 1% must be encoded as 100
+        feeRate * 100, // 1% must be encoded as 100
         deadline
       ],
       value: parseEther(stakeAmount.toString())
@@ -45,8 +46,8 @@ export const useArbiterRegister = () => {
     tokenIds: string[],
     btcAddress: string,
     btcPubKey: string,
-    feeRate: bigint,
-    deadline: bigint
+    feeRate: number,
+    deadline: number
   ): Promise<boolean> => {
     const { hash, receipt } = await writeContract({
       contractAddress: activeChain?.contracts.arbitratorManager,
@@ -56,7 +57,7 @@ export const useArbiterRegister = () => {
         tokenIds,
         btcAddress,
         `0x${btcPubKey}`,
-        feeRate * 100n, // 1% must be encoded as 100
+        feeRate * 100, // 1% must be encoded as 100
         deadline
       ]
     });

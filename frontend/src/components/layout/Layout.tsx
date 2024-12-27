@@ -1,7 +1,20 @@
-import { FC } from 'react';
+import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
+import { useOwnedArbiter } from '@/services/arbiters/hooks/useOwnedArbiter';
+import { useActiveEVMChainConfig } from '@/services/chains/hooks/useActiveEVMChainConfig';
+import { FC, useEffect } from 'react';
 import { Navbar } from './Navbar';
 
 const Layout: FC<{ children: React.ReactNode }> = ({ children }) => {
+  const activeChain = useActiveEVMChainConfig();
+  const { evmAccount } = useWalletContext();
+  const { fetchOwnedArbiter } = useOwnedArbiter();
+
+  // Reset when chain of wallet changes
+  useEffect(() => {
+    console.log("BLAHHH")
+    void fetchOwnedArbiter();
+  }, [activeChain, evmAccount, fetchOwnedArbiter]);
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Top navigation */}

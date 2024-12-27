@@ -24,7 +24,8 @@ export const EditSettingsDialog: FC<{
   arbiter: ArbiterInfo;
   isOpen: boolean;
   onHandleClose: () => void;
-}> = ({ arbiter, isOpen, onHandleClose, ...rest }) => {
+  onContractUpdated: () => void;
+}> = ({ arbiter, isOpen, onContractUpdated, onHandleClose, ...rest }) => {
   const { isPending, updateParams } = useArbiterParamsUpdate();
   const { successToast } = useToasts();
 
@@ -52,12 +53,13 @@ export const EditSettingsDialog: FC<{
       successToast(`Arbiter settings successfully updated!`);
 
       // Update local model
-      arbiter.currentFeeRate = values.feeRate;
+      arbiter.currentFeeRate = values.feeRate * 100;
       arbiter.lastArbitrationTime = values.deadline.getTime() / 1000;
 
+      onContractUpdated();
       onHandleClose();
     }
-  }, [updateParams, successToast, arbiter, onHandleClose]);
+  }, [updateParams, successToast, arbiter, onContractUpdated, onHandleClose]);
 
   if (!arbiter)
     return null;

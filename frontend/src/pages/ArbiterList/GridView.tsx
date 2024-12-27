@@ -3,7 +3,7 @@ import { StatusLabel } from "@/components/base/StatusLabel";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ArbiterInfo } from "@/services/arbiters/model/arbiter-info";
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
-import { formatDateWithoutYear } from "@/utils/dates";
+import { formatDate } from "@/utils/dates";
 import { formatAddress } from "@/utils/formatAddress";
 import { ChevronsUpDown } from "lucide-react";
 import { FC } from "react";
@@ -29,8 +29,8 @@ const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
         <CopyField value={arbiter.address} />
       </h3>
       <StatusLabel
-        title={arbiter.isPaused() ? 'Paused' : 'Active'}
-        color={arbiter.isPaused() ? 'red' : 'green'}
+        title={arbiter.status}
+        color={arbiter.isActive() ? 'green' : 'red'}
       />
     </div>
     <div className="space-y-3 text-sm">
@@ -40,7 +40,7 @@ const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
       </div>
       <div className="flex justify-between">
         <span className="text-gray-600">Term end</span>
-        <span>{termEnd ? formatDateWithoutYear(termEnd) : '-'}</span>
+        <span>{termEnd ? formatDate(termEnd) : '-'}</span>
       </div>
       <div className="flex justify-between">
         <span className="text-gray-600">Stake</span>

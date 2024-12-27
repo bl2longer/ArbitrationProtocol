@@ -18,7 +18,8 @@ export const EditOperatorDialog: FC<{
   arbiter: ArbiterInfo;
   isOpen: boolean;
   onHandleClose: () => void;
-}> = ({ arbiter, isOpen, onHandleClose, ...rest }) => {
+  onContractUpdated: () => void;
+}> = ({ arbiter, isOpen, onContractUpdated, onHandleClose, ...rest }) => {
   const { isPending, updateOperatorInfo } = useArbiterOperatorUpdate();
   const { successToast } = useToasts();
 
@@ -49,9 +50,10 @@ export const EditOperatorDialog: FC<{
       arbiter.operatorBtcAddress = values.operatorBTCAddress;
       arbiter.operatorBtcPubKey = values.operatorBTCPubKey;
 
+      onContractUpdated();
       onHandleClose();
     }
-  }, [updateOperatorInfo, successToast, arbiter, onHandleClose]);
+  }, [updateOperatorInfo, successToast, arbiter, onContractUpdated, onHandleClose]);
 
   if (!arbiter)
     return null;

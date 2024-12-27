@@ -1,16 +1,19 @@
 import { ArbiterInfo as ArbiterInfoDTO } from "@/services/subgraph/dto/arbiter-info";
 import { tokenToReadableValue } from "@/services/tokens/tokens";
+import BigNumber from "bignumber.js";
 import { Expose, Transform, Type } from "class-transformer";
 import moment, { Moment } from "moment";
+import { zeroAddress } from "viem";
+import { ContractArbiterInfo } from "../dto/contract-arbiter-info";
 
 export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdAt" | "currentFeeRate" | "pendingFeeRate"> {
   @Expose() public id: string;
   @Expose() public address: string;
-  @Expose() @Transform(({ value }) => tokenToReadableValue(value, 18)) public ethAmount: bigint;
+  @Expose() @Transform(({ value }) => tokenToReadableValue(value, 18)) public ethAmount: BigNumber;
   @Expose() public status: string;
   @Expose() @Transform(({ value }) => new Date(value * 1000)) public createdAt: Date;
   @Expose() public lastArbitrationTime: number;
-  @Expose() @Type(() => Number) public currentFeeRate: number;
+  @Expose() @Type(() => Number) public currentFeeRate: number; // Fee rate with 100 basis. 100 means 1%
   @Expose() @Type(() => Number) public pendingFeeRate: number;
   @Expose() public activeTransactionId: string;
   @Expose() public operatorEvmAddress: string;
@@ -20,8 +23,12 @@ export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdA
   @Expose() public revenueBtcAddress: string;
   @Expose() public revenueBtcPubKey: string;
 
+  public isActive(): boolean {
+    return this.status === "Active";
+  }
+
   public isPaused(): boolean {
-    return this.status === "Paused"; // TODO: improve with enum
+    return this.status === "Paused";
   }
 
   public getTermEndDate(): Moment {
@@ -29,5 +36,36 @@ export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdA
       return null;
 
     return moment.unix(this.lastArbitrationTime);
+  }
+
+  public static fromContractArbiterInfo(contractInfo: ContractArbiterInfo): ArbiterInfo {
+    if (contractInfo?.arbitrator === zeroAddress)
+      return undefined;
+
+    const arbiter = new ArbiterInfo();
+
+    arbiter.id = contractInfo.arbitrator;
+    arbiter.address = contractInfo.arbitrator;
+    arbiter.ethAmount = tokenToReadableValue(contractInfo.ethAmount, 18);
+    arbiter.createdAt = null;
+    arbiter.lastArbitrationTime = Number(contractInfo.deadLine);
+    arbiter.currentFeeRate = Number(contractInfo.currentFeeRate);
+    arbiter.activeTransactionId = contractInfo.activeTransactionId;
+    arbiter.operatorEvmAddress = contractInfo.operator;
+    arbiter.operatorBtcAddress = contractInfo.operatorBtcAddress;
+    arbiter.operatorBtcPubKey = contractInfo.operatorBtcPubKey;
+    arbiter.revenueEvmAddress = contractInfo.revenueETHAddress;
+    arbiter.revenueBtcAddress = contractInfo.revenueBtcAddress;
+    arbiter.revenueBtcPubKey = contractInfo.revenueBtcPubKey;
+
+    switch (contractInfo.status) {
+      case 0: arbiter.status = "Active"; break;
+      case 1: arbiter.status = "Working"; break;
+      case 2: arbiter.status = "Paused"; break;
+      case 3: arbiter.status = "Terminated"; break;
+      case 4: arbiter.status = "Frozen"; break;
+    }
+
+    return arbiter;
   }
 }

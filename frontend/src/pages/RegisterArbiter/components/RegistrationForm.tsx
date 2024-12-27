@@ -20,6 +20,7 @@ import { useToasts } from '@/services/ui/hooks/useToasts';
 import { formatDate } from '@/utils/dates';
 import { cn } from '@/utils/shadcn';
 import { zodResolver } from '@hookform/resolvers/zod';
+import BigNumber from 'bignumber.js';
 import { CalendarIcon } from 'lucide-react';
 import { FC, useCallback, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -94,11 +95,11 @@ export const RegistrationForm: FC<{
         console.log("Registering arbiter using native coin stake", values);
 
         if (await registerArbiterByStakeETH(
-          BigInt(values.coinAmount),
+          new BigNumber(values.coinAmount),
           values.operatorBTCAddress,
           values.operatorBTCPubKey,
-          BigInt(values.feeRate),
-          BigInt(Math.floor(values.deadline.getTime() / 1000))
+          values.feeRate,
+          Math.floor(values.deadline.getTime() / 1000)
         )) {
           successToast(`Arbiter successfully registered!`);
           navigate("/arbiters"); // Back to arbiters list.
@@ -111,8 +112,8 @@ export const RegistrationForm: FC<{
           values.tokenIds,
           values.operatorBTCAddress,
           values.operatorBTCPubKey,
-          BigInt(values.feeRate),
-          BigInt(Math.floor(values.deadline.getTime() / 1000))
+          values.feeRate,
+          Math.floor(values.deadline.getTime() / 1000)
         )) {
           successToast(`Arbiter successfully registered!`);
           navigate("/arbiters"); // Back to arbiter list.

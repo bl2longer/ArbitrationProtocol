@@ -2,12 +2,13 @@ import { BoxTitle } from "@/components/base/BoxTitle";
 import { EnsureWalletNetwork } from "@/components/base/EnsureWalletNetwork/EnsureWalletNetwork";
 import { StatusLabel } from "@/components/base/StatusLabel";
 import { Button } from "@/components/ui/button";
+import { useOwnedArbiter } from "@/services/arbiters/hooks/useOwnedArbiter";
 import { ArbiterInfo } from "@/services/arbiters/model/arbiter-info";
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
 import { useDynamicAddressFormat } from "@/services/ui/hooks/useDynamicAddressFormat";
-import { formatDateWithoutYear } from "@/utils/dates";
+import { formatDate } from "@/utils/dates";
 import { DollarSignIcon, Layers2Icon, SettingsIcon, StarIcon } from "lucide-react";
-import { FC, ReactNode, useState } from "react";
+import { FC, ReactNode, useCallback, useState } from "react";
 import { EditOperatorDialog } from "./dialogs/EditOperator";
 import { EditRevenueDialog } from "./dialogs/EditRevenue";
 import { EditSettingsDialog } from "./dialogs/EditSettings";
@@ -33,6 +34,12 @@ export const ArbiterPreview: FC<{
   const [editOperatorIsOpen, setEditOperatorIsOpen] = useState(false);
   const [editStakingIsOpen, setEditStakingIsOpen] = useState(false);
   const [editRevenueIsOpen, setEditRevenueIsOpen] = useState(false);
+  const { fetchOwnedArbiter } = useOwnedArbiter();
+
+  const handleArbiterUpdated = useCallback(() => {
+    console.log("manual owned update");
+    void fetchOwnedArbiter();
+  }, [fetchOwnedArbiter]);
 
   return (
     <div className="space-y-6">
@@ -40,8 +47,8 @@ export const ArbiterPreview: FC<{
       <div className="bg-white rounded-lg shadow divide-y">
         <InfoRow title="Address" value={dynamicAddressFormat(arbiter.address)} />
         <InfoRow title="Status" value={<StatusLabel
-          title={arbiter.isPaused() ? 'Paused' : 'Active'}
-          color={arbiter.isPaused() ? 'red' : 'green'}
+          title={arbiter.status}
+          color={arbiter.isActive() ? 'green' : 'red'}
         />} />
       </div>
 
@@ -62,8 +69,8 @@ export const ArbiterPreview: FC<{
             <Button onClick={() => setEditSettingsIsOpen(true)}><SettingsIcon />Edit</Button>
           </EnsureWalletNetwork>
         </div>
-        <InfoRow title="Fee Rate" value={`${Number(arbiter.currentFeeRate) / 100}%`} />
-        <InfoRow title="Term End" value={termEnd ? formatDateWithoutYear(termEnd) : "-"} />
+        <InfoRow title="Fee Rate" value={`${arbiter.currentFeeRate / 100}%`} />
+        <InfoRow title="Term End" value={termEnd ? formatDate(termEnd) : "-"} />
       </div>
 
       <div className="bg-white rounded-lg shadow divide-y">
@@ -90,10 +97,10 @@ export const ArbiterPreview: FC<{
         <InfoRow title="BTC Public Key" value={dynamicAddressFormat(arbiter.revenueBtcPubKey) || "-"} />
       </div>
 
-      <EditOperatorDialog arbiter={arbiter} isOpen={editOperatorIsOpen} onHandleClose={() => setEditOperatorIsOpen(false)} />
-      <EditSettingsDialog arbiter={arbiter} isOpen={editSettingsIsOpen} onHandleClose={() => setEditSettingsIsOpen(false)} />
-      <EditStakingDialog arbiter={arbiter} isOpen={editStakingIsOpen} onHandleClose={() => setEditStakingIsOpen(false)} />
-      <EditRevenueDialog arbiter={arbiter} isOpen={editRevenueIsOpen} onHandleClose={() => setEditRevenueIsOpen(false)} />
+      <EditOperatorDialog arbiter={arbiter} isOpen={editOperatorIsOpen} onHandleClose={() => setEditOperatorIsOpen(false)} onContractUpdated={handleArbiterUpdated} />
+      <EditSettingsDialog arbiter={arbiter} isOpen={editSettingsIsOpen} onHandleClose={() => setEditSettingsIsOpen(false)} onContractUpdated={handleArbiterUpdated} />
+      <EditStakingDialog arbiter={arbiter} isOpen={editStakingIsOpen} onHandleClose={() => setEditStakingIsOpen(false)} onContractUpdated={handleArbiterUpdated} />
+      <EditRevenueDialog arbiter={arbiter} isOpen={editRevenueIsOpen} onHandleClose={() => setEditRevenueIsOpen(false)} onContractUpdated={handleArbiterUpdated} />
     </div >
   )
 }

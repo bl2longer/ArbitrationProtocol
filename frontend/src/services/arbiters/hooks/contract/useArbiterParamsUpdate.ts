@@ -16,7 +16,7 @@ export const useArbiterParamsUpdate = () => {
       abi,
       functionName: 'setArbitratorParams',
       args: [
-        feeRate * 100, // 1% must be encoded as 100
+        Math.round(feeRate * 100), // 1% must be encoded as 100
         deadline
       ]
     });

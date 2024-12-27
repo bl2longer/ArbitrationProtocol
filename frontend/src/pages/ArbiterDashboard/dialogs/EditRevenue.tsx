@@ -20,7 +20,8 @@ export const EditRevenueDialog: FC<{
   arbiter: ArbiterInfo;
   isOpen: boolean;
   onHandleClose: () => void;
-}> = ({ arbiter, isOpen, onHandleClose, ...rest }) => {
+  onContractUpdated: () => void;
+}> = ({ arbiter, isOpen, onContractUpdated, onHandleClose, ...rest }) => {
   const { isPending, updateRevenueInfo } = useArbiterRevenueUpdate();
   const { successToast } = useToasts();
 
@@ -51,9 +52,10 @@ export const EditRevenueDialog: FC<{
       arbiter.revenueBtcAddress = values.revenueBTCAddress;
       arbiter.revenueBtcPubKey = values.revenueBTCPubKey;
 
+      onContractUpdated();
       onHandleClose();
     }
-  }, [updateRevenueInfo, successToast, arbiter, onHandleClose]);
+  }, [updateRevenueInfo, successToast, arbiter, onContractUpdated, onHandleClose]);
 
   if (!arbiter)
     return null;

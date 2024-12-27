@@ -66,8 +66,8 @@ export const ListView: FC<{
             </TableCell>
             <TableCell className="whitespace-nowrap">
               <StatusLabel
-                title={arbiter.isPaused() ? 'Paused' : 'Active'}
-                color={arbiter.isPaused() ? 'red' : 'green'}
+                title={arbiter.status}
+                color={arbiter.isActive() ? 'green' : 'red'}
               />
             </TableCell>
           </TableRow>

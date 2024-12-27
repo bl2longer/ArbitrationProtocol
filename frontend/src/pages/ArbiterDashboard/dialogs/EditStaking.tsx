@@ -12,6 +12,7 @@ import { useERC721Approve } from "@/services/erc721/hooks/useERC721Approve";
 import { useERC721CheckApproval } from "@/services/erc721/hooks/useERC721CheckApproval";
 import { useToasts } from "@/services/ui/hooks/useToasts";
 import { zodResolver } from "@hookform/resolvers/zod";
+import BigNumber from "bignumber.js";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useInterval } from "usehooks-ts";
@@ -24,7 +25,8 @@ export const EditStakingDialog: FC<{
   arbiter: ArbiterInfo;
   isOpen: boolean;
   onHandleClose: () => void;
-}> = ({ arbiter, isOpen, onHandleClose, ...rest }) => {
+  onContractUpdated: () => void;
+}> = ({ arbiter, isOpen, onContractUpdated, onHandleClose, ...rest }) => {
   const { configSettings } = useConfigManager();
   const activeChain = useActiveEVMChainConfig();
   const { successToast } = useToasts();
@@ -87,8 +89,9 @@ export const EditStakingDialog: FC<{
         console.log("Staking native coins", values);
 
         try {
-          if (await stakeETH(BigInt(values.coinAmount))) {
+          if (await stakeETH(new BigNumber(values.coinAmount))) {
             successToast(`Staking successful!`);
+            onContractUpdated();
             onHandleClose();
           }
         } catch (error) {
@@ -101,6 +104,7 @@ export const EditStakingDialog: FC<{
         try {
           if (await stakeNFT(values.tokenIds)) {
             successToast(`Staking successful!`);
+            onContractUpdated();
             onHandleClose();
           }
         } catch (error) {
@@ -109,6 +113,9 @@ export const EditStakingDialog: FC<{
       }
       else if (stakeType === "unstake") {
         if (await unstake()) {
+          arbiter.status = "Terminated";
+          arbiter.ethAmount = new BigNumber(0);
+
           successToast("Unstaked successfully!");
           onHandleClose();
         }
@@ -116,7 +123,7 @@ export const EditStakingDialog: FC<{
     } catch (error) {
       console.error('Error during arbiter registration:', error);
     }
-  }, [stakeType, stakeETH, successToast, onHandleClose, stakeNFT, unstake]);
+  }, [stakeType, stakeETH, successToast, onContractUpdated, onHandleClose, stakeNFT, unstake, arbiter]);
 
   const actionButtonLabel = useMemo(() => {
     switch (stakeType) {

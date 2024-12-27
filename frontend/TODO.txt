@@ -1,5 +1,10 @@
 ===> Target release date: dec 30
 
+- Bug:
+  - stake amount with decimals crashes because of bigint (zhiming)
+  - after unstaking, status should be paused (to check)
+  - after editing fee, then edit settings again, edit form shows old data
+
 - Finish to replace headless UI components with https://ui.shadcn.com/
   - Compensation details dialog
 
