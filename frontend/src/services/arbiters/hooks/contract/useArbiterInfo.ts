@@ -15,7 +15,6 @@ export const useArbiterInfo = (arbiterAddress: string) => {
   const { readContract } = useContractCall();
 
   const fetchArbiterInfo = useCallback(async (): Promise<ArbiterInfo> => {
-    console.log("fetchArbiterInfo real")
     // native coin fees to pay to register a dapp.
     const contractArbiterInfo: ContractArbiterInfo = await readContract({
       contractAddress: activeChain.contracts.arbitratorManager,
@@ -27,11 +26,7 @@ export const useArbiterInfo = (arbiterAddress: string) => {
     if (contractArbiterInfo === undefined)
       return undefined;
 
-    console.log("Got contractArbiterInfo:", contractArbiterInfo);
-
     const arbiter = ArbiterInfo.fromContractArbiterInfo(contractArbiterInfo);
-
-    console.log("Got arbiter info:", arbiter);
 
     return arbiter;
   }, [activeChain, readContract, arbiterAddress]);

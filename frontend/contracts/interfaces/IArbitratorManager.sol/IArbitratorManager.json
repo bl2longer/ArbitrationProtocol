@@ -248,6 +248,12 @@
           "internalType": "uint256[]",
           "name": "nftTokenIds",
           "type": "uint256[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum DataTypes.ArbitratorStatus",
+          "name": "status",
+          "type": "uint8"
         }
       ],
       "name": "StakeAdded",
@@ -443,6 +449,25 @@
           "type": "address"
         }
       ],
+      "name": "getArbitratorStatus",
+      "outputs": [
+        {
+          "internalType": "enum DataTypes.ArbitratorStatus",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "arbitrator",
+          "type": "address"
+        }
+      ],
       "name": "getAvailableStake",
       "outputs": [
         {
@@ -500,6 +525,25 @@
         }
       ],
       "name": "isActiveArbitrator",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "arbitrator",
+          "type": "address"
+        }
+      ],
+      "name": "isFrozenStatus",
       "outputs": [
         {
           "internalType": "bool",

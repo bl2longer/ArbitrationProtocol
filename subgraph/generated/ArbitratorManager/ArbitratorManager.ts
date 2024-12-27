@@ -308,6 +308,10 @@ export class StakeAdded__Params {
   get nftTokenIds(): Array<BigInt> {
     return this._event.parameters[3].value.toBigIntArray();
   }
+
+  get status(): i32 {
+    return this._event.parameters[4].value.toI32();
+  }
 }
 
 export class StakeWithdrawn extends ethereum.Event {
@@ -527,6 +531,29 @@ export class ArbitratorManager extends ethereum.SmartContract {
     );
   }
 
+  getArbitratorStatus(arbitrator: Address): i32 {
+    let result = super.call(
+      "getArbitratorStatus",
+      "getArbitratorStatus(address):(uint8)",
+      [ethereum.Value.fromAddress(arbitrator)],
+    );
+
+    return result[0].toI32();
+  }
+
+  try_getArbitratorStatus(arbitrator: Address): ethereum.CallResult<i32> {
+    let result = super.tryCall(
+      "getArbitratorStatus",
+      "getArbitratorStatus(address):(uint8)",
+      [ethereum.Value.fromAddress(arbitrator)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toI32());
+  }
+
   getAvailableStake(arbitrator: Address): BigInt {
     let result = super.call(
       "getAvailableStake",
@@ -590,6 +617,29 @@ export class ArbitratorManager extends ethereum.SmartContract {
       "isActiveArbitrator",
       "isActiveArbitrator(address):(bool)",
       [ethereum.Value.fromAddress(arbitratorAddress)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  isFrozenStatus(arbitrator: Address): boolean {
+    let result = super.call(
+      "isFrozenStatus",
+      "isFrozenStatus(address):(bool)",
+      [ethereum.Value.fromAddress(arbitrator)],
+    );
+
+    return result[0].toBoolean();
+  }
+
+  try_isFrozenStatus(arbitrator: Address): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "isFrozenStatus",
+      "isFrozenStatus(address):(bool)",
+      [ethereum.Value.fromAddress(arbitrator)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();

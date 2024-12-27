@@ -17,11 +17,6 @@
           "components": [
             {
               "internalType": "bytes",
-              "name": "rawData",
-              "type": "bytes"
-            },
-            {
-              "internalType": "bytes",
               "name": "pubKey",
               "type": "bytes"
             },

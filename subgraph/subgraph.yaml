@@ -34,7 +34,7 @@ dataSources:
           handler: handleOwnershipTransferred
         - event: RevenueAddressesSet(indexed address,address,bytes,string)
           handler: handleRevenueAddressesSet
-        - event: StakeAdded(indexed address,indexed address,uint256,uint256[])
+        - event: StakeAdded(indexed address,indexed address,uint256,uint256[],uint8)
           handler: handleStakeAdded
         - event: StakeWithdrawn(indexed address,indexed address,uint256)
           handler: handleStakeWithdrawn
@@ -128,7 +128,7 @@ dataSources:
     source:
       abi: BPosNFT
       address: "0x8e286664c6B8811015F936592Dd654e94Af3F494"
-      startBlock: 26000000
+      startBlock: 28330216
     mapping:
       file: ./src/event-handlers/BPosNFT.ts
       language: wasm/assemblyscript

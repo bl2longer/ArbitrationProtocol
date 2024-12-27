@@ -47,7 +47,7 @@ export function handleStakeAdded(event: StakeAdded): void {
     else
         throw new Error(`Non native add stake not implemented yet, asset address ${assetAddress} ${assetAddress.length} ${typeof assetAddress} ${ZERO_ADDRESS} ${typeof ZERO_ADDRESS} ${assetAddress === ZERO_ADDRESS}`);
 
-    arbitratorInfo.status = "Active"; // TODO: might not alway be true, need to get the right status from the event when possible.
+    arbitratorInfo.status = contractArbitratorStatusToString(event.params.status);
 
     arbitratorInfo.save();
 }
@@ -61,7 +61,7 @@ export function handleStakeWithdrawn(event: StakeWithdrawn): void {
     const arbitratorInfo = getArbitratorInfo(event.block, arbitratorAddress);
 
     arbitratorInfo.ethAmount = new BigInt(0);
-    arbitratorInfo.status = "Terminated";;
+    arbitratorInfo.status = "Terminated";
 
     // TODO: NFT
 

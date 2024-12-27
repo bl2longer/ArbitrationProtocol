@@ -37,7 +37,6 @@ export const ArbiterPreview: FC<{
   const { fetchOwnedArbiter } = useOwnedArbiter();
 
   const handleArbiterUpdated = useCallback(() => {
-    console.log("manual owned update");
     void fetchOwnedArbiter();
   }, [fetchOwnedArbiter]);
 
