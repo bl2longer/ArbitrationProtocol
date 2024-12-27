@@ -70,7 +70,8 @@ dataSources:
           handler: handleOwnershipTransferred
         - event: TransactionCompleted(indexed address,indexed bytes32)
           handler: handleTransactionCompleted
-        - event: TransactionRegistered(indexed bytes32,indexed address,indexed address)
+        - event: TransactionRegistered(indexed bytes32,indexed address,indexed
+            address,uint256)
           handler: handleTransactionRegistered
   - name: CompensationManager
     kind: ethereum/contract

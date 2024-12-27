@@ -7,6 +7,7 @@ export function handleTransactionRegistered(event: TransactionRegistered): void 
   transaction.status = "Active";
   transaction.arbiter = event.params.arbitrator.toHexString();
   transaction.startTime = event.block.timestamp.toI32();
+  transaction.deadline = event.params.deadline.toI32();
   transaction.save();
 }
 

@@ -220,6 +220,10 @@ export class TransactionRegistered__Params {
   get arbitrator(): Address {
     return this._event.parameters[2].value.toAddress();
   }
+
+  get deadline(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
 }
 
 export class TransactionManager__getTransactionResultValue0Struct extends ethereum.Tuple {
