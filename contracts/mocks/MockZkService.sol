@@ -14,14 +14,12 @@ contract MockZkService is IZkService {
      */
     function setValidVerification(
         bytes32 evidence,
-        bytes memory rawData,
         bytes memory pubKey,
         bytes32 txHash,
         bytes memory signature
     ) external {
         DataTypes.ZKVerification storage verification = _verifications[evidence];
         verification.verified = true;
-        verification.rawData = rawData;
         verification.pubKey = pubKey;
         verification.txHash = txHash;
         verification.signature = signature;
@@ -32,14 +30,12 @@ contract MockZkService is IZkService {
      */
     function setInvalidVerification(
         bytes32 evidence,
-        bytes memory rawData,
         bytes memory pubKey,
         bytes32 txHash,
         bytes memory signature
     ) external {
         DataTypes.ZKVerification storage verification = _verifications[evidence];
         verification.verified = false;
-        verification.rawData = rawData;
         verification.pubKey = pubKey;
         verification.txHash = txHash;
         verification.signature = signature;
@@ -58,7 +54,6 @@ contract MockZkService is IZkService {
     // Additional helper methods for testing scenarios
     function setEmptyRawData(bytes32 evidence) external {
         DataTypes.ZKVerification storage verification = _verifications[evidence];
-        verification.rawData = "";
         verification.pubKey = "0x1234";
         verification.txHash = keccak256("test");
         verification.signature = "0x5678";
@@ -67,7 +62,6 @@ contract MockZkService is IZkService {
 
     function setEmptyPubKey(bytes32 evidence) external {
         DataTypes.ZKVerification storage verification = _verifications[evidence];
-        verification.rawData = "0x1234";
         verification.pubKey = "";
         verification.txHash = keccak256("test");
         verification.signature = "0x5678";
@@ -76,7 +70,6 @@ contract MockZkService is IZkService {
 
     function setEmptyTxHash(bytes32 evidence) external {
         DataTypes.ZKVerification storage verification = _verifications[evidence];
-        verification.rawData = "0x1234";
         verification.pubKey = "0x5678";
         verification.txHash = bytes32(0);
         verification.signature = "0x9012";
