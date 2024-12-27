@@ -4,6 +4,7 @@ import { StatusLabel } from "@/components/base/StatusLabel";
 import { Button } from "@/components/ui/button";
 import { ArbiterInfo } from "@/services/arbiters/model/arbiter-info";
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
+import { useDynamicAddressFormat } from "@/services/ui/hooks/useDynamicAddressFormat";
 import { formatDateWithoutYear } from "@/utils/dates";
 import { DollarSignIcon, Layers2Icon, SettingsIcon, StarIcon } from "lucide-react";
 import { FC, ReactNode, useState } from "react";
@@ -27,6 +28,7 @@ export const ArbiterPreview: FC<{
 }> = ({ arbiter }) => {
   const termEnd = arbiter.getTermEndDate();
   const activeChain = useActiveEVMChainConfig();
+  const { dynamicAddressFormat } = useDynamicAddressFormat();
   const [editSettingsIsOpen, setEditSettingsIsOpen] = useState(false);
   const [editOperatorIsOpen, setEditOperatorIsOpen] = useState(false);
   const [editStakingIsOpen, setEditStakingIsOpen] = useState(false);
@@ -36,7 +38,7 @@ export const ArbiterPreview: FC<{
     <div className="space-y-6">
       {/* Fixed info */}
       <div className="bg-white rounded-lg shadow divide-y">
-        <InfoRow title="Address" value={arbiter.address} />
+        <InfoRow title="Address" value={dynamicAddressFormat(arbiter.address)} />
         <InfoRow title="Status" value={<StatusLabel
           title={arbiter.isPaused() ? 'Paused' : 'Active'}
           color={arbiter.isPaused() ? 'red' : 'green'}
@@ -71,9 +73,9 @@ export const ArbiterPreview: FC<{
             <Button onClick={() => setEditOperatorIsOpen(true)}><StarIcon />Edit</Button>
           </EnsureWalletNetwork>
         </div>
-        <InfoRow title="EVM Address" value={arbiter.operatorEvmAddress || "-"} />
-        <InfoRow title="BTC Address" value={arbiter.operatorBtcAddress || "-"} />
-        <InfoRow title="BTC Public Key" value={arbiter.operatorBtcPubKey || "-"} />
+        <InfoRow title="EVM Address" value={dynamicAddressFormat(arbiter.operatorEvmAddress) || "-"} />
+        <InfoRow title="BTC Address" value={dynamicAddressFormat(arbiter.operatorBtcAddress) || "-"} />
+        <InfoRow title="BTC Public Key" value={dynamicAddressFormat(arbiter.operatorBtcPubKey) || "-"} />
       </div>
 
       <div className="bg-white rounded-lg shadow divide-y">
@@ -83,9 +85,9 @@ export const ArbiterPreview: FC<{
             <Button onClick={() => setEditRevenueIsOpen(true)}><DollarSignIcon />Edit</Button>
           </EnsureWalletNetwork>
         </div>
-        <InfoRow title="EVM Address" value={arbiter.revenueEvmAddress || "-"} />
-        <InfoRow title="BTC Address" value={arbiter.revenueBtcAddress || "-"} />
-        <InfoRow title="BTC Public Key" value={arbiter.revenueBtcPubKey || "-"} />
+        <InfoRow title="EVM Address" value={dynamicAddressFormat(arbiter.revenueEvmAddress) || "-"} />
+        <InfoRow title="BTC Address" value={dynamicAddressFormat(arbiter.revenueBtcAddress) || "-"} />
+        <InfoRow title="BTC Public Key" value={dynamicAddressFormat(arbiter.revenueBtcPubKey) || "-"} />
       </div>
 
       <EditOperatorDialog arbiter={arbiter} isOpen={editOperatorIsOpen} onHandleClose={() => setEditOperatorIsOpen(false)} />

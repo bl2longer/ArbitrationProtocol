@@ -1,5 +1,5 @@
+import { CopyField } from "@/components/base/CopyField";
 import { StatusLabel } from "@/components/base/StatusLabel";
-import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ArbiterInfo } from "@/services/arbiters/model/arbiter-info";
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
@@ -26,6 +26,7 @@ const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
     <div className="flex justify-between items-start mb-4">
       <h3 className="text-lg font-semibold">
         {arbiter.address.slice(0, 6)}...{arbiter.address.slice(-4)}
+        <CopyField value={arbiter.address} />
       </h3>
       <StatusLabel
         title={arbiter.isPaused() ? 'Paused' : 'Active'}
@@ -49,21 +50,33 @@ const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
         <Collapsible>
           <CollapsibleTrigger className="w-full">
             <div className="flex justify-between items-center w-full">
-              <span className="text-gray-600">Operator EVM Address</span>
+              <span className="text-gray-600">Operator</span>
               <div className="flex items-center">
-                <span className="font-mono">{formatAddress(arbiter.operatorEvmAddress)}</span>
-                <Button variant="ghost" className="-mr-6" size="sm"><ChevronsUpDown className="h-3 w-3" /></Button>
+                <ChevronsUpDown className="h-3 w-3" />
               </div>
             </div>
           </CollapsibleTrigger>
-          <CollapsibleContent className="pr-4">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Operator BTC Address</span>
-              <span className="font-mono">{formatAddress(arbiter.operatorBtcAddress)}</span>
+          <CollapsibleContent>
+            <div className="flex justify-between items-center w-full">
+              <span className="text-gray-600">EVM Address</span>
+              <div>
+                <span className="font-mono">{formatAddress(arbiter.operatorEvmAddress)}</span>
+                <CopyField value={arbiter.operatorEvmAddress} />
+              </div>
             </div>
-            <div className="flex justify-between items-center mt-1">
-              <span className="text-gray-600">Operator BTC Pub Key</span>
-              <span className="font-mono">{formatAddress(arbiter.operatorBtcPubKey)}</span>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">BTC Address</span>
+              <div>
+                <span className="font-mono">{formatAddress(arbiter.operatorBtcAddress)}</span>
+                <CopyField value={arbiter.operatorBtcAddress} />
+              </div>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">BTC Pub Key</span>
+              <div>
+                <span className="font-mono">{formatAddress(arbiter.operatorBtcPubKey)}</span>
+                <CopyField value={arbiter.operatorBtcPubKey} />
+              </div>
             </div>
           </CollapsibleContent>
         </Collapsible>

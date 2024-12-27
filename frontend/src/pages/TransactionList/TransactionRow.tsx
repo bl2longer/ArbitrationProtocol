@@ -1,3 +1,4 @@
+import { CopyField } from '@/components/base/CopyField';
 import { StatusLabel } from '@/components/base/StatusLabel';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
@@ -14,20 +15,18 @@ export const TransactionRow: FC<{
 }> = ({ transaction, onSubmitArbitration }) => {
   const { evmAccount } = useWalletContext();
 
-  console.log(transaction)
-
   const formatValue = (key: keyof typeof transactionFieldLabels, value: any) => {
     if (key === 'startTime' || key === 'deadline')
-      return value ? formatDateWithoutYear(value) : "-";
+      return value ? <div className='flex flex-row items-center'>{formatDateWithoutYear(value)} <CopyField value={value} /></div> : "-";
 
     if (key === 'status')
       return <StatusLabel title={value} color={value === "Completed" ? "green" : "red"} />
 
     if (key === 'dapp' || key === 'arbiter')
-      return value ? formatAddress(value) : "-";
+      return value ? <div className='flex flex-row items-center'>{formatAddress(value)} <CopyField value={value} /></div> : "-";
 
     if (key === 'btcTx')
-      return formatAddress(value) || "-";
+      return value ? <div className='flex flex-row items-center'>{formatAddress(value)} <CopyField value={value} /></div> : "-";
 
     return value;
   };

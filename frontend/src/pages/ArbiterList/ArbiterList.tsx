@@ -6,6 +6,7 @@ import { SearchInput } from '@/components/base/SearchInput';
 import { Button } from '@/components/ui/button';
 import { useArbiters } from '@/services/arbiters/hooks/useArbiters';
 import { useOwnedArbiter } from '@/services/arbiters/hooks/useOwnedArbiter';
+import { useScreenSize } from '@/services/ui/hooks/useScreenSize';
 import {
   ListBulletIcon,
   Squares2X2Icon,
@@ -30,6 +31,7 @@ export default function ArbiterList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'stake', direction: 'desc' });
   const navigate = useNavigate();
+  const { isSmallDevice } = useScreenSize();
 
   const handleSort = (key: SortConfig['key']) => {
     setSortConfig(prev => ({
@@ -65,7 +67,7 @@ export default function ArbiterList() {
       <PageTitleRow>
         <PageTitle>Arbiter List</PageTitle>
         <div className="flex space-x-4 w-full sm:w-auto items-center">
-          <Button variant="outline" size="icon" onClick={refreshArbiters}>
+          <Button variant="outline" size="icon" onClick={refreshArbiters} className='shrink-0'>
             <RefreshCwIcon />
           </Button>
           <SearchInput placeholder="Search arbiters..."
@@ -85,7 +87,9 @@ export default function ArbiterList() {
               <ListBulletIcon className="h-5 w-5" />
             </button>
           </div>
-          <Button disabled={!!ownedArbiter} onClick={() => navigate("/register-arbiter")}>Register arbiter</Button>
+          <Button disabled={!!ownedArbiter} onClick={() => navigate("/register-arbiter")}>
+            {isSmallDevice ? 'Register' : 'Register arbiter'}
+          </Button>
         </div>
       </PageTitleRow>
 

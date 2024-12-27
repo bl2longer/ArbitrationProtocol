@@ -1,5 +1,8 @@
 ===> Target release date: dec 30
 
+- Finish to replace headless UI components with https://ui.shadcn.com/
+  - Compensation details dialog
+
 - Transaction list:
   - Submit arbitration:
     - There is a data that need to be signed, you should call the wallet to sign it
@@ -11,20 +14,9 @@
   - need to create a backend
   - we already have bel2.org belayer2.org in zoho mail
 
-- Mobile view: check and fix
-
 P2:
-- add copy address icon near all addresses (dapp, arbiter, transaction, etc) + toast
-- Native coin stake: show current ELA balance
-- bug: arbiter createdAt in model should be int not string
-- Withdraw stake: show current stake (coin, NFTs)
-    - need subgraph to save nft info
-      - need contract events to return staked token ids
 - Ability to unregister dapp: 
   - TBD: from dapps list of from my dashboard?
-
-  P3:
-- Finish to replace headless UI components with https://ui.shadcn.com/
 
 staging contract is deployed : {
     "ERC721_ADDRESS": "0x8e286664c6B8811015F936592Dd654e94Af3F494",
@@ -45,5 +37,5 @@ ERC721 NFT:
 - https://esc-testnet.elastos.io/api?module=account&action=tokenlist&address=0x0aD689150EB4a3C541B7a37E6c69c1510BCB27A4
 
 Claim contract : 
-  0x95c87f9c2381d43fc7019A2F7A2EA1dd8CA47230
-  Solidity: https://github.com/elastos/Elastos.ELA.StakeTicket.Solidity/blob/master/contracts/StakeTicket.sol
+- 0x95c87f9c2381d43fc7019A2F7A2EA1dd8CA47230
+- Solidity: https://github.com/elastos/Elastos.ELA.StakeTicket.Solidity/blob/master/contracts/StakeTicket.sol

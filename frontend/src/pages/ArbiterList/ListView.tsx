@@ -1,5 +1,5 @@
+import { CopyField } from "@/components/base/CopyField";
 import { StatusLabel } from "@/components/base/StatusLabel";
-import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArbiterInfo } from "@/services/arbiters/model/arbiter-info";
@@ -55,6 +55,7 @@ export const ListView: FC<{
           <TableRow key={arbiter.address}>
             <TableCell className="whitespace-nowrap font-mono text-sm">
               {formatAddress(arbiter.address)}
+              <CopyField value={arbiter.address} />
             </TableCell>
             <TableCell><OperatorInfo arbiter={arbiter} /></TableCell>
             <TableCell className="whitespace-nowrap">
@@ -79,16 +80,16 @@ export const ListView: FC<{
 const OperatorInfo: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
   return (
     <Collapsible className="w-full">
-      <CollapsibleTrigger className="w-72">
+      <CollapsibleTrigger className="w-72 mb-1">
         <div className="flex justify-between items-center w-full">
           <span className="text-gray-600">EVM Address</span>
           <div className="flex items-center">
             <span className="font-mono">{formatAddress(arbiter.operatorEvmAddress)}</span>
-            <Button variant="ghost" className="-mr-6" size="sm"><ChevronsUpDown className="h-3 w-3" /></Button>
+            <ChevronsUpDown className="h-3 w-3" />
           </div>
         </div>
       </CollapsibleTrigger>
-      <CollapsibleContent className="pr-4 w-72">
+      <CollapsibleContent className="pr-3 w-72">
         <div className="flex justify-between items-center">
           <span className="text-gray-600">BTC Address</span>
           <span className="font-mono">{formatAddress(arbiter.operatorBtcAddress)}</span>

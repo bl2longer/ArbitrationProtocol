@@ -1,28 +1,16 @@
-import { useState, useMemo, FC, useCallback } from 'react';
-import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
-import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
-import { PageTitle } from '@/components/base/PageTitle';
-import { SearchInput } from '@/components/base/SearchInput';
 import { Loading } from '@/components/base/Loading';
-import { Checkbox } from '@/components/ui/checkbox';
-import { useDApps } from '@/services/dapp-registry/hooks/useDApps';
-import { DApp, DAppStatus } from '@/services/dapp-registry/model/dapp';
-import { formatAddress } from '@/utils/formatAddress';
-import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
 import { PageContainer } from '@/components/base/PageContainer';
+import { PageTitle } from '@/components/base/PageTitle';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
+import { SearchInput } from '@/components/base/SearchInput';
+import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useDApps } from '@/services/dapp-registry/hooks/useDApps';
+import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
 import { RefreshCwIcon } from 'lucide-react';
-import { StatusLabel, StatusLabelColor } from '@/components/base/StatusLabel';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-
-const statusMap = {
-  0: 'Active',
-  1: 'Completed',
-  2: 'Arbitrated',
-  3: 'Expired',
-  4: 'Disputed'
-};
+import { FC, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { DAppRow } from './DAppRow';
 
 const fieldLabels = {
   address: 'DApp Address',
@@ -33,7 +21,6 @@ const fieldLabels = {
 const DAppList: FC = () => {
   const { dapps: rawDApps, refreshDapps } = useDApps();
   const [searchTerm, setSearchTerm] = useState('');
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const dApps = useMemo(() => {
@@ -88,40 +75,6 @@ const DAppList: FC = () => {
   );
 }
 
-const DAppRow: FC<{
-  dapp: DApp;
-  index: number;
-  fieldLabels: string[];
-}> = ({ dapp, index, fieldLabels }) => {
 
-  const formatValue = useCallback((key: string, value: any) => {
-    if (key === 'address' || key === 'owner') {
-      return formatAddress(value);
-    }
-    else if (key === 'status') {
-      const colors: { [status in keyof typeof DAppStatus]: StatusLabelColor } = {
-        None: 'none',
-        Pending: "yellow",
-        Active: "green",
-        Terminated: "yellow",
-        Suspended: "red",
-      };
-      return <StatusLabel title={value} color={colors[value]} />
-    }
-    return value;
-  }, []);
-
-  return <TableRow>
-    {fieldLabels.map(field => (
-      <TableCell key={field}>
-        {formatValue(field, dapp[field as keyof typeof dapp])}
-      </TableCell>
-    ))}
-    {/* Actions */}
-    <TableCell>
-      {/* TODO */}
-    </TableCell>
-  </TableRow>
-}
 
 export default DAppList;

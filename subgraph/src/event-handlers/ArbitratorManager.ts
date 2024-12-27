@@ -8,13 +8,17 @@ export function handleArbitratorRegistered(event: ArbitratorRegistered): void {
     const arbitratorInfo = getArbitratorInfo(event.block, arbitratorAddress);
 
     arbitratorInfo.status = "Active";
+    // Operator
     arbitratorInfo.operatorEvmAddress = event.params.operator.toHexString();
     arbitratorInfo.operatorBtcAddress = event.params.btcAddress;
     arbitratorInfo.operatorBtcPubKey = event.params.btcPubKey.toHexString().slice(2);
-    arbitratorInfo.currentFeeRate = event.params.feeRate.toI32();
+    // Revenue
     arbitratorInfo.revenueEvmAddress = event.params.revenueAddress.toHexString();
     arbitratorInfo.revenueBtcAddress = event.params.btcAddress;
     arbitratorInfo.revenueBtcPubKey = event.params.btcPubKey.toHexString().slice(2);
+    // Settings
+    arbitratorInfo.lastArbitrationTime = event.params.deadline.toI32();
+    arbitratorInfo.currentFeeRate = event.params.feeRate.toI32();
 
     arbitratorInfo.save();
 }
