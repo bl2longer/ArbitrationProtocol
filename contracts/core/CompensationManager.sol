@@ -11,6 +11,7 @@ import "../libraries/Errors.sol";
 import "../libraries/DataTypes.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "hardhat/console.sol";
+import {BTCUtils} from "../libraries/BTCUtils.sol";
 
 contract CompensationManager is 
     ICompensationManager,
@@ -138,7 +139,7 @@ contract CompensationManager is
         DataTypes.ZKVerification memory verification = zkService.getZkVerification(evidence);
 
         // Basic data validation
-        if(verification.rawData.length == 0 || verification.pubKey.length == 0 || verification.txHash == bytes32(0)) {
+        if(verification.pubKey.length == 0 || verification.txHash == bytes32(0)) {
             revert(Errors.INVALID_VERIFICATION_DATA);
         }
         if (!verification.verified) {
@@ -162,9 +163,10 @@ contract CompensationManager is
         if (keccak256(verification.pubKey) != keccak256(arbitratorInfo.operatorBtcPubKey)) {
             revert(Errors.INVALID_VERIFICATION_DATA);
         }
-
         // Validate transaction data
-        if (keccak256(btcTx) != keccak256(verification.rawData)) {
+        BTCUtils.BTCTransaction memory parsedTx = BTCUtils.parseBTCTransaction(btcTx);
+        bytes memory rawData = BTCUtils.serializeBTCTransaction(parsedTx);
+        if (sha256(rawData) != verification.txHash) {
             revert(Errors.INVALID_VERIFICATION_DATA);
         }
 
@@ -242,15 +244,17 @@ contract CompensationManager is
     ) external override returns (bytes32 claimId) {
         // Get ZK verification details
         DataTypes.ZKVerification memory verification = zkService.getZkVerification(evidence);
-        if (verification.rawData.length == 0) revert(Errors.EMPTY_RAW_DATA);
         if (verification.pubKey.length == 0) revert(Errors.EMPTY_PUBLIC_KEY);
         if (verification.txHash == bytes32(0)) revert(Errors.EMPTY_HASH);
         if (verification.signature.length == 0) revert(Errors.EMPTY_SIGNATURE);
         if (verification.verified) {revert(Errors.SIGNATURE_VERIFIED);}
-        if (keccak256(btcTx) != keccak256(verification.rawData)) revert(Errors.BTC_TRANSACTION_MISMATCH);
 
         // Get transaction details
         DataTypes.Transaction memory transaction = transactionManager.getTransaction(verification.txHash);
+
+        BTCUtils.BTCTransaction memory parsedTx = BTCUtils.parseBTCTransaction(btcTx);
+        bytes memory rawData = BTCUtils.serializeBTCTransaction(parsedTx);
+        if (sha256(rawData) != transaction.btcTxHash) revert(Errors.BTC_TRANSACTION_MISMATCH);
 
         // Generate claim ID
         claimId = keccak256(abi.encodePacked(evidence, transaction.arbitrator, msg.sender, CompensationType.FailedArbitration));

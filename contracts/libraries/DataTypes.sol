@@ -78,7 +78,6 @@ library DataTypes {
     }
 
     struct ZKVerification {
-        bytes rawData;
         bytes pubKey;
         bytes32 txHash;
         bytes signature;
