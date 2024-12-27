@@ -3,6 +3,7 @@
 - Transaction list:
   - Submit arbitration:
     - There is a data that need to be signed, you should call the wallet to sign it
+    - Pending feature completion by xiaobin
 
 - Email service for arbiters:
   - "Arbiter can register an email for the arbitration notification, we need a background script to check the events"
@@ -13,16 +14,17 @@
 - Mobile view: check and fix
 
 P2:
+- add copy address icon near all addresses (dapp, arbiter, transaction, etc) + toast
+- Native coin stake: show current ELA balance
 - bug: arbiter createdAt in model should be int not string
 - Withdraw stake: show current stake (coin, NFTs)
     - need subgraph to save nft info
       - need contract events to return staked token ids
 - Ability to unregister dapp: 
   - TBD: from dapps list of from my dashboard?
-- Native coin stake: show current ELA balance
-- Handle subgraph api errors, forward to hooks and pages
+
+  P3:
 - Finish to replace headless UI components with https://ui.shadcn.com/
-- register dapp: intro about what a dapp is
 
 staging contract is deployed : {
     "ERC721_ADDRESS": "0x8e286664c6B8811015F936592Dd654e94Af3F494",

@@ -1,6 +1,7 @@
 {
   "short_name": "Arbiter Portal",
   "name": "Arbiter Portal",
+  "description": "The BeL2 Arbiter Portal is a trustless hub for time-based governance, dispute resolution, and smart BTC services on the Bitcoin-Elastos Layer 2 protocol. Users stake ELA, set fee parameters, and validate cryptographic proofs across EVM-compatible networks, keeping Bitcoin locked on its native chain while supporting advanced financial uses.",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
