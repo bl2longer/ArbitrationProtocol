@@ -1,11 +1,14 @@
 enum ArbiterStatus {
+    Unknown
     Active     # Arbiter is available for new transactions
     Working    # Arbiter is currently working on a transaction
     Paused     # Arbiter is temporarily paused
     Terminated  # Arbiter has been terminated
+    Frozen
 }
 
 enum DAppStatus {
+    Unknown
     None
     Pending
     Active
@@ -14,18 +17,20 @@ enum DAppStatus {
 }
 
 enum TransactionStatus {
+    Unknown
     Active
     Completed
     Arbitrated
     Expired
     Disputed
+    Submitted
 }
 
 enum CompensationType {
     Unknown
-    IllegalSignature,
-    Timeout,
-    FailedArbitration,
+    IllegalSignature
+    Timeout
+    FailedArbitration
     ArbiterFee
 }
 

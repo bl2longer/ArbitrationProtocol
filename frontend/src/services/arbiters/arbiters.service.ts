@@ -1,3 +1,4 @@
+import { StatusLabelColor } from '@/components/base/StatusLabel';
 import { ChainConfig } from '@/services/chains/chain-config';
 import { dtoToClass } from "../class-transformer/class-transformer-utils";
 import { ArbiterInfo as ArbiterInfoDTO } from '../subgraph/dto/arbiter-info';
@@ -96,5 +97,20 @@ export const fetchArbiters = async (chain: ChainConfig, start = 0, limit = 100, 
   } catch (error) {
     console.error("Error fetching arbiters:", error);
     return undefined;
+  }
+}
+
+export const arbiterStatusLabelColor = (arbiter: ArbiterInfo): StatusLabelColor => {
+  switch (arbiter.status) {
+    case "Active":
+    case "Working":
+      return "green";
+    case "Paused":
+      return "yellow";
+    case "Terminated":
+    case "Frozen":
+      return "red";
+    default:
+      return "none";
   }
 }

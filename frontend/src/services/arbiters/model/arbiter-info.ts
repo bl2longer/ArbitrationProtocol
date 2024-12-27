@@ -6,11 +6,13 @@ import moment, { Moment } from "moment";
 import { zeroAddress } from "viem";
 import { ContractArbiterInfo } from "../dto/contract-arbiter-info";
 
+export type ArbiterStatus = "Active" | "Working" | "Paused" | "Terminated" | "Frozen";
+
 export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdAt" | "currentFeeRate" | "pendingFeeRate"> {
   @Expose() public id: string;
   @Expose() public address: string;
   @Expose() @Transform(({ value }) => tokenToReadableValue(value, 18)) public ethAmount: BigNumber;
-  @Expose() public status: string;
+  @Expose() public status: ArbiterStatus;
   @Expose() @Transform(({ value }) => new Date(value * 1000)) public createdAt: Date;
   @Expose() public lastArbitrationTime: number;
   @Expose() @Type(() => Number) public currentFeeRate: number; // Fee rate with 100 basis. 100 means 1%
@@ -29,6 +31,10 @@ export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdA
 
   public isPaused(): boolean {
     return this.status === "Paused";
+  }
+
+  public isWorking(): boolean {
+    return this.status === "Working";
   }
 
   public getTermEndDate(): Moment {

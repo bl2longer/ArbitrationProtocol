@@ -157,6 +157,7 @@ function contractArbitratorStatusToString(status: i32): string {
         case 1: return "Working";
         case 2: return "Paused";
         case 3: return "Terminated";
+        case 4: return "Frozen";
         default:
             return "Unknown";
     }

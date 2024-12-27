@@ -9,6 +9,7 @@ import { ChevronDownIcon, ChevronUpDownIcon, ChevronUpIcon } from '@heroicons/re
 import { ChevronsUpDown } from "lucide-react";
 import { FC } from "react";
 import { SortConfig } from "./ArbiterList";
+import { arbiterStatusLabelColor } from "@/services/arbiters/arbiters.service";
 
 export const ListView: FC<{
   arbiters: ArbiterInfo[];
@@ -67,7 +68,7 @@ export const ListView: FC<{
             <TableCell className="whitespace-nowrap">
               <StatusLabel
                 title={arbiter.status}
-                color={arbiter.isActive() ? 'green' : 'red'}
+                color={arbiterStatusLabelColor(arbiter)}
               />
             </TableCell>
           </TableRow>

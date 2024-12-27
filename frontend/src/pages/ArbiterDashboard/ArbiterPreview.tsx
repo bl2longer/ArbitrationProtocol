@@ -2,6 +2,7 @@ import { BoxTitle } from "@/components/base/BoxTitle";
 import { EnsureWalletNetwork } from "@/components/base/EnsureWalletNetwork/EnsureWalletNetwork";
 import { StatusLabel } from "@/components/base/StatusLabel";
 import { Button } from "@/components/ui/button";
+import { arbiterStatusLabelColor } from "@/services/arbiters/arbiters.service";
 import { useOwnedArbiter } from "@/services/arbiters/hooks/useOwnedArbiter";
 import { ArbiterInfo } from "@/services/arbiters/model/arbiter-info";
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
@@ -47,7 +48,7 @@ export const ArbiterPreview: FC<{
         <InfoRow title="Address" value={dynamicAddressFormat(arbiter.address)} />
         <InfoRow title="Status" value={<StatusLabel
           title={arbiter.status}
-          color={arbiter.isActive() ? 'green' : 'red'}
+          color={arbiterStatusLabelColor(arbiter)}
         />} />
       </div>
 

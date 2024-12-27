@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 import { Transaction } from '@/services/transactions/model/transaction';
+import { transactionStatusLabelColor } from '@/services/transactions/transactions.service';
 import { formatDateWithoutYear } from '@/utils/dates';
 import { formatAddress } from '@/utils/formatAddress';
 import { FC } from 'react';
@@ -20,7 +21,7 @@ export const TransactionRow: FC<{
       return value ? <div className='flex flex-row items-center'>{formatDateWithoutYear(value)} <CopyField value={value} /></div> : "-";
 
     if (key === 'status')
-      return <StatusLabel title={value} color={value === "Completed" ? "green" : "red"} />
+      return <StatusLabel title={value} color={transactionStatusLabelColor(transaction)} />
 
     if (key === 'dapp' || key === 'arbiter')
       return value ? <div className='flex flex-row items-center'>{formatAddress(value)} <CopyField value={value} /></div> : "-";

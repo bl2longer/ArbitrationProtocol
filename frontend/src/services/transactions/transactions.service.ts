@@ -1,3 +1,4 @@
+import { StatusLabelColor } from '@/components/base/StatusLabel';
 import { ChainConfig } from '@/services/chains/chain-config';
 import { dtoToClass } from "../class-transformer/class-transformer-utils";
 import { Transaction as TransactionDTO } from '../subgraph/dto/transaction';
@@ -68,5 +69,21 @@ export const fetchTransactions = async (chain: ChainConfig, start: number, limit
   } catch (error) {
     console.error("Error fetching transactions:", error);
     return undefined;
+  }
+}
+
+export const transactionStatusLabelColor = (transaction: Transaction): StatusLabelColor => {
+  switch (transaction.status) {
+    case "Active":
+    case "Arbitrated":
+    case "Completed":
+      return "green";
+    case "Submitted":
+    case "Disputed":
+      return "yellow";
+    case "Expired":
+      return "red";
+    default:
+      return "none";
   }
 }
