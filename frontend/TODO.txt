@@ -1,13 +1,8 @@
 ===> Target release date: dec 30
 
 - Bugs:
-  - DONE P0: subgraph ERROR: invalid input arbiter status value "Unknown"
-  - DONE "Working" arbiter status should show green
-  - DONE "Arbitrated" tx status should show green
   - P2: "Install Metamask" should look like a real button
   - P2: Transaction list still seems to reload every time the page is entered.
-
-- Ability to pause / resume an arbiter
 
 - Transaction list:
   - Submit arbitration:
