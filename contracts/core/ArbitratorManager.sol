@@ -367,7 +367,7 @@ contract ArbitratorManager is
      * @dev Can only be called when not handling any transactions
      * Withdraws entire stake amount at once
      */
-    function unstake() external override notWorking {
+    function unstake() external override nonReentrant notWorking {
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
         if(!this.canUnStake(arbitrator.arbitrator)) revert(Errors.STAKE_STILL_LOCKED);
         require(arbitrator.ethAmount > 0 || arbitrator.nftTokenIds.length > 0, "NoStake");
@@ -375,18 +375,20 @@ contract ArbitratorManager is
         uint256 amount = arbitrator.ethAmount;
         arbitrator.ethAmount = 0;
         arbitrator.status = DataTypes.ArbitratorStatus.Terminated;
-        
+
         // Transfer NFTs back to arbitrator if any
         if (arbitrator.nftContract != address(0) && arbitrator.nftTokenIds.length > 0) {
-            for (uint256 i = 0; i < arbitrator.nftTokenIds.length; i++) {
+            uint256[] memory nftTokenIds = arbitrator.nftTokenIds;
+            arbitrator.nftTokenIds = new uint256[](0);
+            arbitrator.nftContract = address(0);
+
+            for (uint256 i = 0; i < nftTokenIds.length; i++) {
                 nftContract.transferFrom(
                     address(this),
                     msg.sender,
-                    arbitrator.nftTokenIds[i]
+                    nftTokenIds[i]
                 );
             }
-            arbitrator.nftTokenIds = new uint256[](0);
-            arbitrator.nftContract = address(0);
         }
 
         if (amount > 0) {
@@ -596,8 +598,12 @@ contract ArbitratorManager is
      * @return bool True if arbitrator is not working
      */
     function canUnStake(address arbitrator) external view returns (bool) {
-        if (isFrozenArbitrator(arbitrators[arbitrator])) return false;
-        return arbitrators[arbitrator].activeTransactionId == bytes32(0);
+        DataTypes.ArbitratorInfo memory arbitratorInfo = arbitrators[arbitrator];
+        if (arbitratorInfo.arbitrator == address(0)
+            || arbitratorInfo.status == DataTypes.ArbitratorStatus.Terminated) return false;
+
+        if (isFrozenArbitrator(arbitratorInfo)) return false;
+        return arbitratorInfo.activeTransactionId == bytes32(0);
     }
 
     /**
@@ -676,14 +682,16 @@ contract ArbitratorManager is
 
         // Transfer NFTs to compensation manager if any
         if (info.nftContract != address(0) && info.nftTokenIds.length > 0) {
-            for (uint256 i = 0; i < info.nftTokenIds.length; i++) {
-                IERC721(info.nftContract).transferFrom(
+            uint256[] memory nftTokenIds = info.nftTokenIds;
+            info.nftTokenIds = new uint256[](0);
+            info.nftContract = address(0);
+            for (uint256 i = 0; i < nftTokenIds.length; i++) {
+                nftContract.transferFrom(
                     address(this),
                     compensationManager,
-                    info.nftTokenIds[i]
+                    nftTokenIds[i]
                 );
             }
-            info.nftTokenIds = new uint256[](0);
         }
 
         emit ArbitratorStatusChanged(arbitrator, DataTypes.ArbitratorStatus.Terminated);

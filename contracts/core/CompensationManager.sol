@@ -26,7 +26,7 @@ contract CompensationManager is
     mapping(bytes32 => CompensationClaim) public claims;
 
     struct CompensationClaim {
-        address dapp;
+        address claimer;
         address arbitrator;
         uint256 ethAmount;
         address nftContract;
@@ -108,30 +108,25 @@ contract CompensationManager is
         }
     }
 
-    function _getCompensationAddress(
-        DataTypes.ArbitratorInfo memory arbitratorInfo, 
-        address sender
-    ) internal view returns (address) {
-        if (arbitratorInfo.activeTransactionId == 0) {
-            revert(Errors.NO_ACTIVE_TRANSACTION);
-        }
-        
-        DataTypes.Transaction memory transaction = transactionManager.getTransactionById(arbitratorInfo.activeTransactionId);
-        if (transaction.dapp != sender) {
-            revert(Errors.NOT_TRANSACTION_OWNER);
-        }
-
-        return transaction.compensationReceiver;
-    }
-
     function claimIllegalSignatureCompensation(
         address arbitrator,
         bytes calldata btcTx,
         bytes32 evidence
     ) external override returns (bytes32 claimId) {
+        // Get arbitrator details
+        DataTypes.ArbitratorInfo memory arbitratorInfo = arbitratorManager.getArbitratorInfo(arbitrator);
+        if (arbitratorInfo.activeTransactionId == 0) {
+            revert(Errors.NO_ACTIVE_TRANSACTION);
+        }
+
+        DataTypes.Transaction memory transaction = transactionManager.getTransactionById(arbitratorInfo.activeTransactionId);
+        if (transaction.status != DataTypes.TransactionStatus.Active) {
+            revert(Errors.NO_ACTIVE_TRANSACTION);
+        }
+
         // Generate claim ID
-        claimId = keccak256(abi.encodePacked(evidence, arbitrator, msg.sender, CompensationType.IllegalSignature));
-        if (claims[claimId].dapp != address(0)) {
+        claimId = keccak256(abi.encodePacked(evidence, arbitrator, transaction.compensationReceiver, CompensationType.IllegalSignature));
+        if (claims[claimId].claimer != address(0)) {
             revert (Errors.COMPENSATION_ALREADY_CLAIMED);
         }
 
@@ -146,13 +141,9 @@ contract CompensationManager is
             revert(Errors.SIGNATURE_MISMATCH);
         }
 
-        // Check transaction existence
-        if (transactionManager.txHashToId(verification.txHash) != bytes32(0)) {
-            revert(Errors.TRANSACTION_EXISTS);
+        if (transaction.btcTxHash != verification.txHash) {
+            revert(Errors.BTC_TRANSACTION_MISMATCH);
         }
-
-        // Get arbitrator details
-        DataTypes.ArbitratorInfo memory arbitratorInfo = arbitratorManager.getArbitratorInfo(arbitrator);
 
         // Validate arbitrator details
         if (arbitratorInfo.operatorBtcPubKey.length == 0) {
@@ -170,9 +161,6 @@ contract CompensationManager is
             revert(Errors.INVALID_VERIFICATION_DATA);
         }
 
-        // Get compensation address
-        address receivedCompensationAddress = _getCompensationAddress(arbitratorInfo, msg.sender);
-
         // Validate stake
         uint256 stakeAmount = arbitratorManager.getAvailableStake(arbitrator);
         if (stakeAmount == 0) {
@@ -181,7 +169,7 @@ contract CompensationManager is
 
         // Create compensation claim
         claims[claimId] = CompensationClaim({
-            dapp: msg.sender,
+            claimer: msg.sender,
             arbitrator: arbitrator,
             ethAmount: arbitratorInfo.ethAmount,
             nftContract: arbitratorInfo.nftContract,
@@ -189,7 +177,7 @@ contract CompensationManager is
             totalAmount: stakeAmount,
             withdrawn: false,
             claimType: CompensationType.IllegalSignature,
-            receivedCompensationAddress: receivedCompensationAddress
+            receivedCompensationAddress: transaction.compensationReceiver
         });
 
         // Update arbitrator status
@@ -204,12 +192,11 @@ contract CompensationManager is
         DataTypes.Transaction memory transaction = transactionManager.getTransactionById(id);
 
         // Generate claim ID
-        claimId = keccak256(abi.encodePacked(id, transaction.arbitrator, msg.sender, CompensationType.Timeout));
-        if (claims[claimId].dapp != address(0)) {
+        claimId = keccak256(abi.encodePacked(id, transaction.arbitrator, transaction.timeoutCompensationReceiver, CompensationType.Timeout));
+        if (claims[claimId].claimer != address(0)) {
             revert (Errors.COMPENSATION_ALREADY_CLAIMED);
         }
 
-        if (transaction.dapp != msg.sender) revert(Errors.NOT_TRANSACTION_OWNER);
         if (transaction.status == DataTypes.TransactionStatus.Completed) revert(Errors.TRANSACTION_COMPLETED);
         if (block.timestamp < transaction.deadline) revert(Errors.DEADLINE_NOT_REACHED);
         if (transaction.signature.length > 0) revert(Errors.SIGNATURE_ALREADY_SUBMITTED);
@@ -221,7 +208,7 @@ contract CompensationManager is
 
         // Create compensation claim
         claims[claimId] = CompensationClaim({
-            dapp: msg.sender,
+            claimer: msg.sender,
             arbitrator: transaction.arbitrator,
             ethAmount: arbitratorInfo.ethAmount,
             nftContract: arbitratorInfo.nftContract,
@@ -257,15 +244,14 @@ contract CompensationManager is
         if (sha256(rawData) != transaction.btcTxHash) revert(Errors.BTC_TRANSACTION_MISMATCH);
 
         // Generate claim ID
-        claimId = keccak256(abi.encodePacked(evidence, transaction.arbitrator, msg.sender, CompensationType.FailedArbitration));
-        if (claims[claimId].dapp != address(0)) {
+        claimId = keccak256(abi.encodePacked(evidence, transaction.arbitrator, transaction.compensationReceiver, CompensationType.FailedArbitration));
+        if (claims[claimId].claimer != address(0)) {
             revert (Errors.COMPENSATION_ALREADY_CLAIMED);
         }
 
         // Validate UTXO consistency
         _validateUTXOConsistency(verification.utxos, transaction.utxos);
 
-        if (transaction.dapp != msg.sender) revert(Errors.NOT_TRANSACTION_OWNER);
         if (transaction.signature.length == 0) revert(Errors.SIGNATURE_NOT_SUBMITTED);
 
         // Get transaction signature and verify
@@ -278,7 +264,7 @@ contract CompensationManager is
 
         // Create compensation claim
         claims[claimId] = CompensationClaim({
-            dapp: msg.sender,
+            claimer: msg.sender,
             arbitrator: transaction.arbitrator,
             ethAmount: arbitratorInfo.ethAmount,
             nftContract: arbitratorInfo.nftContract,
@@ -302,16 +288,16 @@ contract CompensationManager is
         // Transfer fees and terminate transaction
         (uint256 arbitratorFee, ) = transactionManager.transferArbitrationFee(txId);
 
+        DataTypes.ArbitratorInfo memory arbitratorInfo = arbitratorManager.getArbitratorInfo(transaction.arbitrator);
         // Generate claim ID
-        bytes32 claimId = keccak256(abi.encodePacked(txId, transaction.arbitrator, msg.sender, CompensationType.ArbitratorFee));
-        if (claims[claimId].dapp != address(0)) {
+        bytes32 claimId = keccak256(abi.encodePacked(txId, transaction.arbitrator, arbitratorInfo.revenueETHAddress, CompensationType.ArbitratorFee));
+        if (claims[claimId].claimer != address(0)) {
             revert (Errors.COMPENSATION_ALREADY_CLAIMED);
         }
 
-        DataTypes.ArbitratorInfo memory arbitratorInfo = arbitratorManager.getArbitratorInfo(transaction.arbitrator);
         // Create compensation claim
         claims[claimId] = CompensationClaim({
-            dapp: transaction.dapp,
+            claimer: msg.sender,
             arbitrator: transaction.arbitrator,
             ethAmount: arbitratorFee,
             nftContract: address(0),
