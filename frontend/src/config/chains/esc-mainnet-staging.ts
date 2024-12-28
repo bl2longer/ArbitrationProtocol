@@ -5,7 +5,7 @@ import { escMainnetProd } from './esc-mainnet-prod';
 export const escMainnetStaging: ChainConfig = clone<ChainConfig>(escMainnetProd);
 
 const hasCustomLocalSubgraphEndpoint = import.meta.env.VITE_APP_LOCAL_SUBGRAPH_ENDPOINT!.length > 0;
-const subgraphEndpoint = hasCustomLocalSubgraphEndpoint ? import.meta.env.VITE_APP_LOCAL_SUBGRAPH_ENDPOINT! : "https://graph.bel2.org/subgraphs/name/bel2-loan-esc-staging";
+const subgraphEndpoint = hasCustomLocalSubgraphEndpoint ? import.meta.env.VITE_APP_LOCAL_SUBGRAPH_ENDPOINT! : "https://graph.bel2.org/subgraphs/name/arbitrators-staging";
 
 // Start from prod config, and update a few things
 escMainnetStaging.subgraph = {
