@@ -34,6 +34,10 @@ export class ArbitrationRequested__Params {
   get btcTx(): Bytes {
     return this._event.parameters[2].value.toBytes();
   }
+
+  get arbitrator(): Address {
+    return this._event.parameters[3].value.toAddress();
+  }
 }
 
 export class ArbitrationSubmitted extends ethereum.Event {

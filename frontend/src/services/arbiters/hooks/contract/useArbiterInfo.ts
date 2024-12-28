@@ -4,6 +4,7 @@ import { useCallback } from 'react';
 import { abi } from "../../../../../contracts/core/ArbitratorManager.sol/ArbitratorManager.json";
 import { ContractArbiterInfo } from '../../dto/contract-arbiter-info';
 import { ArbiterInfo } from '../../model/arbiter-info';
+import { useArbiterNFTStakeValue } from './useArbiterNFTStakeValue';
 
 /**
  * Retrieves an arbiter from the contract instead of subgraph.
@@ -13,9 +14,9 @@ import { ArbiterInfo } from '../../model/arbiter-info';
 export const useArbiterInfo = (arbiterAddress: string) => {
   const activeChain = useActiveEVMChainConfig();
   const { readContract } = useContractCall();
+  const { fetchArbiterNFTStakeValue } = useArbiterNFTStakeValue();
 
   const fetchArbiterInfo = useCallback(async (): Promise<ArbiterInfo> => {
-    // native coin fees to pay to register a dapp.
     const contractArbiterInfo: ContractArbiterInfo = await readContract({
       contractAddress: activeChain.contracts.arbitratorManager,
       abi,
@@ -23,13 +24,16 @@ export const useArbiterInfo = (arbiterAddress: string) => {
       args: [arbiterAddress]
     });
 
-    if (contractArbiterInfo === undefined)
+    if (!contractArbiterInfo)
       return undefined;
 
+    const nftValue = await fetchArbiterNFTStakeValue(arbiterAddress);
+
     const arbiter = ArbiterInfo.fromContractArbiterInfo(contractArbiterInfo);
+    arbiter.setNFTValue(nftValue);
 
     return arbiter;
-  }, [activeChain, readContract, arbiterAddress]);
+  }, [readContract, activeChain, arbiterAddress, fetchArbiterNFTStakeValue]);
 
   return { fetchArbiterInfo };
 };

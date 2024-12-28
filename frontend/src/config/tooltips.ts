@@ -1,5 +1,6 @@
 export const tooltips = {
   arbiterFeeRate: "An arbiter charges a yearly fee, like 10%. If they stake 1000 ELA valued at 3 USD each, their annual fee is 300 USD. If a DApp selects them for 6 months, they get 150 USD. This fee is based on the ELA price at the selection time, ignoring future price changes.",
   revenueAddress: "EVM address, normally owned by arbiters, that receives tokens from dApps as compensation for arbiters service.",
-  arbiterDeadline: "The deadline is set by the arbiter and refers to the period during which the arbiter commits to providing services. During this time, an arbiter cannot withdraw their stake if they are processing any dApp transactions, but they can if there is no work in progress. After this date, the arbiter becomes inactive. dApps that require longer periods for proof validation should not use arbiters with short-term expirations."
+  arbiterDeadline: "The deadline is set by the arbiter and refers to the period during which the arbiter commits to providing services. During this time, an arbiter cannot withdraw their stake if they are processing any dApp transactions, but they can if there is no work in progress. After this date, the arbiter becomes inactive. dApps that require longer periods for proof validation should not use arbiters with short-term expirations.",
+  dappIntro: "A dApp in the current context is any on chain contract that plans to require services from this arbitration service."
 }

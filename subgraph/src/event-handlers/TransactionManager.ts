@@ -15,8 +15,13 @@ export function handleTransactionRegistered(event: TransactionRegistered): void 
 export function handleArbitrationRequested(event: ArbitrationRequested): void {
   const transaction = getTransaction(event.block, event.params.txId.toHexString());
   transaction.dapp = event.params.dapp.toHexString();
-  transaction.btcTx = event.params.btcTx;
+  transaction.arbiter = event.params.arbitrator.toHexString(); // Useless, same arbiter already saved by TransactionRegistered
   transaction.status = "Arbitrated";
+
+  // BTC tx
+  if (event.params.btcTx)
+    transaction.btcTx = event.params.btcTx.toHexString().slice(2);
+
   transaction.save();
 }
 

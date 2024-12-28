@@ -2,6 +2,7 @@ import { CopyField } from "@/components/base/CopyField";
 import { StatusLabel } from "@/components/base/StatusLabel";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { arbiterStatusLabelColor } from "@/services/arbiters/arbiters.service";
 import { ArbiterInfo } from "@/services/arbiters/model/arbiter-info";
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
 import { formatAddress } from "@/utils/formatAddress";
@@ -9,7 +10,6 @@ import { ChevronDownIcon, ChevronUpDownIcon, ChevronUpIcon } from '@heroicons/re
 import { ChevronsUpDown } from "lucide-react";
 import { FC } from "react";
 import { SortConfig } from "./ArbiterList";
-import { arbiterStatusLabelColor } from "@/services/arbiters/arbiters.service";
 
 export const ListView: FC<{
   arbiters: ArbiterInfo[];
@@ -63,7 +63,7 @@ export const ListView: FC<{
               <div className="text-sm">{Number(arbiter.currentFeeRate) / 100}%</div>
             </TableCell>
             <TableCell className="whitespace-nowrap">
-              <div className="text-sm">{Number(arbiter.ethAmount)} {activeChain?.nativeCurrency.symbol}</div>
+              <div className="text-sm">{Number(arbiter.getTotalValue())} {activeChain?.nativeCurrency.symbol}</div>
             </TableCell>
             <TableCell className="whitespace-nowrap">
               <StatusLabel

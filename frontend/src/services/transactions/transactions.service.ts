@@ -72,6 +72,18 @@ export const fetchTransactions = async (chain: ChainConfig, start: number, limit
   }
 }
 
+/**
+ * Refines some of the raw transaction statutes into more readable status.
+ */
+export const transactionStatusLabelTitle = (transaction: Transaction): string => {
+  switch (transaction.status) {
+    case "Arbitrated":
+      return "Arbitration requested";
+    default:
+      return transaction.status;
+  }
+}
+
 export const transactionStatusLabelColor = (transaction: Transaction): StatusLabelColor => {
   switch (transaction.status) {
     case "Active":

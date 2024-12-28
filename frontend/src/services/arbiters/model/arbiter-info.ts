@@ -11,7 +11,8 @@ export type ArbiterStatus = "Active" | "Working" | "Paused" | "Terminated" | "Fr
 export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdAt" | "currentFeeRate" | "pendingFeeRate"> {
   @Expose() public id: string;
   @Expose() public address: string;
-  @Expose() @Transform(({ value }) => tokenToReadableValue(value, 18)) public ethAmount: BigNumber;
+  @Expose() @Transform(({ value }) => tokenToReadableValue(value, 18)) public ethAmount: BigNumber; // Number of native coins not including NFT values
+  @Expose() @Transform(({ value }) => tokenToReadableValue(value, 18)) public nftValue: BigNumber; // Readable amount of native coin represented by the staked NFTs.
   @Expose() public status: ArbiterStatus;
   @Expose() @Transform(({ value }) => new Date(value * 1000)) public createdAt: Date;
   @Expose() public lastArbitrationTime: number;
@@ -42,6 +43,18 @@ export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdA
       return null;
 
     return moment.unix(this.lastArbitrationTime);
+  }
+
+  /**
+   * Manual way of setting the NFT value which is automatically retrieved from the subgraph, but requires
+   * an additional contract call when fetching arbiters directly from the contract.
+   */
+  public setNFTValue(value: BigNumber) {
+    this.nftValue = value;
+  }
+
+  public getTotalValue(): BigNumber {
+    return this.ethAmount.plus(this.nftValue || 0);
   }
 
   public static fromContractArbiterInfo(contractInfo: ContractArbiterInfo): ArbiterInfo {

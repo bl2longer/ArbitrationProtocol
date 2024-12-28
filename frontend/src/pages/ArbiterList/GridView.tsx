@@ -45,7 +45,7 @@ const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
       </div>
       <div className="flex justify-between">
         <span className="text-gray-600">Stake</span>
-        <span>{Number(arbiter.ethAmount)} {activeChain?.nativeCurrency.symbol}</span>
+        <span>{arbiter.getTotalValue().toNumber()} {activeChain?.nativeCurrency.symbol}</span>
       </div>
       <div className="mt-4 pt-4 border-t">
         <Collapsible>

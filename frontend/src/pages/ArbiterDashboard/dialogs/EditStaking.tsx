@@ -84,7 +84,7 @@ export const EditStakingDialog: FC<{
   // Temporary limitation of maximum staking amount
   const watchedCoinAmount = parseFloat(`${form.watch("coinAmount")}`); // Sometimes returned as number, sometimes string...
   const stakeAmount = useMemo(() => {
-    let amount = arbiter.ethAmount.toNumber();
+    let amount = arbiter.getTotalValue().toNumber();
 
     if (stakeType === "coin")
       amount += watchedCoinAmount;
@@ -134,6 +134,7 @@ export const EditStakingDialog: FC<{
         if (await unstake()) {
           arbiter.status = "Terminated";
           arbiter.ethAmount = new BigNumber(0);
+          arbiter.setNFTValue(new BigNumber(0));
 
           successToast("Unstaked successfully!");
           onHandleClose();

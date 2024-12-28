@@ -36,17 +36,19 @@ export function handleArbitratorStatusChanged(event: ArbitratorStatusChanged): v
 export function handleStakeAdded(event: StakeAdded): void {
     const arbitratorAddress = event.params.arbitrator.toHexString();
     const assetAddress = event.params.assetAddress.toHexString();
-    const amount = event.params.amount;
-
-    // TODO: save event.params.nftTokenIds so UI can easily get the list of staked NFTs
 
     const arbitratorInfo = getArbitratorInfo(event.block, arbitratorAddress);
 
-    if (assetAddress != ZERO_ADDRESS) {
+    if (assetAddress == ZERO_ADDRESS) {
+        // Native coin staking
+        arbitratorInfo.ethAmount = arbitratorInfo.ethAmount.plus(event.params.amount); // Native coin amount only
+    }
+    else {
+        // NFT staking
+        arbitratorInfo.nftValue = arbitratorInfo.nftValue.plus(event.params.amount);
         // TODO: save NFT ids
     }
 
-    arbitratorInfo.ethAmount = arbitratorInfo.ethAmount.plus(amount); // No matter if native coin of NFT value, this arrives in ethAmount as added value, not total. So we sum up.
     arbitratorInfo.status = contractArbitratorStatusToString(event.params.status);
 
     arbitratorInfo.save();
@@ -61,6 +63,7 @@ export function handleStakeWithdrawn(event: StakeWithdrawn): void {
     const arbitratorInfo = getArbitratorInfo(event.block, arbitratorAddress);
 
     arbitratorInfo.ethAmount = new BigInt(0);
+    arbitratorInfo.nftValue = new BigInt(0);
     arbitratorInfo.status = "Terminated";
 
     // TODO: NFT
@@ -138,6 +141,7 @@ function getArbitratorInfo(block: ethereum.Block, arbitratorAddress: string): Ar
     arbitratorInfo.address = arbitratorAddress;
     arbitratorInfo.status = "Paused"; // Default state is paused at creation. Owner must set operator, revenue, params info first
     arbitratorInfo.ethAmount = new BigInt(0);
+    arbitratorInfo.nftValue = new BigInt(0);
     arbitratorInfo.currentFeeRate = 0;
 
     arbitratorInfo.operatorEvmAddress = null;

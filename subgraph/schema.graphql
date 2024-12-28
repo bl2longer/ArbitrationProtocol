@@ -42,8 +42,9 @@ type ArbiterInfo @entity {
     currentFeeRate: Int # Current fee rate
     pendingFeeRate: Int # Pending new fee rate
     status: ArbiterStatus! # Arbiter status
-    activeTransactionId: Bytes # ID of the transaction that made the arbiter "working". 0 address if not working.
+    activeTransactionId: String # ID of the transaction that made the arbiter "working". 0 address if not working.
     ethAmount: BigInt! # Native token stake amount
+    nftValue: BigInt! # Amount of native coins locked in the staked NFTs
     erc20Token: String # ERC20 token address
     nftContract: String # NFT contract address
     nftTokenIds: [BigInt!] # NFT token IDs
@@ -67,11 +68,11 @@ type Transaction @entity {
     arbiter: String
     startTime: Int
     deadline: Int
-    btcTx: Bytes # Unsigned Bitcoin transaction
-    btcTxHash: Bytes # Hash of the Bitcoin transaction with empty input scripts
+    btcTx: String # Unsigned Bitcoin transaction
+    btcTxHash: String # Hash of the Bitcoin transaction with empty input scripts
     status: TransactionStatus!
     depositedFee: BigInt
-    signature: Bytes # Arbiter's signature
+    signature: String # Arbiter's signature
     compensationReceiver: String
     timeoutCompensationReceiver: String
 }
@@ -94,7 +95,7 @@ type CompensationClaim @entity {
     withdrawn: Boolean!
     arbiter: String
     amount: BigInt
-    evidence: Bytes
+    evidence: String
 }
 
 type DApp @entity {

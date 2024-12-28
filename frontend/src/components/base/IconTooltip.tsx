@@ -16,7 +16,7 @@ export const IconTooltip: FC<{
       </HoverCardTrigger>
       <HoverCardContent className="w-96">
         <p className="text-base text-primary font-bold">{title}</p>
-        <p className="text-sm text-justify">{tooltip}</p>
+        <p className="text-sm font-normal text-justify">{tooltip}</p>
       </HoverCardContent>
     </HoverCard>
   )

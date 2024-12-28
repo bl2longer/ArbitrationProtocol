@@ -2,11 +2,9 @@
 
 - Deploy PROD + clone keep a staging url/subgraph alive
 
-- Bugs:
-  - after staking NFT, ethAmount returned by getArbitratorInfo seems to not include the NFT value.
-  - subgraph: non native add stake not implemented
+- DONE Improve transaction status label "Arbitrated" as this means "Arbitration requested"
+- btcTx should not have 0x prefix
 
-- DONE Update events for btcTx and depositedFee
 - Make a limit in loan dapp too, max loan amount is 100 usd
 
 - P2: Simple tooltips to explain main app pages (compensations? dapps? transactions?)

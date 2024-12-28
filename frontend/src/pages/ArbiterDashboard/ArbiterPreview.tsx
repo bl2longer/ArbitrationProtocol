@@ -59,7 +59,10 @@ export const ArbiterPreview: FC<{
             <Button onClick={() => setEditStakingIsOpen(true)}><Layers2Icon />Edit</Button>
           </EnsureWalletNetwork>
         </div>
-        <InfoRow title="Stake Amount" value={`${arbiter.ethAmount.toString()} ${activeChain?.nativeCurrency.symbol}`} />
+        <InfoRow title="Stake Amount" value={`
+          ${arbiter.getTotalValue().toString()} ${activeChain?.nativeCurrency.symbol}
+          (${arbiter.ethAmount.toString()} ${activeChain?.nativeCurrency.symbol} in native coins, ${arbiter.nftValue.toString()} ${activeChain?.nativeCurrency.symbol} in NFTs)
+          `} />
       </div>
 
       <div className="bg-white rounded-lg shadow divide-y">

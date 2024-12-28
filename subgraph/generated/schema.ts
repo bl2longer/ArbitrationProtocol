@@ -130,20 +130,20 @@ export class ArbiterInfo extends Entity {
     this.set("status", Value.fromString(value));
   }
 
-  get activeTransactionId(): Bytes | null {
+  get activeTransactionId(): string | null {
     let value = this.get("activeTransactionId");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
-      return value.toBytes();
+      return value.toString();
     }
   }
 
-  set activeTransactionId(value: Bytes | null) {
+  set activeTransactionId(value: string | null) {
     if (!value) {
       this.unset("activeTransactionId");
     } else {
-      this.set("activeTransactionId", Value.fromBytes(<Bytes>value));
+      this.set("activeTransactionId", Value.fromString(<string>value));
     }
   }
 
@@ -158,6 +158,19 @@ export class ArbiterInfo extends Entity {
 
   set ethAmount(value: BigInt) {
     this.set("ethAmount", Value.fromBigInt(value));
+  }
+
+  get nftValue(): BigInt {
+    let value = this.get("nftValue");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set nftValue(value: BigInt) {
+    this.set("nftValue", Value.fromBigInt(value));
   }
 
   get erc20Token(): string | null {
@@ -441,37 +454,37 @@ export class Transaction extends Entity {
     this.set("deadline", Value.fromI32(value));
   }
 
-  get btcTx(): Bytes | null {
+  get btcTx(): string | null {
     let value = this.get("btcTx");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
-      return value.toBytes();
+      return value.toString();
     }
   }
 
-  set btcTx(value: Bytes | null) {
+  set btcTx(value: string | null) {
     if (!value) {
       this.unset("btcTx");
     } else {
-      this.set("btcTx", Value.fromBytes(<Bytes>value));
+      this.set("btcTx", Value.fromString(<string>value));
     }
   }
 
-  get btcTxHash(): Bytes | null {
+  get btcTxHash(): string | null {
     let value = this.get("btcTxHash");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
-      return value.toBytes();
+      return value.toString();
     }
   }
 
-  set btcTxHash(value: Bytes | null) {
+  set btcTxHash(value: string | null) {
     if (!value) {
       this.unset("btcTxHash");
     } else {
-      this.set("btcTxHash", Value.fromBytes(<Bytes>value));
+      this.set("btcTxHash", Value.fromString(<string>value));
     }
   }
 
@@ -505,20 +518,20 @@ export class Transaction extends Entity {
     }
   }
 
-  get signature(): Bytes | null {
+  get signature(): string | null {
     let value = this.get("signature");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
-      return value.toBytes();
+      return value.toString();
     }
   }
 
-  set signature(value: Bytes | null) {
+  set signature(value: string | null) {
     if (!value) {
       this.unset("signature");
     } else {
-      this.set("signature", Value.fromBytes(<Bytes>value));
+      this.set("signature", Value.fromString(<string>value));
     }
   }
 
@@ -812,20 +825,20 @@ export class CompensationClaim extends Entity {
     }
   }
 
-  get evidence(): Bytes | null {
+  get evidence(): string | null {
     let value = this.get("evidence");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
-      return value.toBytes();
+      return value.toString();
     }
   }
 
-  set evidence(value: Bytes | null) {
+  set evidence(value: string | null) {
     if (!value) {
       this.unset("evidence");
     } else {
-      this.set("evidence", Value.fromBytes(<Bytes>value));
+      this.set("evidence", Value.fromString(<string>value));
     }
   }
 }

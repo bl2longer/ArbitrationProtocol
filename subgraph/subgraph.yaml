@@ -62,7 +62,7 @@ dataSources:
         - name: TransactionManager
           file: ./src/abis/TransactionManager.json
       eventHandlers:
-        - event: ArbitrationRequested(indexed address,indexed bytes32,bytes)
+        - event: ArbitrationRequested(indexed address,indexed bytes32,bytes,address)
           handler: handleArbitrationRequested
         - event: ArbitrationSubmitted(indexed address,indexed bytes32)
           handler: handleArbitrationSubmitted

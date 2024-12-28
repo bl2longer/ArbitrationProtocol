@@ -3,8 +3,9 @@ import { StatusLabel } from '@/components/base/StatusLabel';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
+import { useActiveEVMChainConfig } from '@/services/chains/hooks/useActiveEVMChainConfig';
 import { Transaction } from '@/services/transactions/model/transaction';
-import { transactionStatusLabelColor } from '@/services/transactions/transactions.service';
+import { transactionStatusLabelColor, transactionStatusLabelTitle } from '@/services/transactions/transactions.service';
 import { formatDateWithoutYear } from '@/utils/dates';
 import { formatAddress } from '@/utils/formatAddress';
 import { FC } from 'react';
@@ -15,19 +16,23 @@ export const TransactionRow: FC<{
   onSubmitArbitration: () => void;
 }> = ({ transaction, onSubmitArbitration }) => {
   const { evmAccount } = useWalletContext();
+  const activeChain = useActiveEVMChainConfig();
 
   const formatValue = (key: keyof typeof transactionFieldLabels, value: any) => {
     if (key === 'startTime' || key === 'deadline')
       return value ? <div className='flex flex-row items-center'>{formatDateWithoutYear(value)} <CopyField value={value} /></div> : "-";
 
     if (key === 'status')
-      return <StatusLabel title={value} color={transactionStatusLabelColor(transaction)} />
+      return <StatusLabel title={transactionStatusLabelTitle(transaction)} color={transactionStatusLabelColor(transaction)} />
 
     if (key === 'dapp' || key === 'arbiter')
       return value ? <div className='flex flex-row items-center'>{formatAddress(value)} <CopyField value={value} /></div> : "-";
 
     if (key === 'btcTx')
       return value ? <div className='flex flex-row items-center'>{formatAddress(value)} <CopyField value={value} /></div> : "-";
+
+    if (key === 'depositedFee')
+      return value ? <span>{transaction.depositedFee.toNumber()} {activeChain?.nativeCurrency.symbol}</span> : "-";
 
     return value;
   };

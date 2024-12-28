@@ -50,6 +50,7 @@ export const fetchArbiters = async (chain: ChainConfig, start = 0, limit = 100, 
           status 
           address 
           ethAmount 
+          nftValue
           lastArbitrationTime 
           currentFeeRate 
           pendingFeeRate 

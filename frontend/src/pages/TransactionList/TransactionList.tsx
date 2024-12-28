@@ -19,8 +19,8 @@ export const transactionFieldLabels: Partial<Record<keyof Transaction, string>> 
   startTime: 'Start Time',
   deadline: 'Deadline',
   btcTx: 'BTC Tx',
-  status: 'Status',
   depositedFee: 'Deposited Fee',
+  status: 'Status',
   // signature: 'Signature'
 };
 

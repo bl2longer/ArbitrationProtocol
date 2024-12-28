@@ -1,3 +1,4 @@
+import { IconTooltip } from '@/components/base/IconTooltip';
 import { Loading } from '@/components/base/Loading';
 import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitle } from '@/components/base/PageTitle';
@@ -5,6 +6,7 @@ import { PageTitleRow } from '@/components/base/PageTitleRow';
 import { SearchInput } from '@/components/base/SearchInput';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { tooltips } from '@/config/tooltips';
 import { useDApps } from '@/services/dapp-registry/hooks/useDApps';
 import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
 import { RefreshCwIcon } from 'lucide-react';
@@ -38,7 +40,7 @@ const DAppList: FC = () => {
   return (
     <PageContainer>
       <PageTitleRow>
-        <PageTitle>DApps List</PageTitle>
+        <PageTitle>DApp List <IconTooltip title='dApp' tooltip={tooltips.dappIntro} iconClassName='ml-2' iconSize={20} /></PageTitle>
         <div className='flex flex-row gap-2 items-center'>
           <Button variant="outline" size="icon" onClick={refreshDapps}>
             <RefreshCwIcon />

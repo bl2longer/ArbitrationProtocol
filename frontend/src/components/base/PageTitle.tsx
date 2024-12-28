@@ -5,6 +5,6 @@ export const PageTitle: FC<{
   className?: string;
 }> = ({ children, className = '' }) => {
   return (
-    <h1 className={`text-2xl font-bold ${className}`}>{children}</h1>
+    <h1 className={`flex items-center text-2xl font-bold ${className}`}>{children}</h1>
   )
 }

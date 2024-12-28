@@ -11,7 +11,6 @@ const Layout: FC<{ children: React.ReactNode }> = ({ children }) => {
 
   // Reset when chain of wallet changes
   useEffect(() => {
-    console.log("BLAHHH")
     void fetchOwnedArbiter();
   }, [activeChain, evmAccount, fetchOwnedArbiter]);
 
