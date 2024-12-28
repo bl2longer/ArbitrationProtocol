@@ -30,7 +30,8 @@ export const useArbiterInfo = (arbiterAddress: string) => {
     const nftValue = await fetchArbiterNFTStakeValue(arbiterAddress);
 
     const arbiter = ArbiterInfo.fromContractArbiterInfo(contractArbiterInfo);
-    arbiter.setNFTValue(nftValue);
+    if (arbiter)
+      arbiter.setNFTValue(nftValue);
 
     return arbiter;
   }, [readContract, activeChain, arbiterAddress, fetchArbiterNFTStakeValue]);

@@ -3,7 +3,6 @@
 - Deploy PROD + clone keep a staging url/subgraph alive
 
 - DONE Improve transaction status label "Arbitrated" as this means "Arbitration requested"
-- btcTx should not have 0x prefix
 
 - Make a limit in loan dapp too, max loan amount is 100 usd
 
@@ -32,6 +31,10 @@
     - requestArbitration
     - borrowerAddArbitrationSignatures
     - getArbitrationBtcTx
+  - auto arbiter selection:
+    - criteria: 
+      - deadline > order time, staking value > order value
+      - The arbiter with the smallest staking amount, and the staking amount is greater than the order amount
 
 - Email service for arbiters:
   - "Arbiter can register an email for the arbitration notification, we need a background script to check the events"
