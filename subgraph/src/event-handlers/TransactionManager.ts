@@ -8,12 +8,14 @@ export function handleTransactionRegistered(event: TransactionRegistered): void 
   transaction.arbiter = event.params.arbitrator.toHexString();
   transaction.startTime = event.block.timestamp.toI32();
   transaction.deadline = event.params.deadline.toI32();
+  transaction.depositedFee = event.params.depositFee;
   transaction.save();
 }
 
 export function handleArbitrationRequested(event: ArbitrationRequested): void {
   const transaction = getTransaction(event.block, event.params.txId.toHexString());
   transaction.dapp = event.params.dapp.toHexString();
+  transaction.btcTx = event.params.btcTx;
   transaction.status = "Arbitrated";
   transaction.save();
 }

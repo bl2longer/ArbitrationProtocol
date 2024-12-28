@@ -9,7 +9,9 @@ import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { tooltips } from '@/config/tooltips';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
+import { ArbiterMaxStakeValue } from '@/services/arbiters/arbiters.service';
 import { useArbiterRegister } from '@/services/arbiters/hooks/contract/useArbiterRegister';
+import { BPosNFT } from '@/services/bpos-nfts/model/bpos-nft';
 import { isValidBitcoinAddress, isValidBitcoinPublicKey } from '@/services/btc/btc';
 import { useBitcoinWalletAction } from '@/services/btc/hooks/useBitcoinWalletAction';
 import { useActiveEVMChainConfig } from '@/services/chains/hooks/useActiveEVMChainConfig';
@@ -43,6 +45,7 @@ export const RegistrationForm: FC<{
   const { getPublicKey } = useBitcoinWalletAction();
   const { checkApproved, isApproved: nftTransferIsApproved, isPending: isCheckingTransferApproval } = useERC721CheckApproval(activeChain?.contracts.bPoSNFT, activeChain?.contracts.arbitratorManager);
   const { approveNFTTransfer, isPending: isApprovingTokenTransfer } = useERC721Approve(activeChain?.contracts.bPoSNFT, activeChain?.contracts.arbitratorManager);
+  const [selectedNFTs, setSelectedNFTs] = useState<BPosNFT[]>([]);
 
   useInterval(checkApproved, 3000);
 
@@ -88,6 +91,22 @@ export const RegistrationForm: FC<{
       tokenIds: []
     }
   });
+
+  // Temporary limitation of maximum staking amount
+  const watchedCoinAmount = parseFloat(`${form.watch("coinAmount")}`); // Sometimes returned as number, sometimes string...
+  const stakeAmount = useMemo(() => {
+    let amount = 0;
+
+    if (stakeType === "coin")
+      amount += watchedCoinAmount;
+
+    if (stakeType === "nft")
+      amount += selectedNFTs.reduce((acc, nft) => acc + (nft.voteInfo?.getCoinValue() || 0), 0);
+
+    return amount;
+  }, [selectedNFTs, stakeType, watchedCoinAmount]);
+
+  const newAmountAllowsStaking = useMemo(() => stakeAmount <= ArbiterMaxStakeValue, [stakeAmount]);
 
   const handleRegister = useCallback(async (values: z.infer<PartialSchema>) => {
     try {
@@ -244,7 +263,15 @@ export const RegistrationForm: FC<{
           </FormItem>
 
           {stakeType === "coin" && <StakeCoinForm form={form} />}
-          {stakeType === "nft" && <StakeNFTForm form={form} />}
+          {stakeType === "nft" && <StakeNFTForm form={form} onNFTSelectionChanged={setSelectedNFTs} />}
+
+          {
+            !newAmountAllowsStaking &&
+            <div className='text-sm my-2 text-red-500'>
+              Stake value should be lower than {ArbiterMaxStakeValue} {activeChain?.nativeCurrency.symbol}.
+              Now {stakeAmount} {activeChain?.nativeCurrency.symbol}.
+            </div>
+          }
         </div>
 
         <div className="mt-6 flex justify-end space-x-3">
@@ -260,7 +287,7 @@ export const RegistrationForm: FC<{
           {(nftTransferIsApproved === true || stakeType !== "nft") && <EnsureWalletNetwork continuesTo='Register'>
             <Button
               type="submit"
-              disabled={!configSettings || isRegistering}
+              disabled={!configSettings || isRegistering || !newAmountAllowsStaking}
               className={!form.formState.isValid && "opacity-30"}>
               Register
             </Button>

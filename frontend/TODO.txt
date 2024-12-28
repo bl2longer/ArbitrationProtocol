@@ -1,8 +1,21 @@
 ===> Target release date: dec 30
 
+- Deploy PROD + clone keep a staging url/subgraph alive
+
 - Bugs:
-  - P2: "Install Metamask" should look like a real button
-  - P2: Transaction list still seems to reload every time the page is entered.
+  - after staking NFT, ethAmount returned by getArbitratorInfo seems to not include the NFT value.
+  - subgraph: non native add stake not implemented
+
+- DONE Update events for btcTx and depositedFee
+- Make a limit in loan dapp too, max loan amount is 100 usd
+
+- P2: Simple tooltips to explain main app pages (compensations? dapps? transactions?)
+
+------- AFTER DEC 30 RELEASE ------
+
+- P2: arbiter registration: hide "operator" (self by default)
+- P2: "Install Metamask" should look like a real button
+- P2: Transaction list still seems to reload every time the page is entered.
 
 - Transaction list:
   - Submit arbitration:
@@ -31,6 +44,11 @@
 P2:
 - Ability to unregister dapp: 
   - TBD: from dapps list of from my dashboard?
+
+
+
+
+------ HELPER INFO ------
 
 staging contract is deployed : {
     "ERC721_ADDRESS": "0x8e286664c6B8811015F936592Dd654e94Af3F494",

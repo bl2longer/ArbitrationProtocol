@@ -30,6 +30,10 @@ export class ArbitrationRequested__Params {
   get txId(): Bytes {
     return this._event.parameters[1].value.toBytes();
   }
+
+  get btcTx(): Bytes {
+    return this._event.parameters[2].value.toBytes();
+  }
 }
 
 export class ArbitrationSubmitted extends ethereum.Event {
@@ -223,6 +227,10 @@ export class TransactionRegistered__Params {
 
   get deadline(): BigInt {
     return this._event.parameters[3].value.toBigInt();
+  }
+
+  get depositFee(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
   }
 }
 

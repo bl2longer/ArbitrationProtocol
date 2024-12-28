@@ -3,9 +3,11 @@ import { StakeType, StakeTypePicker } from "@/components/staking/StakeTypePicker
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
+import { ArbiterMaxStakeValue } from "@/services/arbiters/arbiters.service";
 import { useArbiterStake } from "@/services/arbiters/hooks/contract/useArbiterStake";
 import { useArbiterUnstake } from "@/services/arbiters/hooks/contract/useArbiterUnstake";
 import { ArbiterInfo } from "@/services/arbiters/model/arbiter-info";
+import { BPosNFT } from "@/services/bpos-nfts/model/bpos-nft";
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
 import { useConfigManager } from "@/services/config-manager/hooks/useConfigManager";
 import { useERC721Approve } from "@/services/erc721/hooks/useERC721Approve";
@@ -36,6 +38,7 @@ export const EditStakingDialog: FC<{
   const { stakeETH, stakeNFT, isPending: isStaking } = useArbiterStake();
   const { unstake, isPending: isUnstaking } = useArbiterUnstake();
   const isActionBusy = isStaking || isUnstaking;
+  const [selectedNFTs, setSelectedNFTs] = useState<BPosNFT[]>([]);
 
   useInterval(checkApproved, 3000);
 
@@ -77,6 +80,22 @@ export const EditStakingDialog: FC<{
   useEffect(() => {
     form.reset();
   }, [formSchema, form]);
+
+  // Temporary limitation of maximum staking amount
+  const watchedCoinAmount = parseFloat(`${form.watch("coinAmount")}`); // Sometimes returned as number, sometimes string...
+  const stakeAmount = useMemo(() => {
+    let amount = arbiter.ethAmount.toNumber();
+
+    if (stakeType === "coin")
+      amount += watchedCoinAmount;
+
+    if (stakeType === "nft")
+      amount += selectedNFTs.reduce((acc, nft) => acc + (nft.voteInfo?.getCoinValue() || 0), 0);
+
+    return amount;
+  }, [selectedNFTs, arbiter, stakeType, watchedCoinAmount]);
+
+  const newAmountAllowsStaking = useMemo(() => stakeAmount <= ArbiterMaxStakeValue, [stakeAmount]);
 
   const handleApproveNFTTransfer = useCallback(async () => {
     await approveNFTTransfer();
@@ -152,8 +171,16 @@ export const EditStakingDialog: FC<{
           <form onSubmit={form.handleSubmit(handleSubmit)} className='flex flex-col gap-4 w-full items-center justify-center'>
             <StakeTypePicker value={stakeType} onChange={setStakeType} canUnstake={true} />
             {stakeType === "coin" && <StakeCoinForm form={form} />}
-            {stakeType === "nft" && <StakeNFTForm form={form} />}
+            {stakeType === "nft" && <StakeNFTForm form={form} onNFTSelectionChanged={setSelectedNFTs} />}
             {stakeType === "unstake" && <UnstakeForm />}
+
+            {
+              !newAmountAllowsStaking &&
+              <div className='text-sm my-2 text-red-500'>
+                Stake value should be lower than {ArbiterMaxStakeValue} {activeChain?.nativeCurrency.symbol}.
+                Now {stakeAmount} {activeChain?.nativeCurrency.symbol}.
+              </div>
+            }
 
             <div className="mt-6 flex justify-end space-x-3">
               {nftTransferIsApproved === false && stakeType === "nft" && <EnsureWalletNetwork continuesTo='Approve NFT Transfer'>
@@ -168,7 +195,7 @@ export const EditStakingDialog: FC<{
               {(nftTransferIsApproved === true || stakeType !== "nft") && <EnsureWalletNetwork continuesTo='Register'>
                 <Button
                   type="submit"
-                  disabled={!configSettings || isActionBusy}
+                  disabled={!configSettings || isActionBusy || !newAmountAllowsStaking}
                   className={!form.formState.isValid && "opacity-30"}>
                   {actionButtonLabel}
                 </Button>

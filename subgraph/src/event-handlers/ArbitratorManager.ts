@@ -42,11 +42,11 @@ export function handleStakeAdded(event: StakeAdded): void {
 
     const arbitratorInfo = getArbitratorInfo(event.block, arbitratorAddress);
 
-    if (assetAddress == ZERO_ADDRESS) // Native token staked - strict equality doesn't work here
-        arbitratorInfo.ethAmount = arbitratorInfo.ethAmount.plus(amount);
-    else
-        throw new Error(`Non native add stake not implemented yet, asset address ${assetAddress} ${assetAddress.length} ${typeof assetAddress} ${ZERO_ADDRESS} ${typeof ZERO_ADDRESS} ${assetAddress === ZERO_ADDRESS}`);
+    if (assetAddress != ZERO_ADDRESS) {
+        // TODO: save NFT ids
+    }
 
+    arbitratorInfo.ethAmount = arbitratorInfo.ethAmount.plus(amount); // No matter if native coin of NFT value, this arrives in ethAmount as added value, not total. So we sum up.
     arbitratorInfo.status = contractArbitratorStatusToString(event.params.status);
 
     arbitratorInfo.save();

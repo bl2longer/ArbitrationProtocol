@@ -5,6 +5,8 @@ import { ArbiterInfo as ArbiterInfoDTO } from '../subgraph/dto/arbiter-info';
 import { SubgraphGQLResponse } from '../subgraph/gql-response';
 import { ArbiterInfo } from './model/arbiter-info';
 
+export const ArbiterMaxStakeValue = 50; // Maximum number of native coin value allowed for staking. Used during initial phase while testing things.
+
 type FetchArbitersResponse = SubgraphGQLResponse<{
   arbiterInfos: ArbiterInfoDTO[];
 }>;

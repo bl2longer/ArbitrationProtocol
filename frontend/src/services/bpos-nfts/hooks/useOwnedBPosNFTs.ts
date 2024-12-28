@@ -6,6 +6,7 @@ import { useCallback, useEffect } from 'react';
 import { BehaviorSubject } from 'rxjs';
 import { fetchBPosNfts } from '../bpos-nfts.service';
 import { BPosNFT } from '../model/bpos-nft';
+import { useNFTInfo } from './contract/useNFTInfo';
 
 const state$ = new BehaviorSubject<{ ownedBPosNFTs?: BPosNFT[]; isPending: boolean, wasFetched: boolean }>({
   isPending: false,
@@ -16,17 +17,27 @@ export const useOwnedBPosNFTs = () => {
   const activeChain = useActiveEVMChainConfig();
   const { evmAccount } = useWalletContext();
   const state = useBehaviorSubject(state$);
+  const { fetchNFTInfo } = useNFTInfo();
+
 
   const fetchOwnedBPosNFTs = useCallback(async () => {
     state$.next({ isPending: true, wasFetched: false });
     if (activeChain && evmAccount) {
-      // TMP HARDCODED ADDRESS
       const { bposNfts } = await fetchBPosNfts(activeChain, 0, 100, { ownerAddress: evmAccount });
+
+      // Fetch NFTs info/value
+      if (bposNfts) {
+        for (const nft of bposNfts) {
+          const info = await fetchNFTInfo(nft.tokenId)
+          nft.setVoteInfo(info);
+        }
+      }
+
       state$.next({ ownedBPosNFTs: bposNfts, isPending: false, wasFetched: true });
     } else {
       state$.next({ ownedBPosNFTs: [], isPending: false, wasFetched: true });
     }
-  }, [activeChain, evmAccount]);
+  }, [activeChain, evmAccount, fetchNFTInfo]);
 
   // Initial lazy fetch (first access)
   useEffect(() => {
