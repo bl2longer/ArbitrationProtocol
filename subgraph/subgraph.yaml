@@ -5,11 +5,11 @@ schema:
 dataSources:
   - name: ArbitratorManager
     kind: ethereum/contract
-    network: esc-prod
+    network: esc-staging
     source:
       abi: ArbitratorManager
-      address: "0xdA73554143F1F92aE31801632BB9620B7AF1e709"
-      startBlock: 28395810
+      address: "0x611E86f21ff95a36d0675D12c287db32B2B9DFa8"
+      startBlock: 28360443
     mapping:
       file: ./src/event-handlers/ArbitratorManager.ts
       language: wasm/assemblyscript
@@ -24,11 +24,11 @@ dataSources:
       eventHandlers:
         - event: ArbitratorStatusChanged(indexed address,uint8)
           handler: handleArbitratorStatusChanged
-        - event: ArbitratorParamsSet(indexed address,uint256,uint256)
+        - event: ArbitratorParamsSet(indexed address,uint256,uint256,uint8)
           handler: handleArbitratorParamsSet
-        - event: ArbitratorPaused(indexed address)
+        - event: ArbitratorPaused(indexed address,uint8)
           handler: handleArbitratorPaused
-        - event: ArbitratorUnpaused(indexed address)
+        - event: ArbitratorUnpaused(indexed address,uint8)
           handler: handleArbitratorUnpaused
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
@@ -45,11 +45,11 @@ dataSources:
           handler: handleArbitratorRegistered
   - name: TransactionManager
     kind: ethereum/contract
-    network: esc-prod
+    network: esc-staging
     source:
       abi: TransactionManager
-      address: "0x1E7899A60b1fE71Cdb856518eB1817CcA3Fb5804"
-      startBlock: 28395825
+      address: "0xA10b92006743Ef3B12077da67e465963743b03D3"
+      startBlock: 28330216
     mapping:
       file: ./src/event-handlers/TransactionManager.ts
       language: wasm/assemblyscript
@@ -62,7 +62,7 @@ dataSources:
         - name: TransactionManager
           file: ./src/abis/TransactionManager.json
       eventHandlers:
-        - event: ArbitrationRequested(indexed address,indexed bytes32,bytes,address)
+        - event: ArbitrationRequested(indexed address,indexed bytes32,bytes,bytes,address)
           handler: handleArbitrationRequested
         - event: ArbitrationSubmitted(indexed address,indexed bytes32)
           handler: handleArbitrationSubmitted
@@ -75,11 +75,11 @@ dataSources:
           handler: handleTransactionRegistered
   - name: CompensationManager
     kind: ethereum/contract
-    network: esc-prod
+    network: esc-staging
     source:
       abi: CompensationManager
-      address: "0x11C42653ea0B7BC1e14cE09DE14E9D285f05F408"
-      startBlock: 28395835
+      address: "0x34832C9283f9915DCff196241d00D7306147e151"
+      startBlock: 28330302
     mapping:
       file: ./src/event-handlers/CompensationManager.ts
       language: wasm/assemblyscript
@@ -98,11 +98,11 @@ dataSources:
           handler: handleCompensationWithdrawn
   - name: DAppRegistry
     kind: ethereum/contract
-    network: esc-prod
+    network: esc-staging
     source:
       abi: DAppRegistry
-      address: "0x682c832541507EbFd9B5A11576e1e79e1cad9598"
-      startBlock: 28395800
+      address: "0x538f5e27299384c0FEF434d3359d948277E13C85"
+      startBlock: 28329774
     mapping:
       file: ./src/event-handlers/DAppRegistry.ts
       language: wasm/assemblyscript
@@ -125,11 +125,11 @@ dataSources:
           handler: handleDAppSuspended
   - name: BPosNFT
     kind: ethereum/contract
-    network: esc-prod
+    network: esc-staging
     source:
       abi: BPosNFT
       address: "0x8e286664c6B8811015F936592Dd654e94Af3F494"
-      startBlock: 18033297
+      startBlock: 28330216
     mapping:
       file: ./src/event-handlers/BPosNFT.ts
       language: wasm/assemblyscript

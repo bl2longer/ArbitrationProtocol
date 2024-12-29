@@ -1,4 +1,4 @@
-import { BigInt, ethereum } from "@graphprotocol/graph-ts";
+import { BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import { ArbitratorParamsSet, ArbitratorPaused, ArbitratorRegistered, ArbitratorStatusChanged, ArbitratorUnpaused, OperatorSet, OwnershipTransferred, RevenueAddressesSet, StakeAdded, StakeWithdrawn } from "../../generated/ArbitratorManager/ArbitratorManager";
 import { ArbiterInfo } from "../../generated/schema";
 import { ZERO_ADDRESS } from "../constants";
@@ -79,6 +79,7 @@ export function handleArbitratorParamsSet(event: ArbitratorParamsSet): void {
     const arbitratorInfo = getArbitratorInfo(event.block, arbitratorAddress);
     arbitratorInfo.currentFeeRate = feeRate.toI32();
     arbitratorInfo.lastArbitrationTime = deadline.toI32();
+    arbitratorInfo.status = contractArbitratorStatusToString(event.params.status);
 
     arbitratorInfo.save();
 }
@@ -87,7 +88,7 @@ export function handleArbitratorPaused(event: ArbitratorPaused): void {
     const arbitratorAddress = event.params.arbitrator.toHexString();
 
     const arbitratorInfo = getArbitratorInfo(event.block, arbitratorAddress);
-    arbitratorInfo.status = "Paused";
+    arbitratorInfo.status = contractArbitratorStatusToString(event.params.status);
 
     arbitratorInfo.save();
 }
@@ -96,13 +97,9 @@ export function handleArbitratorUnpaused(event: ArbitratorUnpaused): void {
     const arbitratorAddress = event.params.arbitrator.toHexString();
 
     const arbitratorInfo = getArbitratorInfo(event.block, arbitratorAddress);
-    arbitratorInfo.status = "Active";
+    arbitratorInfo.status = contractArbitratorStatusToString(event.params.status);
 
     arbitratorInfo.save();
-}
-
-export function handleOwnershipTransferred(event: OwnershipTransferred): void {
-    // TODO
 }
 
 export function handleRevenueAddressesSet(event: RevenueAddressesSet): void {
@@ -125,6 +122,11 @@ export function handleOperatorSet(event: OperatorSet): void {
     arbitratorInfo.operatorBtcPubKey = event.params.btcPubKey.toHexString().slice(2);
 
     arbitratorInfo.save();
+}
+
+export function handleOwnershipTransferred(event: OwnershipTransferred): void {
+    // TODO
+    log.info("handleOwnershipTransferred not implemented", []);
 }
 
 /**

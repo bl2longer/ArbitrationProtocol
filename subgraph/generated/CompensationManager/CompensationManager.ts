@@ -212,7 +212,7 @@ export class CompensationManager__claimsResult {
     return map;
   }
 
-  getDapp(): Address {
+  getClaimer(): Address {
     return this.value0;
   }
 

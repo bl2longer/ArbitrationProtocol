@@ -35,8 +35,12 @@ export class ArbitrationRequested__Params {
     return this._event.parameters[2].value.toBytes();
   }
 
+  get script(): Bytes {
+    return this._event.parameters[3].value.toBytes();
+  }
+
   get arbitrator(): Address {
-    return this._event.parameters[3].value.toAddress();
+    return this._event.parameters[4].value.toAddress();
   }
 }
 
@@ -286,6 +290,10 @@ export class TransactionManager__getTransactionResultValue0Struct extends ethere
   get utxos(): Array<TransactionManager__getTransactionResultValue0UtxosStruct> {
     return this[11].toTupleArray<TransactionManager__getTransactionResultValue0UtxosStruct>();
   }
+
+  get script(): Bytes {
+    return this[12].toBytes();
+  }
 }
 
 export class TransactionManager__getTransactionResultValue0UtxosStruct extends ethereum.Tuple {
@@ -354,6 +362,10 @@ export class TransactionManager__getTransactionByIdResultValue0Struct extends et
   get utxos(): Array<TransactionManager__getTransactionByIdResultValue0UtxosStruct> {
     return this[11].toTupleArray<TransactionManager__getTransactionByIdResultValue0UtxosStruct>();
   }
+
+  get script(): Bytes {
+    return this[12].toBytes();
+  }
 }
 
 export class TransactionManager__getTransactionByIdResultValue0UtxosStruct extends ethereum.Tuple {
@@ -386,6 +398,7 @@ export class TransactionManager__transactionsResult {
   value8: Bytes;
   value9: Address;
   value10: Address;
+  value11: Bytes;
 
   constructor(
     value0: Address,
@@ -399,6 +412,7 @@ export class TransactionManager__transactionsResult {
     value8: Bytes,
     value9: Address,
     value10: Address,
+    value11: Bytes,
   ) {
     this.value0 = value0;
     this.value1 = value1;
@@ -411,6 +425,7 @@ export class TransactionManager__transactionsResult {
     this.value8 = value8;
     this.value9 = value9;
     this.value10 = value10;
+    this.value11 = value11;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
@@ -429,6 +444,7 @@ export class TransactionManager__transactionsResult {
     map.set("value8", ethereum.Value.fromBytes(this.value8));
     map.set("value9", ethereum.Value.fromAddress(this.value9));
     map.set("value10", ethereum.Value.fromAddress(this.value10));
+    map.set("value11", ethereum.Value.fromBytes(this.value11));
     return map;
   }
 
@@ -474,6 +490,10 @@ export class TransactionManager__transactionsResult {
 
   getTimeoutCompensationReceiver(): Address {
     return this.value10;
+  }
+
+  getScript(): Bytes {
+    return this.value11;
   }
 }
 
@@ -624,7 +644,7 @@ export class TransactionManager extends ethereum.SmartContract {
   ): TransactionManager__getTransactionResultValue0Struct {
     let result = super.call(
       "getTransaction",
-      "getTransaction(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[]))",
+      "getTransaction(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[],bytes))",
       [ethereum.Value.fromFixedBytes(txHash)],
     );
 
@@ -638,7 +658,7 @@ export class TransactionManager extends ethereum.SmartContract {
   ): ethereum.CallResult<TransactionManager__getTransactionResultValue0Struct> {
     let result = super.tryCall(
       "getTransaction",
-      "getTransaction(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[]))",
+      "getTransaction(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[],bytes))",
       [ethereum.Value.fromFixedBytes(txHash)],
     );
     if (result.reverted) {
@@ -657,7 +677,7 @@ export class TransactionManager extends ethereum.SmartContract {
   ): TransactionManager__getTransactionByIdResultValue0Struct {
     let result = super.call(
       "getTransactionById",
-      "getTransactionById(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[]))",
+      "getTransactionById(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[],bytes))",
       [ethereum.Value.fromFixedBytes(id)],
     );
 
@@ -671,7 +691,7 @@ export class TransactionManager extends ethereum.SmartContract {
   ): ethereum.CallResult<TransactionManager__getTransactionByIdResultValue0Struct> {
     let result = super.tryCall(
       "getTransactionById",
-      "getTransactionById(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[]))",
+      "getTransactionById(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[],bytes))",
       [ethereum.Value.fromFixedBytes(id)],
     );
     if (result.reverted) {
@@ -726,7 +746,7 @@ export class TransactionManager extends ethereum.SmartContract {
   transactions(param0: Bytes): TransactionManager__transactionsResult {
     let result = super.call(
       "transactions",
-      "transactions(bytes32):(address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address)",
+      "transactions(bytes32):(address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,bytes)",
       [ethereum.Value.fromFixedBytes(param0)],
     );
 
@@ -742,6 +762,7 @@ export class TransactionManager extends ethereum.SmartContract {
       result[8].toBytes(),
       result[9].toAddress(),
       result[10].toAddress(),
+      result[11].toBytes(),
     );
   }
 
@@ -750,7 +771,7 @@ export class TransactionManager extends ethereum.SmartContract {
   ): ethereum.CallResult<TransactionManager__transactionsResult> {
     let result = super.tryCall(
       "transactions",
-      "transactions(bytes32):(address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address)",
+      "transactions(bytes32):(address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,bytes)",
       [ethereum.Value.fromFixedBytes(param0)],
     );
     if (result.reverted) {
@@ -770,6 +791,7 @@ export class TransactionManager extends ethereum.SmartContract {
         value[8].toBytes(),
         value[9].toAddress(),
         value[10].toAddress(),
+        value[11].toBytes(),
       ),
     );
   }
@@ -1068,8 +1090,12 @@ export class RequestArbitrationCall__Inputs {
     return this._call.inputValues[1].value.toBytes();
   }
 
+  get script(): Bytes {
+    return this._call.inputValues[2].value.toBytes();
+  }
+
   get timeoutCompensationReceiver(): Address {
-    return this._call.inputValues[2].value.toAddress();
+    return this._call.inputValues[3].value.toAddress();
   }
 }
 
