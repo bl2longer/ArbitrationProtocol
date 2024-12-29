@@ -45,7 +45,7 @@
   },
   "esc-testnet": {
     "ArbitratorManager": {
-      "address": "0xFd3b0FD49df58a465Ac8E62f35d913b27cfc04B3",
+      "address": "0x54eE4fc8951A936b6AA02079B76c497c0471c52A",
       "startBlock": 21099754
     },
     "TransactionManager": {

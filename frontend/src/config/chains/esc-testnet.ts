@@ -21,7 +21,7 @@ export const escTestnet: ChainConfig = {
   },
   contracts: {
     configManager: "0x941796c51443493d2F5C03D3c40d3ff0F0B0BD30",
-    arbitratorManager: "0xFd3b0FD49df58a465Ac8E62f35d913b27cfc04B3",
+    arbitratorManager: "0x54eE4fc8951A936b6AA02079B76c497c0471c52A",
     compensationManager: "0x7c31A7185660d5c40B1A02D60dbcCfd221d40787",
     dappRegistry: "0xC9B498e769e1A7670f747beBB3A3b5172DD122D1",
     transactionManager: "0xD206be45b53Fa5C2065049c7a70B1aa1755a9475",
