@@ -185,16 +185,18 @@ describe("ArbitratorManager", function () {
            deadline,
            { value: stakeAmount }
          );
-         let status = await arbitratorManager.getArbitratorStatus(arbitrator.address);
-         console.log("arbitrator status:", status);
+         let isActive = await arbitratorManager.isActiveArbitrator(arbitrator.address);
+         expect(isActive).to.equal(true);
+
          // Check initial stake
          let availableStake = await arbitratorManager.getAvailableStake(arbitrator.address);
          expect(availableStake).to.equal(stakeAmount);
 
          // Unstake all ETH
          await arbitratorManager.connect(arbitrator).unstake();
-         status = await arbitratorManager.getArbitratorStatus(arbitrator.address);
-         console.log("arbitrator status:", status);
+         isActive = await arbitratorManager.isActiveArbitrator(arbitrator.address);
+         expect(isActive).to.equal(false);
+
          // Check stake after unstaking
          availableStake = await arbitratorManager.getAvailableStake(arbitrator.address);
          expect(availableStake).to.equal(0);
@@ -202,8 +204,9 @@ describe("ArbitratorManager", function () {
          // Restake the same amount of ETH
          await arbitratorManager.connect(arbitrator).stakeETH({ value: stakeAmount });
 
-         status = await arbitratorManager.getArbitratorStatus(arbitrator.address);
-         console.log("arbitrator status:", status);
+         isActive = await arbitratorManager.isActiveArbitrator(arbitrator.address);
+         expect(isActive).to.equal(true);
+
          // Check stake after restaking
          availableStake = await arbitratorManager.getAvailableStake(arbitrator.address);
          expect(availableStake).to.equal(stakeAmount);

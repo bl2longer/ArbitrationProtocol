@@ -55,11 +55,21 @@ interface IArbitratorManager {
         string calldata btcAddress
     ) external;
     
-    // Set arbitrator parameters
-    function setArbitratorParams(
-        uint256 feeRate,
-        uint256 deadline  // In seconds, Arbitrator end of term
+    /**
+     * @notice Set arbitrator fee rate
+     * @dev Only callable by the arbitrator
+     * @param feeRate The fee rate of the arbitrator
+     */
+    function setArbitratorFeeRate(
+        uint256 feeRate
     ) external;
+
+    /**
+     * @notice Set arbitrator deadline
+     * @dev Only callable by arbitrator
+     * @param deadline In seconds, Arbitrator end of term, must bigger than prev deadline
+     */
+    function setArbitratorDeadline(uint256 deadline) external;
     
     // Arbitrator status management
     function pause() external;    // Pause accepting new transactions
@@ -101,13 +111,7 @@ interface IArbitratorManager {
     function isActiveArbitrator(address arbitrator) external view returns (bool);
     function getAvailableStake(address arbitrator) external view returns (uint256);
     function getTotalNFTStakeValue(address arbitrator) external view returns (uint256);
-    /**
-     * @notice Retrieves the current status of a specific arbitrator
-     * @dev Returns the status of an arbitrator from the ArbitratorManager
-     * @param arbitrator The address of the arbitrator to query
-     * @return The current status of the arbitrator as defined in the DataTypes enum
-     */
-    function getArbitratorStatus(address arbitrator) external view returns (DataTypes.ArbitratorStatus);
+    function isConfigModifiable(address arbitrator) external view returns (bool);
 
     /**
      * @notice Check if the given operator address is the operator of the arbitrator
@@ -116,13 +120,6 @@ interface IArbitratorManager {
      * @return True if the operator is the arbitrator's operator, false otherwise
      */
     function isOperatorOf(address arbitrator, address operator) external view returns (bool);
-
-    /**
-     * @notice Check if the arbitrator can unstake their funds
-     * @param arbitrator The address of the arbitrator
-     * @return True if the arbitrator can unstake, false otherwise
-     */
-    function canUnStake(address arbitrator) external view returns (bool);
 
     /**
      * @notice Check if the arbitrator is paused
@@ -137,14 +134,12 @@ interface IArbitratorManager {
     function initTransactionAndCompensationManager(address _transactionManager, address _compensationManager) external;
     function setNFTContract(address _nftContract) external;
     // Events
-    event ArbitratorStatusChanged(address indexed arbitrator, DataTypes.ArbitratorStatus status);
     event InitializedManager(address indexed transactionManager, address indexed compensationManager);
     event StakeAdded(
         address indexed arbitrator, 
         address indexed assetAddress,  // 0x0 for ETH
         uint256 amount,
-        uint256[] nftTokenIds,
-        DataTypes.ArbitratorStatus status
+        uint256[] nftTokenIds
     );
     
     event StakeWithdrawn(
@@ -166,16 +161,21 @@ interface IArbitratorManager {
         bytes btcPubKey,
         string btcAddress
     );
-    
-    event ArbitratorParamsSet(
+
+    event ArbitratorFeeRateUpdated(
         address indexed arbitrator,
-        uint256 feeRate,
-        uint256 deadline,
-        DataTypes.ArbitratorStatus status
+        uint256 feeRate
     );
+
+    event ArbitratorDeadlineUpdated(address indexed arbitrator, uint256 deadline);
     
-    event ArbitratorPaused(address indexed arbitrator, DataTypes.ArbitratorStatus status);
-    event ArbitratorUnpaused(address indexed arbitrator, DataTypes.ArbitratorStatus status);
+    event ArbitratorPaused(address indexed arbitrator);
+    event ArbitratorUnpaused(address indexed arbitrator);
+    event ArbitratorFrozen(address indexed arbitrator);
+    event ArbitratorTerminatedWithSlash(address indexed arbitrator);
+    event ArbitratorWorking(address indexed arbitrator, bytes32 indexed transactionId);
+    event ArbitratorReleased(address indexed arbitrator, bytes32 indexed transactionId);
+
     event TransactionManagerUpdated(address indexed oldManager, address indexed newManager);
     event CompensationManagerUpdated(address indexed oldManager, address indexed newManager);
     event ArbitratorRegistered(

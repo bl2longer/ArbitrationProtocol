@@ -56,6 +56,7 @@ library Errors {
     string constant INVALID_REVENUE_ADDRESS = "Invalid revenue address";
     string constant ARBITRATOR_FROZEN = "Arbitrator frozen";
     string constant NO_RECEIVE_METHOD = "no receive method";
+    string constant CONFIG_NOT_MODIFIABLE = "config not modifiable";
 
     // Config related errors
     string constant INVALID_CONFIG_KEY = "Invalid config key";

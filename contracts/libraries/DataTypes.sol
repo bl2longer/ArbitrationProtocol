@@ -2,13 +2,6 @@
 pragma solidity ^0.8.20;
 
 library DataTypes {
-    enum ArbitratorStatus {
-        Active,     // Arbitrator is available for new transactions
-        Working,    // Arbitrator is currently working on a transaction
-        Paused,     // Arbitrator is temporarily paused
-        Terminated,  // Arbitrator has been terminated
-        Frozen // Arbitrator has been frozen
-    }
 
     enum DAppStatus {
         None,
@@ -44,9 +37,8 @@ library DataTypes {
 
     struct ArbitratorInfo {
         address arbitrator;        // Arbitrator Ethereum address
+        bool paused;               // is paused
         uint256 currentFeeRate;    // Current fee rate
-        uint256 pendingFeeRate;    // Pending new fee rate
-        ArbitratorStatus status;   // Arbitrator status
         bytes32 activeTransactionId; // Current transaction ID
         uint256 ethAmount;         // ETH stake amount
         address erc20Token;        // ERC20 token address

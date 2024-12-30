@@ -170,7 +170,7 @@ contract ArbitratorManager is
         arbitrator.ethAmount += msg.value;
 
         // Emit an event to notify the registration
-        emit StakeAdded(arbitrator.arbitrator, address(0), msg.value, new uint256[](0), this.getArbitratorStatus(arbitrator.arbitrator));
+        emit StakeAdded(arbitrator.arbitrator, address(0), msg.value, new uint256[](0));
         emit ArbitratorRegistered(
             msg.sender,
             arbitrator.operator,
@@ -227,7 +227,7 @@ contract ArbitratorManager is
 
         // Emit events
         
-        emit StakeAdded(msg.sender, address(nftContract), totalNftValue, tokenIds, this.getArbitratorStatus(arbitrator.arbitrator));
+        emit StakeAdded(msg.sender, address(nftContract), totalNftValue, tokenIds);
         emit ArbitratorRegistered(
             msg.sender,
             arbitrator.operator, // operator
@@ -248,6 +248,9 @@ contract ArbitratorManager is
         if (arbitrator.arbitrator == address(0)) {
            revert(Errors.ARBITRATOR_NOT_REGISTERED);
         }
+        if (!isConfigModifiable(msg.sender)) {
+            revert(Errors.CONFIG_NOT_MODIFIABLE);
+        }
 
         // Calculate total NFT value
         uint256 totalNftValue = getTotalNFTStakeValue(msg.sender);
@@ -255,14 +258,10 @@ contract ArbitratorManager is
         // Update ETH amount and calculate total stake
         uint256 newEthAmount = arbitrator.ethAmount + msg.value;
         arbitrator.ethAmount = newEthAmount;
-        if (arbitrator.status == DataTypes.ArbitratorStatus.Terminated) {
-            if(!isTerminated(arbitrator)) {
-                arbitrator.status = DataTypes.ArbitratorStatus.Active;
-            }
-        }
+
         _validateStakeAmount(newEthAmount, totalNftValue);
-        arbitrator.status = this.getArbitratorStatus(arbitrator.arbitrator);
-        emit StakeAdded(arbitrator.arbitrator, address(0), msg.value,new uint256[](0), arbitrator.status);
+
+        emit StakeAdded(arbitrator.arbitrator, address(0), msg.value,new uint256[](0));
     }
 
     /**
@@ -278,6 +277,9 @@ contract ArbitratorManager is
         if (arbitrator.arbitrator == address(0)) {
             revert(Errors.ARBITRATOR_NOT_REGISTERED);
         }
+        if (!isConfigModifiable(msg.sender)) {
+            revert(Errors.CONFIG_NOT_MODIFIABLE);
+        }
 
         // Calculate total NFT value
         uint256 totalNftValue = _calculateNFTValue(tokenIds);
@@ -290,13 +292,8 @@ contract ArbitratorManager is
 
         // Set or validate NFT contract
         _setOrValidateNFTContract(arbitrator);
-        if (arbitrator.status == DataTypes.ArbitratorStatus.Terminated) {
-            if(!isTerminated(arbitrator)) {
-                arbitrator.status = DataTypes.ArbitratorStatus.Active;
-            }
-        }
-        arbitrator.status = this.getArbitratorStatus(arbitrator.arbitrator);
-        emit StakeAdded(msg.sender, address(nftContract), totalNftValue, tokenIds, arbitrator.status);
+
+        emit StakeAdded(msg.sender, address(nftContract), totalNftValue, tokenIds);
     }
 
     /**
@@ -393,12 +390,11 @@ contract ArbitratorManager is
      */
     function unstake() external override nonReentrant notWorking {
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
-        if(!this.canUnStake(arbitrator.arbitrator)) revert(Errors.STAKE_STILL_LOCKED);
+        if(!isConfigModifiable(arbitrator.arbitrator)) revert(Errors.STAKE_STILL_LOCKED);
         require(arbitrator.ethAmount > 0 || arbitrator.nftTokenIds.length > 0, "NoStake");
         
         uint256 amount = arbitrator.ethAmount;
         arbitrator.ethAmount = 0;
-        arbitrator.status = DataTypes.ArbitratorStatus.Terminated;
 
         // Transfer NFTs back to arbitrator if any
         if (arbitrator.nftContract != address(0) && arbitrator.nftTokenIds.length > 0) {
@@ -436,7 +432,11 @@ contract ArbitratorManager is
         string calldata btcAddress
     ) external override {
         require(operator != address(0), "InvalidOperator");
-        
+
+        if (!isConfigModifiable(msg.sender)) {
+            revert(Errors.CONFIG_NOT_MODIFIABLE);
+        }
+
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
         if (arbitrator.arbitrator == address(0)) revert(Errors.ARBITRATOR_NOT_REGISTERED);
         
@@ -459,7 +459,11 @@ contract ArbitratorManager is
     ) external override {
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
         if (arbitrator.arbitrator == address(0)) revert(Errors.ARBITRATOR_NOT_REGISTERED);
-        
+
+        if (!isConfigModifiable(msg.sender)) {
+            revert(Errors.CONFIG_NOT_MODIFIABLE);
+        }
+
         arbitrator.revenueETHAddress = ethAddress;
         arbitrator.revenueBtcPubKey = btcPubKey;
         arbitrator.revenueBtcAddress = btcAddress;
@@ -468,56 +472,66 @@ contract ArbitratorManager is
     }
 
     /**
-     * @notice Sets arbitrator's fee rate and term deadline
-     * @param feeRate Fee rate in basis points (1% = 100)
-     * @param deadline Unix timestamp for term end (0 for no end)
-     * @dev Fee rate must be >= minimum rate from ConfigManager
-     * Deadline must be in future if not zero
+     * @notice Set arbitrator fee rate
+     * @dev Only callable by the arbitrator
+     * @param feeRate The fee rate of the arbitrator
      */
-    function setArbitratorParams(
-        uint256 feeRate,
-        uint256 deadline
-    ) external override notWorking {
+    function setArbitratorFeeRate(
+        uint256 feeRate
+    ) external override {
         require(feeRate >= configManager.getConfig(configManager.TRANSACTION_MIN_FEE_RATE()), "FeeTooLow");
-        require(deadline == 0 || deadline > block.timestamp, Errors.INVALID_DEADLINE);
         
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
         if (arbitrator.arbitrator == address(0)) revert(Errors.ARBITRATOR_NOT_REGISTERED);
-        arbitrator.currentFeeRate = feeRate;
-        arbitrator.deadLine = deadline;
-        if(arbitrator.status == DataTypes.ArbitratorStatus.Terminated) {
-            if(!isTerminated(arbitrator)) {
-                arbitrator.status = DataTypes.ArbitratorStatus.Active;
-            }
+        if (!isConfigModifiable(msg.sender)) {
+            revert(Errors.CONFIG_NOT_MODIFIABLE);
         }
-        arbitrator.status = this.getArbitratorStatus(arbitrator.arbitrator);
-        emit ArbitratorParamsSet(msg.sender, feeRate, deadline, arbitrator.status);
+
+        arbitrator.currentFeeRate = feeRate;
+
+        emit ArbitratorFeeRateUpdated(msg.sender, feeRate);
+    }
+
+    /**
+     * @notice Set arbitrator deadline
+     * @dev Only callable by arbitrator
+     * @param deadline In seconds, Arbitrator end of term, must bigger than prev deadline
+     */
+    function setArbitratorDeadline(uint256 deadline) external override {
+        if (deadline <= block.timestamp) revert(Errors.INVALID_DEADLINE);
+        DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
+        if (arbitrator.arbitrator == address(0)) revert(Errors.ARBITRATOR_NOT_REGISTERED);
+
+        if (arbitrator.deadLine > 0 && deadline <= arbitrator.deadLine) revert(Errors.INVALID_DEADLINE);
+        arbitrator.deadLine = deadline;
+
+        emit ArbitratorDeadlineUpdated(msg.sender, deadline);
     }
 
     /**
      * @notice Pauses arbitrator services
      * @dev Can only be called when active and not working
      */
-    function pause() external override notWorking {
+    function pause() external override {
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
         if (arbitrator.arbitrator == address(0)) revert(Errors.ARBITRATOR_NOT_REGISTERED);
-        require(arbitrator.status == DataTypes.ArbitratorStatus.Active, "Not active");
-        arbitrator.status = DataTypes.ArbitratorStatus.Paused;
+        require(isActiveArbitrator(msg.sender), "Not active");
+        arbitrator.paused = true;
         
-        emit ArbitratorPaused(msg.sender, arbitrator.status);
+        emit ArbitratorPaused(msg.sender);
     }
 
     /**
      * @notice Resumes arbitrator services
      * @dev Can only be called when paused and not working
      */
-    function unpause() external override notWorking {
+    function unpause() external override {
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[msg.sender];
         if (arbitrator.arbitrator == address(0)) revert(Errors.ARBITRATOR_NOT_REGISTERED);
-        require(arbitrator.status == DataTypes.ArbitratorStatus.Paused, "not paused");
-        arbitrator.status = DataTypes.ArbitratorStatus.Active;
+        require(arbitrator.paused, "not paused");
+        arbitrator.paused = false;
         
-        emit ArbitratorUnpaused(msg.sender, arbitrator.status);
+        emit ArbitratorUnpaused(msg.sender);
     }
 
     /**
@@ -540,21 +554,35 @@ contract ArbitratorManager is
      * @return bool True if arbitrator is active and meets minimum stake
      */
     function isActiveArbitrator(address arbitratorAddress) 
-        external 
+        public
         view 
         override 
         returns (bool) 
     {
         DataTypes.ArbitratorInfo storage arbitrator = arbitrators[arbitratorAddress];
-        // check deadline time in life circle
-        if (isTerminated(arbitrator)) {
+        if (arbitrator.deadLine > 0 && arbitrator.deadLine <= block.timestamp) {
             return false;
         }
+
+        uint256 totalStakeValue = getAvailableStake(arbitrator.arbitrator);
+        if (totalStakeValue < configManager.getConfig(configManager.MIN_STAKE())) {
+            return false;
+        }
+
         // freeze lock time
         if (isFrozenArbitrator(arbitrator)) {
             return false;
         }
-        return arbitrator.status == DataTypes.ArbitratorStatus.Active;
+
+        if (arbitrator.activeTransactionId != bytes32(0)) {
+            return false;
+        }
+
+        if (arbitrator.paused) {
+            return false;
+        }
+
+        return true;
     }
 
     function isFrozenStatus(address arbitrator) external view returns (bool) {
@@ -574,35 +602,12 @@ contract ArbitratorManager is
         return false;
     }
 
-    function isTerminated(DataTypes.ArbitratorInfo memory arbitrator) internal view returns(bool) {
-        if (arbitrator.deadLine > 0 && arbitrator.deadLine <= block.timestamp) {
-            return true;
-        }
-
-        uint256 totalStakeValue = this.getAvailableStake(arbitrator.arbitrator);
-        return totalStakeValue < configManager.getConfig(configManager.MIN_STAKE());
-    }
-
-    function getArbitratorStatus(address arbitrator) external view returns (DataTypes.ArbitratorStatus) {
-        DataTypes.ArbitratorInfo memory arbitratorInfo = arbitrators[arbitrator];
-        if (arbitratorInfo.arbitrator == address(0)) {
-            revert(Errors.ARBITRATOR_NOT_REGISTERED);
-        }
-        if (isFrozenArbitrator(arbitratorInfo)) {
-            return DataTypes.ArbitratorStatus.Frozen;
-        }
-        if (isTerminated(arbitratorInfo)) {
-            return DataTypes.ArbitratorStatus.Terminated;
-        }
-        return arbitratorInfo.status;
-    }
-
     /**
      * @notice Get available stake amount for an arbitrator
      * @param arbitrator Address of the arbitrator
      * @return uint256 Available stake amount (ETH + NFT value)
      */
-    function getAvailableStake(address arbitrator) external view override returns (uint256) {
+    function getAvailableStake(address arbitrator) public view override returns (uint256) {
         DataTypes.ArbitratorInfo storage info = arbitrators[arbitrator];
         uint256 totalNftValue = getTotalNFTStakeValue(arbitrator);
         return info.ethAmount + totalNftValue;
@@ -619,17 +624,17 @@ contract ArbitratorManager is
     }
 
     /**
-     * @notice Checks if an arbitrator can unstake
+     * @notice Checks if the config of the arbitrator can change
      * @param arbitrator Address of the arbitrator
-     * @return bool True if arbitrator is not working
+     * @return bool True if the config can change
      */
-    function canUnStake(address arbitrator) external view returns (bool) {
+    function isConfigModifiable(address arbitrator) public view returns (bool) {
         DataTypes.ArbitratorInfo memory arbitratorInfo = arbitrators[arbitrator];
-        if (arbitratorInfo.arbitrator == address(0)
-            || arbitratorInfo.status == DataTypes.ArbitratorStatus.Terminated) return false;
-
+        if (arbitratorInfo.arbitrator == address(0)) return false;
+        if (arbitratorInfo.activeTransactionId != bytes32(0)) return false;
         if (isFrozenArbitrator(arbitratorInfo)) return false;
-        return arbitratorInfo.activeTransactionId == bytes32(0);
+
+        return true;
     }
 
     /**
@@ -638,11 +643,11 @@ contract ArbitratorManager is
      * @return bool True if arbitrator is paused
      */
     function isPaused(address arbitrator) external view returns (bool) {
-        return arbitrators[arbitrator].status == DataTypes.ArbitratorStatus.Paused;
+        return arbitrators[arbitrator].paused;
     }
 
     /**
-     * @notice Set arbitrator to working status with specific transaction
+     * @notice Set arbitrator to working with specific transaction
      * @param arbitrator The address of the arbitrator
      * @param transactionId The ID of the transaction
      */
@@ -651,22 +656,18 @@ contract ArbitratorManager is
         bytes32 transactionId
     ) external onlyTransactionManager {
         DataTypes.ArbitratorInfo storage arbitratorInfo = arbitrators[arbitrator];
-        
-        // Validate arbitrator state
-        if (arbitratorInfo.status != DataTypes.ArbitratorStatus.Active)
-            revert(Errors.ARBITRATOR_NOT_ACTIVE);
-        if (arbitratorInfo.activeTransactionId != bytes32(0))
-            revert(Errors.ARBITRATOR_ALREADY_WORKING);
-            
+        if (!isActiveArbitrator(arbitrator)) {
+            revert (Errors.ARBITRATOR_NOT_ACTIVE);
+        }
+
         // Update arbitrator state
-        arbitratorInfo.status = DataTypes.ArbitratorStatus.Working;
         arbitratorInfo.activeTransactionId = transactionId;
         
-        emit ArbitratorStatusChanged(arbitrator, DataTypes.ArbitratorStatus.Working);
+        emit ArbitratorWorking(arbitrator, transactionId);
     }
 
     /**
-     * @notice Release arbitrator from working status
+     * @notice Release arbitrator from working
      * @param arbitrator The address of the arbitrator
      * @param transactionId The ID of the transaction
      */
@@ -680,10 +681,9 @@ contract ArbitratorManager is
             revert(Errors.INVALID_TRANSACTION_ID);
             
         // Update arbitrator state
-        arbitratorInfo.status = DataTypes.ArbitratorStatus.Active;
         arbitratorInfo.activeTransactionId = bytes32(0);
-        
-        emit ArbitratorStatusChanged(arbitrator, DataTypes.ArbitratorStatus.Active);
+
+        emit ArbitratorReleased(arbitrator, transactionId);
     }
 
     /**
@@ -695,9 +695,6 @@ contract ArbitratorManager is
         DataTypes.ArbitratorInfo storage info = arbitrators[arbitrator];
         if (info.arbitrator == address(0)) revert(Errors.ARBITRATOR_NOT_REGISTERED);
 
-        // Set status to terminated
-        info.status = DataTypes.ArbitratorStatus.Terminated;
-        
         // Transfer ETH stake to compensation manager
         uint256 ethAmount = info.ethAmount;
         if (ethAmount > 0) {
@@ -721,7 +718,7 @@ contract ArbitratorManager is
             }
         }
 
-        emit ArbitratorStatusChanged(arbitrator, DataTypes.ArbitratorStatus.Terminated);
+        emit ArbitratorTerminatedWithSlash(arbitrator);
     }
 
     /**
@@ -748,7 +745,7 @@ contract ArbitratorManager is
     }
 
     /**
-     * @notice Freeze an arbitrator's status after submitted transactions
+     * @notice Freeze an arbitrator's after submitted transactions
      * @param arbitrator Address of the arbitrator
      */
     function frozenArbitrator(address arbitrator) external override onlyTransactionManager {
@@ -758,13 +755,12 @@ contract ArbitratorManager is
 
         // Ensure the arbitrator exists and is active
         require(arbitratorInfo.arbitrator != address(0), Errors.ARBITRATOR_NOT_REGISTERED);
-        require(arbitratorInfo.status == DataTypes.ArbitratorStatus.Working, Errors.INVALID_ARBITRATOR_STATUS);
+        require(arbitratorInfo.activeTransactionId != bytes32(0), Errors.ARBITRATOR_NOT_WORKING);
 
         // Set the last submitted work time to current timestamp to trigger freeze
         arbitratorInfo.lastSubmittedWorkTime = block.timestamp;
-        arbitratorInfo.status = DataTypes.ArbitratorStatus.Frozen;
         // Emit event about arbitrator being frozen
-        emit ArbitratorStatusChanged(arbitrator, DataTypes.ArbitratorStatus.Frozen);
+        emit ArbitratorFrozen(arbitrator);
     }
 
     /**
