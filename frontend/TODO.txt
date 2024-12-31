@@ -2,20 +2,33 @@
 
 - TOP PRIORITY:
   - loan app update
-  - Make a amount limit in loan dapp too, max loan amount is 100 usd
   - Compensation requests:
     - TBD: add a global request compensation button? 
 
-for loan dapp
-1. select an arbiter when alice submit the btc tx to dapp
-2. support alice to request the arbitration
-3. alice can check the status/result of the arbitration
+- Update loan app with recent arbitration changes:
+  - Modified Interfaces:
+    - takeOrder now includes selectedArbitrator.
+    - getArbitrationRequestCost now includes a deadline parameter.
+  - New Interfaces:
+    - registerArbitrationTransaction
+    - requestArbitration
+    - borrowerAddArbitrationSignatures
+    - getArbitrationBtcTx
+  - auto arbiter selection:
+    - criteria: 
+      - deadline > order time, staking value > order value
+      - The arbiter with the smallest staking amount, and the staking amount is greater than the order amount
 
-for arbiter dapp
-1. Alice can submit a request to punish the arbiter
-2. Bob can submit a request to punish the arbiter
+  for loan dapp
+  1. auto select an arbiter when alice submit the btc tx to dapp
+  2. support alice to request the arbitration
+  3. alice can check the status/result of the arbitration
 
-registerTransaction is in submitToLenderTransferProof method
+  for arbiter dapp
+  1. Alice can submit a request to punish the arbiter
+  2. Bob can submit a request to punish the arbiter
+
+  registerTransaction is in submitToLenderTransferProof method
 
 
 
@@ -65,20 +78,6 @@ P2"
 
 - Finish to replace headless UI components with https://ui.shadcn.com/
   - Compensation details dialog
-
-- Update loan app with recent arbitration changes:
-  - Modified Interfaces:
-    - takeOrder now includes selectedArbitrator.
-    - getArbitrationRequestCost now includes a deadline parameter.
-  - New Interfaces:
-    - registerArbitrationTransaction
-    - requestArbitration
-    - borrowerAddArbitrationSignatures
-    - getArbitrationBtcTx
-  - auto arbiter selection:
-    - criteria: 
-      - deadline > order time, staking value > order value
-      - The arbiter with the smallest staking amount, and the staking amount is greater than the order amount
 
 - Email service for arbiters:
   - "Arbiter can register an email for the arbitration notification, we need a background script to check the events"
