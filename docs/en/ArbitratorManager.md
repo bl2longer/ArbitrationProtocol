@@ -1,34 +1,49 @@
 # ArbitratorManager
 
 ## Overview
-The ArbitratorManager is responsible for managing arbitrator registration, staking, status changes, and other operations. Arbitrators must stake a certain amount of tokens to participate in arbitration work, and there is a freeze period after completing arbitration.
+The ArbitratorManager is responsible for managing arbitrator registration, staking, status changes, and other operations. Arbitrators must stake either ETH or NFTs to participate in arbitration work, and their status and activities are carefully managed within the protocol.
 
-## Features
-- Arbitrator registration and management
-- Staking token management (ETH, ERC20, NFT)
-- Arbitrator status management
-- Operator authorization management
-- Arbitration freeze period management
+## Core Functions
 
-## Arbitrator Lifecycle
-
-### 1. Registration and Staking
-Arbitrators register by staking assets. The following staking methods are supported:
-- ETH staking
-- ERC20 token staking
-- NFT staking
+### Staking Operations
 
 ```solidity
 function stakeETH() external payable;
-function stakeERC20(address token, uint256 amount) external;
-function stakeNFT(address nftContract, uint256[] calldata tokenIds) external;
+function stakeNFT(uint256[] calldata tokenIds) external;
+function unstake() external;  // Withdraw all staked assets
 ```
 
-### 2. Configuration Settings
-After registration, arbitrators need to complete the following configurations to start service:
+### Arbitrator Registration
 
-#### 2.1 Operator Settings
-Set the operator responsible for signing and their Bitcoin information:
+```solidity
+function registerArbitratorByStakeETH(
+    string calldata defaultBtcAddress,
+    bytes calldata defaultBtcPubKey,
+    uint256 feeRate,
+    uint256 deadline
+) external payable;
+```
+Register as an arbitrator using ETH stake:
+- `defaultBtcAddress`: Bitcoin address for receiving earnings
+- `defaultBtcPubKey`: Corresponding Bitcoin public key
+- `feeRate`: Service fee rate in basis points (4 decimal places)
+- `deadline`: Registration deadline timestamp (0 for no deadline)
+
+```solidity
+function registerArbitratorByStakeNFT(
+    uint256[] calldata tokenIds,
+    string calldata defaultBtcAddress,
+    bytes calldata defaultBtcPubKey,
+    uint256 feeRate,
+    uint256 deadline
+) external;
+```
+Register as an arbitrator using NFT stake:
+- `tokenIds`: Array of NFT tokens to stake
+- Other parameters same as ETH registration
+
+### Configuration Management
+
 ```solidity
 function setOperator(
     address operator,
@@ -36,9 +51,8 @@ function setOperator(
     string calldata btcAddress
 ) external;
 ```
+Set the operator address and Bitcoin credentials.
 
-#### 2.2 Revenue Address Settings
-Configure the address to receive revenue:
 ```solidity
 function setRevenueAddresses(
     address ethAddress,
@@ -46,59 +60,80 @@ function setRevenueAddresses(
     string calldata btcAddress
 ) external;
 ```
+Configure revenue receiving addresses.
 
-#### 2.3 Arbitration Parameter Settings
-- After completing an arbitration, the arbitrator enters a 7-day freeze period.
-- During the freeze period, the arbitrator cannot participate in new arbitration work.
-- The arbitrator must wait for the last arbitration's freeze period to end before unstaking:
-
-Set service parameters:
 ```solidity
-function setArbitratorParams(
-    uint256 feeRate,
-    uint256 termDuration
-) external;
+function setArbitratorFeeRate(uint256 feeRate) external;
 ```
+Update the arbitrator's fee rate.
 
-### 3. Runtime Management
+```solidity
+function setArbitratorDeadline(uint256 deadline) external;
+```
+Set or extend arbitrator's term deadline.
 
-#### 3.1 Status Management
-Arbitrators can pause and resume services:
+### Status Management
+
 ```solidity
 function pause() external;    // Pause accepting new transactions
 function unpause() external;  // Resume accepting new transactions
 ```
 
-#### 3.2 Unstaking
-Stakes can be retrieved when there are no ongoing transactions:
 ```solidity
-function unstake() external;  // Retrieve all staked assets
+function setArbitratorWorking(address arbitrator, bytes32 transactionId) external;
+```
+Mark arbitrator as working on a specific transaction (only callable by transaction manager).
+
+```solidity
+function releaseArbitrator(address arbitrator, bytes32 transactionId) external;
+```
+Release arbitrator from working status (only callable by transaction manager).
+
+```solidity
+function terminateArbitratorWithSlash(address arbitrator) external;
+```
+Terminate an arbitrator and slash their stake (only callable by compensation manager).
+
+### Query Functions
+
+```solidity
+function getArbitratorInfo(address arbitrator) external view returns (DataTypes.ArbitratorInfo memory);
+function getArbitratorOperator(address arbitrator) external view returns (address);
+function getArbitratorRevenue(address arbitrator) external view returns (address);
+function getArbitratorBtcInfo(address arbitrator) external view returns (DataTypes.BtcInfo memory);
+function getArbitratorFeeRate(address arbitrator) external view returns (uint256);
+function getArbitratorDeadline(address arbitrator) external view returns (uint256);
+function isArbitratorActive(address arbitrator) external view returns (bool);
+function isArbitratorWorking(address arbitrator) external view returns (bool);
+function getAvailableStake(address arbitrator) external view returns (uint256);
+function getTotalNFTStakeValue(address arbitrator) external view returns (uint256);
+function isConfigModifiable(address arbitrator) external view returns (bool);
 ```
 
-### 4. Query Functions
-Provide multiple query interfaces:
-```solidity
-struct ArbitratorInfo {
-    address operator;          // Operator address
-    uint256 stakedAmount;      // Staked amount
-    uint256 stakeLockedTime;   // Stake locked time
-    uint256 lastArbitrationTime; // Last arbitration time
-    bool isActive;             // Is active
-    bytes operatorBtcPubKey;   // Bitcoin public key
-    string operatorBtcAddress; // Bitcoin address
-}
+## Events
 
-function getArbitratorStatus(address arbitrator) external view returns (ArbitratorInfo memory);
-function isOperatorOf(address arbitrator, address operator) external view returns (bool);
-function canUnstake(address arbitrator) external view returns (bool);
-function isPaused(address arbitrator) external view returns (bool);
-function getAvailableStake(address arbitrator) external view returns (uint256);
+```solidity
+event ArbitratorRegistered(address indexed arbitrator, uint256 stakedAmount);
+event ArbitratorUnregistered(address indexed arbitrator);
+event ArbitratorStakeETH(address indexed arbitrator, uint256 amount);
+event ArbitratorStakeNFT(address indexed arbitrator, uint256[] tokenIds);
+event ArbitratorUnstake(address indexed arbitrator);
+event ArbitratorOperatorSet(address indexed arbitrator, address indexed operator);
+event ArbitratorRevenueSet(address indexed arbitrator, address indexed revenue);
+event ArbitratorBtcInfoSet(address indexed arbitrator, string btcAddress, bytes btcPubKey);
+event ArbitratorFeeRateSet(address indexed arbitrator, uint256 feeRate);
+event ArbitratorDeadlineSet(address indexed arbitrator, uint256 deadline);
+event ArbitratorPaused(address indexed arbitrator);
+event ArbitratorUnpaused(address indexed arbitrator);
+event ArbitratorWorking(address indexed arbitrator, bytes32 indexed transactionId);
+event ArbitratorReleased(address indexed arbitrator, bytes32 indexed transactionId);
+event ArbitratorTerminated(address indexed arbitrator);
 ```
 
 ## Workflow
 
 ### 1. Becoming an Arbitrator
-1. Stake assets (ETH/ERC20/NFT)
+1. Stake assets (ETH/NFT)
 2. Set operator information (can be self)
 3. Set revenue addresses
 4. Configure arbitration parameters (fee rate, etc.)
@@ -117,61 +152,26 @@ function getAvailableStake(address arbitrator) external view returns (uint256);
 1. Ensure no ongoing transactions
 2. Call `unstake()` to retrieve all staked assets
 
-## Event System
+## Error Handling
+The contract will throw errors in the following situations:
+- Insufficient stake amount (InsufficientStake)
+- Arbitrator not active (ArbitratorNotActive)
+- Operator not authorized (UnauthorizedOperator)
+- Stake still locked (StakeStillLocked)
+- Invalid parameters (InvalidFeeRate)
 
-### Staking Related Events
-```solidity
-event StakeAdded(
-    address indexed arbitrator, 
-    address indexed assetAddress,
-    uint256 amount,
-    uint256[] nftTokenIds
-);
+## Security Considerations
+1. The stake lock mechanism ensures arbitrators cannot withdraw stakes during service.
+2. Operator authorization mechanism protects signing rights.
+3. Status management ensures smooth service transitions.
+4. Parameter limits prevent invalid configurations.
 
-event StakeRemoved(
-    address indexed arbitrator, 
-    address indexed assetAddress,
-    uint256 amount,
-    uint256[] nftTokenIds
-);
-```
-
-### Configuration Update Events
-```solidity
-event OperatorUpdated(
-    address indexed arbitrator,
-    address indexed operator,
-    bytes btcPubKey,
-    string btcAddress
-);
-
-event RevenueAddressesUpdated(
-    address indexed arbitrator,
-    address ethAddress,
-    bytes btcPubKey,
-    string btcAddress
-);
-
-event ArbitratorParamsUpdated(
-    address indexed arbitrator,
-    uint256 feeRate,
-    uint256 termDuration
-);
-```
-
-### Status Change Events
-```solidity
-event ArbitratorStatusChanged(
-    address indexed arbitrator,
-    bool isPaused
-);
-
-event ArbitratorTermStarted(
-    address indexed arbitrator,
-    uint256 startTime,
-    uint256 endTime
-);
-```
+## Best Practices
+1. Fully understand protocol mechanisms before staking.
+2. Set reasonable fee rates.
+3. Safeguard operator private keys.
+4. Regularly check arbitrator status and ongoing transactions.
+5. Ensure all transactions are completed before exiting.
 
 ## Usage Examples
 
@@ -195,9 +195,8 @@ await arbitratorManager.setRevenueAddresses(
 );
 
 // 4. Set arbitration parameters
-await arbitratorManager.setArbitratorParams(
+await arbitratorManager.setArbitratorFeeRate(
     100,                             // 1% fee rate
-    30 * 24 * 3600                  // 30-day term
 );
 ```
 
@@ -229,25 +228,3 @@ if (canUnstake) {
 
 // Resume service
 await arbitratorManager.unpause();
-```
-
-## Error Handling
-The contract will throw errors in the following situations:
-- Insufficient stake amount (InsufficientStake)
-- Arbitrator not active (ArbitratorNotActive)
-- Operator not authorized (UnauthorizedOperator)
-- Stake still locked (StakeStillLocked)
-- Invalid parameters (InvalidFeeRate)
-
-## Security Considerations
-1. The stake lock mechanism ensures arbitrators cannot withdraw stakes during service.
-2. Operator authorization mechanism protects signing rights.
-3. Status management ensures smooth service transitions.
-4. Parameter limits prevent invalid configurations.
-
-## Best Practices
-1. Fully understand protocol mechanisms before staking.
-2. Set reasonable fee rates.
-3. Safeguard operator private keys.
-4. Regularly check arbitrator status and ongoing transactions.
-5. Ensure all transactions are completed before exiting.

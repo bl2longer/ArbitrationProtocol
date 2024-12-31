@@ -3,72 +3,116 @@
 ## 概述
 TransactionManager 是仲裁协议中负责管理跨链交易生命周期的核心组件。它负责交易的注册、仲裁请求处理、签名提交等关键功能，并与补偿系统紧密集成以处理异常情况。
 
-## 功能特性
-- 交易注册与生命周期管理
-- 仲裁请求处理
-- 比特币交易签名管理
-- 补偿机制集成
-- 交易状态跟踪
+## 核心功能
 
-## 交易生命周期
+### 交易注册与管理
 
-### 1. 交易注册
-DApp 通过注册交易来启动跨链交易流程：
 ```solidity
 function registerTransaction(
-    bytes32 txId,
+    DataTypes.UTXO[] calldata utxos,
     address arbitrator,
     uint256 deadline,
     address compensationReceiver
-) external payable;
+) external payable returns (bytes32 id);
 ```
+注册新的交易。
+- `utxos`: 交易的UTXO数据数组
+- `arbitrator`: 选定的仲裁人地址
+- `deadline`: 交易截止时间戳
+- `compensationReceiver`: 补偿接收地址
+- 返回值: 唯一交易ID
 
-参数说明：
-- txId: 交易唯一标识（hash）
-- arbitrator: 选定的仲裁人地址
-- deadline: 交易截止时间
-- compensationReceiver: 仲裁人签署错误签名时的补偿接收地址
+```solidity
+function completeTransaction(bytes32 id) external;
+```
+标记交易为已完成。
 
-### 2. 仲裁请求
-当需要仲裁人签名时，可以提交仲裁请求：
+```solidity
+function isAbleCompletedTransaction(bytes32 id) external view returns (bool);
+```
+检查交易是否可以完成。
+
+### 仲裁功能
+
 ```solidity
 function requestArbitration(
-    bytes32 txId,
+    bytes32 id,
     bytes calldata btcTx,
+    bytes calldata script,
     address timeoutCompensationReceiver
 ) external;
 ```
+请求交易仲裁。
+- `id`: 交易ID
+- `btcTx`: 比特币交易数据
+- `script`: 交易脚本数据
+- `timeoutCompensationReceiver`: 超时补偿接收地址
 
-参数说明：
-- txId: 交易ID
-- btcTx: 待签名的比特币交易内容
-- timeoutCompensationReceiver: 仲裁人超时未签名时的补偿接收地址
-
-### 3. 提交签名
-仲裁人对比特币交易进行签名并提交：
 ```solidity
 function submitArbitration(
-    bytes32 txId,
-    bytes calldata signature
+    bytes32 id,
+    bytes calldata btcTxSignature
 ) external;
 ```
+提交仲裁结果和签名。
+- `id`: 交易ID
+- `btcTxSignature`: 比特币交易签名
 
-参数说明：
-- txId: 交易ID
-- signature: 比特币交易签名
+### 查询功能
 
-### 4. 查询交易
-可以通过交易ID或比特币交易内容查询交易信息：
 ```solidity
-function getTransaction(bytes32 txId) external view returns (Transaction memory);
-function getTransaction(bytes calldata btcTx) external view returns (Transaction memory);
+function getTransactionById(bytes32 id) external view returns (DataTypes.Transaction memory);
+function getTransaction(bytes32 txHash) external view returns (DataTypes.Transaction memory);
+function txHashToId(bytes32 txHash) external view returns (bytes32);
 ```
+交易信息查询功能：
+- 通过ID或哈希获取交易信息
+- 将交易哈希转换为ID
 
-### 5. 完成交易
-交易完成后调用：
 ```solidity
-function completeTransaction(bytes32 txId) external;
+function getRegisterTransactionFee(uint256 deadline, address arbitrator) external view returns (uint256 fee);
 ```
+计算注册交易所需的费用。
+
+### 费用管理
+
+```solidity
+function transferArbitrationFee(
+    bytes32 id
+) external returns (uint256 arbitratorFee, uint256 systemFee);
+```
+转移仲裁费用给仲裁人和系统。
+- 仅可由补偿管理器调用
+- 返回仲裁人费用和系统费用金额
+
+### 初始化和配置
+
+```solidity
+function initialize(address _arbitratorManager, address _dappRegistry, address _configManager) external;
+function initCompensationManager(address _compensationManager) external;
+function setArbitratorManager(address _arbitratorManager) external;
+```
+系统初始化和配置功能。
+
+## 事件
+
+```solidity
+event TransactionRegistered(
+    bytes32 indexed id,
+    address indexed dapp,
+    address indexed arbitrator,
+    uint256 deadline,
+    uint256 depositFee
+);
+event TransactionCompleted(address indexed dapp, bytes32 indexed txId);
+event ArbitrationRequested(address indexed dapp, bytes32 indexed txId, bytes btcTx, bytes script, address arbitrator);
+event ArbitrationSubmitted(address indexed dapp, bytes32 indexed txId);
+event TransactionCreated(bytes32 indexed id, address indexed sender, address indexed arbitrator);
+event TransactionCancelled(bytes32 indexed id);
+event CompensationManagerInitialized(address indexed compensationManager);
+event SetArbitratorManager(address indexed arbitratorManager);
+```
+交易生命周期各阶段触发的事件。
 
 ## 补偿机制
 

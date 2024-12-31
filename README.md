@@ -1,156 +1,115 @@
 # Decentralized Arbitration Protocol
 
-## 项目简介
+## What is it?
 
-Decentralized Arbitration Protocol 是一个创新的跨链区块链仲裁系统，旨在为区块链生态系统提供去中心化的争议解决方案。该协议支持以太坊和比特币网络，通过智能合约实现自动化的仲裁流程，为 DApp 和用户提供公平、透明的争议处理机制。
+The Decentralized Arbitration Protocol is a trustless guarantee system for Bitcoin transactions. It enables secure Bitcoin transaction execution through a decentralized network of arbiters who stake assets as collateral for their services. The protocol uses zero-knowledge proofs for automated dispute resolution, ensuring fair and transparent handling of transaction conflicts.
 
-## 主要特性
+## Why use it?
 
-- 跨链支持：同时支持以太坊和比特币网络的交易仲裁
-- 去中心化仲裁：由多个独立仲裁人组成的仲裁团进行裁决
-- 灵活的补偿机制：支持多种资产类型的赔付方案
-- 可配置参数：支持动态调整系统参数，适应不同场景需求
-- 安全可靠：基于智能合约实现，确保仲裁过程的透明性和不可篡改性
+- **Trustless Bitcoin Transactions**: Execute Bitcoin transactions safely without trusting counterparties
+- **Automated Guarantees**: Get immediate compensation if transactions go wrong
+- **Zero Trust Required**: All enforcement is automated through smart contracts and zero-knowledge proofs
+- **DApp Integration**: Easy to integrate with any application needing secure Bitcoin transaction handling
+- **Decentralized Security**: Network of independent arbiters with staked assets
 
-## 系统架构
+## How it works
 
-### 核心模块
+1. **DApp Registration**
+   - DApps apply to use the protocol
+   - Application review process ensures quality
+   - Once approved, DApp can request arbiters for transactions
 
-1. **DApp 注册管理 (DAppRegistry)**
-   - DApp 注册和注销
-   - 授权状态管理
-   - 注册状态查询
+2. **Transaction Flow**
+   - DApp requests arbiter guarantee for a transaction
+   - If transaction completes normally, arbiter isn't involved
+   - In disputes, arbiter helps by signing Bitcoin transactions
+   - All actions are backed by arbiter's staked assets
 
-2. **配置管理 (ConfigManager)**
-   - 仲裁冻结期设置
-   - 仲裁超时时间管理
-   - 系统参数配置
+3. **Dispute Resolution**
+   - If arbiter misbehaves (wrong signature or no response)
+   - Victim submits transaction to ZK service for proof
+   - Proof submitted to protocol for automated verification
+   - Valid claims receive immediate compensation from arbiter's stake
 
-3. **仲裁人管理 (ArbitratorManager)**
-   - 仲裁人注册和管理
-   - 操作员设置
-   - 收益地址管理
+## Technical Architecture
 
-4. **交易管理 (TransactionManager)**
-   - 跨链交易处理
-   - 交易状态追踪
-   - 交易验证
+### Core Components
 
-5. **补偿管理 (CompensationManager)**
-   - 补偿方案制定
-   - 赔付执行
-   - 多资产类型支持
+1. **DApp Registry**
+   - Application processing
+   - DApp verification
+   - Access management
 
-## 工作流程
+2. **Arbiter Management**
+   - Arbiter registration with ELA/DPoS NFT staking
+   - Bitcoin credential management
+   - Performance tracking
 
-1. **DApp 接入流程**
-   - DApp 注册到仲裁协议
-   - 配置必要参数（最小质押、仲裁人数等）
-   - 获取授权状态
+3. **Transaction Handling**
+   - Bitcoin UTXO processing
+   - Arbiter assignment
+   - Status tracking
 
-2. **仲裁流程**
-   - 发起仲裁请求
-   - 仲裁人分配和确认
-   - 证据提交和审查
-   - 仲裁决策
-   - 执行补偿
+4. **Dispute Resolution**
+   - ZK proof verification
+   - Automated claim processing
+   - Compensation distribution
 
-3. **补偿执行**
-   - 确定补偿方案
-   - 验证补偿条件
-   - 执行资产转移
-   - 完成补偿流程
-
-## 安全考虑
-
-- 所有关键操作都需要合约所有者权限
-- 仲裁过程设有冻结期和超时机制
-- 多重验证确保跨链交易安全
-- 完善的事件日志记录
-
-## 项目结构
+## Smart Contract Structure
 
 ```
 contracts/
-├── core/                   # 核心合约实现
-│   ├── ArbitrationProtocol.sol
-│   ├── DAppRegistry.sol
-│   ├── ConfigManager.sol
-│   ├── ArbitratorManager.sol
-│   ├── TransactionManager.sol
-│   └── CompensationManager.sol
-├── interfaces/            # 接口定义
+├── core/                   
+│   ├── DAppRegistry.sol      # DApp management
+│   ├── ArbitratorManager.sol # Arbiter handling
+│   ├── TransactionManager.sol# Transaction processing
+│   ├── CompensationManager.sol# Dispute resolution
+│   └── ZkService.sol         # Proof verification
+├── interfaces/            
 │   ├── IDAppRegistry.sol
-│   ├── IConfigManager.sol
 │   ├── IArbitratorManager.sol
 │   ├── ITransactionManager.sol
-│   └── ICompensationManager.sol
-├── libraries/            # 工具库
-│   ├── DataTypes.sol     # 数据类型定义
-│   └── Errors.sol        # 错误信息定义
-└── docs/                 # 文档
-    ├── DAppRegistry.md
-    ├── ConfigManager.md
-    └── CompensationManager.md
+│   └── IZkService.sol
+└── libraries/            
+    ├── DataTypes.sol    
+    └── Errors.sol      
 ```
 
-## 部署注意事项
+## Security Features
 
-1. **合约部署顺序**
-   - 首先部署配置管理合约
-   - 然后部署 DApp 注册合约
-   - 最后部署其他功能合约
+- Staked Assets: Arbiters must stake ELA or DPoS voting NFTs
+- Zero-Knowledge Proofs: Automated verification of claims
+- Smart Contract Automation: No manual intervention needed
+- Multi-Chain Support: Works across ESC and other EVM chains
 
-2. **初始化配置**
-   - 设置适当的仲裁冻结期
-   - 配置合理的仲裁超时时间
-   - 设置初始仲裁人要求
+## Development
 
-3. **权限管理**
-   - 确保合约所有者地址安全
-   - 谨慎管理操作员权限
-   - 定期检查授权状态
+### Requirements
+- Solidity ^0.8.20
+- Hardhat
+- Node.js
 
-## 开发环境
+### Setup
+1. Clone the repository
+2. Install dependencies
+3. Configure environment
+4. Run tests
 
-- Solidity 版本: ^0.8.20
-- 开发框架: Hardhat/Truffle
-- 依赖管理: npm/yarn
+## Documentation
 
-## 依赖项
+Detailed documentation available in [docs/](docs/):
+- [English Documentation](docs/en/)
+- [Chinese Documentation](docs/cn/)
 
-- OpenZeppelin Contracts
-  - @openzeppelin/contracts/access/Ownable.sol
+## Contributing
 
-## 贡献指南
+We welcome contributions!
 
-1. Fork 项目
-2. 创建功能分支
-3. 提交更改
-4. 推送到分支
-5. 创建 Pull Request
-
-## 许可证
+## License
 
 MIT License
 
-## 联系方式
+## Contact
 
-如有问题或建议，请通过以下方式联系我们：
-- Issue 提交
-- Pull Request
-- 邮件联系
-
-## Setting ArbitratorManager
-
-To set the ArbitratorManager for the TransactionManager contract:
-
-1. Replace `YOUR_TRANSACTION_MANAGER_ADDRESS` with the actual deployed TransactionManager contract address
-2. Replace `YOUR_ARBITRATOR_MANAGER_ADDRESS` with the address of the ArbitratorManager you want to set
-3. Run the script:
-
-```bash
-npx hardhat run scripts/setArbitratorManager.js --network <your-network>
-```
-
-Note: Ensure you are using an account with owner permissions when running this script.
+- GitHub Issues
+- Email
