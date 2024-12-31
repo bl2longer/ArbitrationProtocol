@@ -4,14 +4,6 @@
   - TOP PRIORITY:
     - loan app update
     - Make a amount limit in loan dapp too, max loan amount is 100 usd
-    - TBD: should we register some prod arbiters for the app to not look empty at launch?
-    - @benjaminpiette  The latest Aribiterator Manager code has been updated and needs to be redeployed. 
-      - The modified content is to remove the status of the arbitrator The front-end should also be modified. 
-      ... Regarding how to obtain this status. You need to make your own judgment based on isFrozenStatus, 
-      ... isActiveArbitrator interface, and other information.
-      - UI only shows active or inactive? No need to show "working", "frozen", "terminated" 
-    - Also make it clear on the website the Arbiter portal is beta
-      - Beta tag bottom right of the "arbiter portal" title + "This is a beta version and most functions are limited." when hovered
   - P2:
     - Bug: edit arbiter staking:
         1. the max stake amount should be 100 not 50

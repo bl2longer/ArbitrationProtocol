@@ -5,6 +5,7 @@ import { Bars3Icon, WalletIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
 import { FC, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { ChildTooltip } from '../base/ChildTooltip';
 import { Button } from '../ui/button';
 import { Popover } from '../ui/popover';
 
@@ -25,10 +26,15 @@ export const Navbar: FC = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between">
           <div className="flex">
-            <div className="flex flex-shrink-0 items-center">
+            <div className="flex flex-shrink-0 items-center relative">
               <span className="text-xl font-bold text-gray-800">
                 Arbiter Portal
               </span>
+              <div className='absolute right-0 -bottom-1 text-sm text-primary cursor-help font-bold' style={{ bottom: "0rem" }}>
+                <ChildTooltip title="Beta version" tooltip="This is a beta version. Most functions are limited and usable coin amounts are capped.">
+                  BETA
+                </ChildTooltip>
+              </div>
             </div>
             {/* Nav items, large screens only */}
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
