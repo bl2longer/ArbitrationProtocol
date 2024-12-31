@@ -17,6 +17,24 @@
           "internalType": "bytes32",
           "name": "txId",
           "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "btcTx",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "script",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "arbitrator",
+          "type": "address"
         }
       ],
       "name": "ArbitrationRequested",
@@ -144,6 +162,18 @@
           "internalType": "address",
           "name": "arbitrator",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "deadline",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "depositFee",
+          "type": "uint256"
         }
       ],
       "name": "TransactionRegistered",
@@ -279,6 +309,11 @@
               "internalType": "struct DataTypes.UTXO[]",
               "name": "utxos",
               "type": "tuple[]"
+            },
+            {
+              "internalType": "bytes",
+              "name": "script",
+              "type": "bytes"
             }
           ],
           "internalType": "struct DataTypes.Transaction",
@@ -382,6 +417,11 @@
               "internalType": "struct DataTypes.UTXO[]",
               "name": "utxos",
               "type": "tuple[]"
+            },
+            {
+              "internalType": "bytes",
+              "name": "script",
+              "type": "bytes"
             }
           ],
           "internalType": "struct DataTypes.Transaction",
@@ -513,6 +553,11 @@
         {
           "internalType": "bytes",
           "name": "btcTx",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "script",
           "type": "bytes"
         },
         {

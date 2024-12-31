@@ -8,8 +8,8 @@ dataSources:
     network: esc-staging
     source:
       abi: ArbitratorManager
-      address: "0x611E86f21ff95a36d0675D12c287db32B2B9DFa8"
-      startBlock: 28360443
+      address: "0x9963b5214434776D043A4e98Bc7f33321F6aaCfc"
+      startBlock: 28426902
     mapping:
       file: ./src/event-handlers/ArbitratorManager.ts
       language: wasm/assemblyscript
@@ -22,19 +22,17 @@ dataSources:
         - name: ArbitratorManager
           file: ./src/abis/ArbitratorManager.json
       eventHandlers:
-        - event: ArbitratorStatusChanged(indexed address,uint8)
-          handler: handleArbitratorStatusChanged
-        - event: ArbitratorParamsSet(indexed address,uint256,uint256,uint8)
-          handler: handleArbitratorParamsSet
-        - event: ArbitratorPaused(indexed address,uint8)
+        - event: ArbitratorDeadlineUpdated(indexed address,uint256)
+          handler: handleArbitratorDeadlineUpdated
+        - event: ArbitratorFeeRateUpdated(indexed address,uint256)
+          handler: handleArbitratorFeeRateUpdated
+        - event: ArbitratorPaused(indexed address)
           handler: handleArbitratorPaused
-        - event: ArbitratorUnpaused(indexed address,uint8)
+        - event: ArbitratorUnpaused(indexed address)
           handler: handleArbitratorUnpaused
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
         - event: RevenueAddressesSet(indexed address,address,bytes,string)
           handler: handleRevenueAddressesSet
-        - event: StakeAdded(indexed address,indexed address,uint256,uint256[],uint8)
+        - event: StakeAdded(indexed address,indexed address,uint256,uint256[])
           handler: handleStakeAdded
         - event: StakeWithdrawn(indexed address,indexed address,uint256)
           handler: handleStakeWithdrawn

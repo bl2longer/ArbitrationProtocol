@@ -65,8 +65,8 @@ export class ArbiterInfo extends Entity {
     this.set("createdAt", Value.fromI32(value));
   }
 
-  get lastArbitrationTime(): i32 {
-    let value = this.get("lastArbitrationTime");
+  get deadLine(): i32 {
+    let value = this.get("deadLine");
     if (!value || value.kind == ValueKind.NULL) {
       return 0;
     } else {
@@ -74,8 +74,8 @@ export class ArbiterInfo extends Entity {
     }
   }
 
-  set lastArbitrationTime(value: i32) {
-    this.set("lastArbitrationTime", Value.fromI32(value));
+  set deadLine(value: i32) {
+    this.set("deadLine", Value.fromI32(value));
   }
 
   get address(): string {
@@ -117,17 +117,17 @@ export class ArbiterInfo extends Entity {
     this.set("pendingFeeRate", Value.fromI32(value));
   }
 
-  get status(): string {
-    let value = this.get("status");
+  get paused(): boolean {
+    let value = this.get("paused");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return false;
     } else {
-      return value.toString();
+      return value.toBoolean();
     }
   }
 
-  set status(value: string) {
-    this.set("status", Value.fromString(value));
+  set paused(value: boolean) {
+    this.set("paused", Value.fromBoolean(value));
   }
 
   get activeTransactionId(): string | null {

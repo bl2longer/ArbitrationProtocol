@@ -1,12 +1,3 @@
-enum ArbiterStatus {
-    Unknown
-    Active     # Arbiter is available for new transactions
-    Working    # Arbiter is currently working on a transaction
-    Paused     # Arbiter is temporarily paused
-    Terminated  # Arbiter has been terminated
-    Frozen
-}
-
 enum DAppStatus {
     Unknown
     None
@@ -37,11 +28,11 @@ enum CompensationType {
 type ArbiterInfo @entity {
     id: ID! # required by the graph
     createdAt: Int! # Timestamp, DB side only, not on chain - block time at which the arbiter info was first found (first event)
-    lastArbitrationTime: Int # Timestamp at which this arbiter term ends
+    deadLine: Int # Timestamp at which this arbiter term ends
     address: String! @id # Arbiter Ethereum address
     currentFeeRate: Int # Current fee rate
     pendingFeeRate: Int # Pending new fee rate
-    status: ArbiterStatus! # Arbiter status
+    paused: Boolean! # Whether the arbiter is manually paused or not
     activeTransactionId: String # ID of the transaction that made the arbiter "working". 0 address if not working.
     ethAmount: BigInt! # Native token stake amount
     nftValue: BigInt! # Amount of native coins locked in the staked NFTs

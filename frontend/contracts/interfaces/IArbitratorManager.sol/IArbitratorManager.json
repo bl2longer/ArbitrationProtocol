@@ -15,17 +15,43 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "feeRate",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
           "name": "deadline",
           "type": "uint256"
         }
       ],
-      "name": "ArbitratorParamsSet",
+      "name": "ArbitratorDeadlineUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "arbitrator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "feeRate",
+          "type": "uint256"
+        }
+      ],
+      "name": "ArbitratorFeeRateUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "arbitrator",
+          "type": "address"
+        }
+      ],
+      "name": "ArbitratorFrozen",
       "type": "event"
     },
     {
@@ -100,13 +126,26 @@
           "type": "address"
         },
         {
-          "indexed": false,
-          "internalType": "enum DataTypes.ArbitratorStatus",
-          "name": "status",
-          "type": "uint8"
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "transactionId",
+          "type": "bytes32"
         }
       ],
-      "name": "ArbitratorStatusChanged",
+      "name": "ArbitratorReleased",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "arbitrator",
+          "type": "address"
+        }
+      ],
+      "name": "ArbitratorTerminatedWithSlash",
       "type": "event"
     },
     {
@@ -120,6 +159,25 @@
         }
       ],
       "name": "ArbitratorUnpaused",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "arbitrator",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "transactionId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ArbitratorWorking",
       "type": "event"
     },
     {
@@ -158,6 +216,25 @@
         }
       ],
       "name": "InitializedManager",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "oldNFTContract",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newNFTContract",
+          "type": "address"
+        }
+      ],
+      "name": "NFTContractUpdated",
       "type": "event"
     },
     {
@@ -248,12 +325,6 @@
           "internalType": "uint256[]",
           "name": "nftTokenIds",
           "type": "uint256[]"
-        },
-        {
-          "indexed": false,
-          "internalType": "enum DataTypes.ArbitratorStatus",
-          "name": "status",
-          "type": "uint8"
         }
       ],
       "name": "StakeAdded",
@@ -311,25 +382,6 @@
           "type": "address"
         }
       ],
-      "name": "canUnStake",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "arbitrator",
-          "type": "address"
-        }
-      ],
       "name": "frozenArbitrator",
       "outputs": [],
       "stateMutability": "nonpayable",
@@ -353,19 +405,14 @@
               "type": "address"
             },
             {
+              "internalType": "bool",
+              "name": "paused",
+              "type": "bool"
+            },
+            {
               "internalType": "uint256",
               "name": "currentFeeRate",
               "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "pendingFeeRate",
-              "type": "uint256"
-            },
-            {
-              "internalType": "enum DataTypes.ArbitratorStatus",
-              "name": "status",
-              "type": "uint8"
             },
             {
               "internalType": "bytes32",
@@ -449,25 +496,6 @@
           "type": "address"
         }
       ],
-      "name": "getArbitratorStatus",
-      "outputs": [
-        {
-          "internalType": "enum DataTypes.ArbitratorStatus",
-          "name": "",
-          "type": "uint8"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "arbitrator",
-          "type": "address"
-        }
-      ],
       "name": "getAvailableStake",
       "outputs": [
         {
@@ -525,6 +553,25 @@
         }
       ],
       "name": "isActiveArbitrator",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "arbitrator",
+          "type": "address"
+        }
+      ],
+      "name": "isConfigModifiable",
       "outputs": [
         {
           "internalType": "bool",
@@ -687,16 +734,24 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "feeRate",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
           "name": "deadline",
           "type": "uint256"
         }
       ],
-      "name": "setArbitratorParams",
+      "name": "setArbitratorDeadline",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "feeRate",
+          "type": "uint256"
+        }
+      ],
+      "name": "setArbitratorFeeRate",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -728,6 +783,19 @@
         }
       ],
       "name": "setCompensationManager",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_nftContract",
+          "type": "address"
+        }
+      ],
+      "name": "setNFTContract",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

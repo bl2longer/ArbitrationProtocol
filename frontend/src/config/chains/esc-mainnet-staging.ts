@@ -13,7 +13,7 @@ escMainnetStaging.subgraph = {
 };
 
 escMainnetStaging.contracts = {
-  arbitratorManager: "0x611E86f21ff95a36d0675D12c287db32B2B9DFa8",
+  arbitratorManager: "0x9963b5214434776D043A4e98Bc7f33321F6aaCfc",
   compensationManager: "0x34832C9283f9915DCff196241d00D7306147e151",
   configManager: "0x4421c63241A262C423277FFA82C376953072d25f",
   dappRegistry: "0x538f5e27299384c0FEF434d3359d948277E13C85",

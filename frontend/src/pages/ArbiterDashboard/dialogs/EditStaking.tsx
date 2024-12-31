@@ -132,7 +132,6 @@ export const EditStakingDialog: FC<{
       }
       else if (stakeType === "unstake") {
         if (await unstake()) {
-          arbiter.status = "Terminated";
           arbiter.ethAmount = new BigNumber(0);
           arbiter.setNFTValue(new BigNumber(0));
 

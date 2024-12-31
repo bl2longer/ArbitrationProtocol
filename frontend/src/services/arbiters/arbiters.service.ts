@@ -103,17 +103,16 @@ export const fetchArbiters = async (chain: ChainConfig, start = 0, limit = 100, 
   }
 }
 
+export const arbiterStatusLabelTitle = (arbiter: ArbiterInfo): string => {
+  if (arbiter.isPaused())
+    return "Paused";
+  else
+    return "Active";
+}
+
 export const arbiterStatusLabelColor = (arbiter: ArbiterInfo): StatusLabelColor => {
-  switch (arbiter.status) {
-    case "Active":
-    case "Working":
-      return "green";
-    case "Paused":
-      return "yellow";
-    case "Terminated":
-    case "Frozen":
-      return "red";
-    default:
-      return "none";
-  }
+  if (arbiter.isPaused())
+    return "red";
+  else
+    return "green";
 }

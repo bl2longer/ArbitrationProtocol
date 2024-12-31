@@ -2,7 +2,7 @@ import { CopyField } from "@/components/base/CopyField";
 import { StatusLabel } from "@/components/base/StatusLabel";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { arbiterStatusLabelColor } from "@/services/arbiters/arbiters.service";
+import { arbiterStatusLabelColor, arbiterStatusLabelTitle } from "@/services/arbiters/arbiters.service";
 import { ArbiterInfo } from "@/services/arbiters/model/arbiter-info";
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
 import { formatAddress } from "@/utils/formatAddress";
@@ -67,7 +67,7 @@ export const ListView: FC<{
             </TableCell>
             <TableCell className="whitespace-nowrap">
               <StatusLabel
-                title={arbiter.status}
+                title={arbiterStatusLabelTitle(arbiter)}
                 color={arbiterStatusLabelColor(arbiter)}
               />
             </TableCell>

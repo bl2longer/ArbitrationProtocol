@@ -183,7 +183,7 @@ export const RegistrationForm: FC<{
             name="deadline"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Term end <IconTooltip title="Term end" tooltip={tooltips.arbiterDeadline} iconClassName='ml-1' iconSize={12} /></FormLabel>
+                <FormLabel>Deadline <IconTooltip title="Deadline" tooltip={tooltips.arbiterDeadline} iconClassName='ml-1' iconSize={12} /></FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>

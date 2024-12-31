@@ -4,9 +4,9 @@ export interface ArbiterInfo {
   address: string; // same as id
   ethAmount: string;
   createdAt: number; // timestamp seconds
-  lastArbitrationTime: number;
+  deadline: number;
   currentFeeRate: number;
-  status: string; // TODO: enum
+  paused: boolean;
   activeTransactionId: string;
 
   // Operator

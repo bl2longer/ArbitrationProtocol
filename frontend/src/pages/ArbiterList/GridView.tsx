@@ -1,7 +1,7 @@
 import { CopyField } from "@/components/base/CopyField";
 import { StatusLabel } from "@/components/base/StatusLabel";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { arbiterStatusLabelColor } from "@/services/arbiters/arbiters.service";
+import { arbiterStatusLabelColor, arbiterStatusLabelTitle } from "@/services/arbiters/arbiters.service";
 import { ArbiterInfo } from "@/services/arbiters/model/arbiter-info";
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
 import { formatDate } from "@/utils/dates";
@@ -30,7 +30,7 @@ const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
         <CopyField value={arbiter.address} />
       </h3>
       <StatusLabel
-        title={arbiter.status}
+        title={arbiterStatusLabelTitle(arbiter)}
         color={arbiterStatusLabelColor(arbiter)}
       />
     </div>
@@ -40,7 +40,7 @@ const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
         <span>{Number(arbiter.currentFeeRate) / 100}%</span>
       </div>
       <div className="flex justify-between">
-        <span className="text-gray-600">Term end</span>
+        <span className="text-gray-600">Deadline</span>
         <span>{termEnd ? formatDate(termEnd) : '-'}</span>
       </div>
       <div className="flex justify-between">

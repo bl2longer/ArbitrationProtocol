@@ -1,6 +1,7 @@
 
 export type ContractArbiterInfo = {
   arbitrator: string;
+  paused: boolean;
   activeTransactionId: string;
   currentFeeRate: bigint;
   deadLine: bigint;

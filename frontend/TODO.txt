@@ -1,15 +1,62 @@
 ===> Target release date: dec 30
 
-- Deploy PROD + clone keep a staging url/subgraph alive
+- TO BE SORTED:
+  - TOP PRIORITY:
+    - loan app update
+    - Make a amount limit in loan dapp too, max loan amount is 100 usd
+    - TBD: should we register some prod arbiters for the app to not look empty at launch?
+    - @benjaminpiette  The latest Aribiterator Manager code has been updated and needs to be redeployed. 
+      - The modified content is to remove the status of the arbitrator The front-end should also be modified. 
+      ... Regarding how to obtain this status. You need to make your own judgment based on isFrozenStatus, 
+      ... isActiveArbitrator interface, and other information.
+      - UI only shows active or inactive? No need to show "working", "frozen", "terminated" 
+    - Also make it clear on the website the Arbiter portal is beta
+      - Beta tag bottom right of the "arbiter portal" title + "This is a beta version and most functions are limited." when hovered
+  - P2:
+    - Bug: edit arbiter staking:
+        1. the max stake amount should be 100 not 50
+          - ArbiterMaxStakeValue should be replaced with config.maxStake
+        2. reopen this page , the "Stake value should be lower than 50 ELA. Now 72.5 ELA" is still displayed
+    - @benjaminpiette  maybe we should disable the "stake NFT" button when the nft ela votes less than 1ela?
+      - That's okay If Sum is more than 1 ela
+    - @benjaminpiette user cannot know the public key of the unisat btc wallet, maybe we should add "Import " button here?
+      - (in edit arbiter dialog)
+    - Hide "My dashboard" if not connected
+    - Add a footer:
+        BeL2 Website
+        BeL2 github
+        BeL2 twitter
+        BeL2 lending app
+        Elastos website (Elastos.info) 
+        Need help? Join TG (direct to Elastos Telegram) 
+    - Compensations: don't fetch data, just show "coming soon" for now
 
-- DONE Improve transaction status label "Arbitrated" as this means "Arbitration requested"
 
-- Make a limit in loan dapp too, max loan amount is 100 usd
 
-- P2: Simple tooltips to explain main app pages (compensations? dapps? transactions?)
+Aria Zuo, [31 Dec 2024 at 08:09:42]:
+  请求路径：http://103.1.65.125:8018/prove - The return value is the id for the signature verification of this transaction, which can be used to submit to the contract
+      POST 请求 Json：
+      {
+          "app": "tx_signature_proof",
+          "rawtx": "str...",
+          "utxos": ["str..."],
+          "input_index": 0,
+          "signature_index": 0,
+          "pubkey": "str..."
+      }
+
+      返回 Json：
+      {
+          "id": "0x..."
+      }
+  used for dapp to apply for compensation
+  For example, the arbitrator gave the wrong signature or signed a transaction that should not have been signed.
+
+
 
 ------- AFTER DEC 30 RELEASE ------
 
+- P2: Simple tooltips to explain main app pages (compensations? dapps? transactions?)
 - P2: arbiter registration: hide "operator" (self by default)
 - P2: "Install Metamask" should look like a real button
 - P2: Transaction list still seems to reload every time the page is entered.

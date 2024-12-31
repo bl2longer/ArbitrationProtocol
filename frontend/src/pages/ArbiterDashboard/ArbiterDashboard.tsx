@@ -45,7 +45,7 @@ const ArbiterDashboard: FC = () => {
           {
             !isPending && ownedArbiter && !ownedArbiter.isPaused() &&
             <EnsureWalletNetwork continuesTo='Pause'>
-              <Button onClick={handlePauseArbiter} disabled={isPausing || ownedArbiter.isWorking()}>Pause</Button>
+              <Button onClick={handlePauseArbiter} disabled={isPausing}>Pause</Button>
             </EnsureWalletNetwork>
           }
           {
