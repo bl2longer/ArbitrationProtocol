@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { tooltips } from '@/config/tooltips';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
-import { ArbiterMaxStakeValue } from '@/services/arbiters/arbiters.service';
 import { useArbiterRegister } from '@/services/arbiters/hooks/contract/useArbiterRegister';
 import { BPosNFT } from '@/services/bpos-nfts/model/bpos-nft';
 import { isValidBitcoinAddress, isValidBitcoinPublicKey } from '@/services/btc/btc';
@@ -106,7 +105,7 @@ export const RegistrationForm: FC<{
     return amount;
   }, [selectedNFTs, stakeType, watchedCoinAmount]);
 
-  const newAmountAllowsStaking = useMemo(() => stakeAmount <= ArbiterMaxStakeValue, [stakeAmount]);
+  const newAmountAllowsStaking = useMemo(() => stakeAmount >= configSettings?.minStake && stakeAmount <= configSettings?.maxStake, [configSettings, stakeAmount]);
 
   const handleRegister = useCallback(async (values: z.infer<PartialSchema>) => {
     try {
@@ -268,7 +267,7 @@ export const RegistrationForm: FC<{
           {
             !newAmountAllowsStaking &&
             <div className='text-sm my-2 text-red-500'>
-              Stake value should be lower than {ArbiterMaxStakeValue} {activeChain?.nativeCurrency.symbol}.
+              Stake value should be higher than {Number(configSettings?.minStake)} {activeChain?.nativeCurrency.symbol} and lower than {Number(configSettings?.maxStake)} {activeChain?.nativeCurrency.symbol}.
               Now {stakeAmount} {activeChain?.nativeCurrency.symbol}.
             </div>
           }

@@ -30,7 +30,7 @@ export const Navbar: FC = () => {
               <span className="text-xl font-bold text-gray-800">
                 Arbiter Portal
               </span>
-              <div className='absolute right-0 -bottom-1 text-sm text-primary cursor-help font-bold' style={{ bottom: "0rem" }}>
+              <div className='absolute -bottom-1 text-sm text-primary cursor-help font-bold -right-3' style={{ bottom: "0rem" }}>
                 <ChildTooltip title="Beta version" tooltip="This is a beta version. Most functions are limited and usable coin amounts are capped.">
                   BETA
                 </ChildTooltip>

@@ -3,7 +3,6 @@ import { StakeType, StakeTypePicker } from "@/components/staking/StakeTypePicker
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
-import { ArbiterMaxStakeValue } from "@/services/arbiters/arbiters.service";
 import { useArbiterStake } from "@/services/arbiters/hooks/contract/useArbiterStake";
 import { useArbiterUnstake } from "@/services/arbiters/hooks/contract/useArbiterUnstake";
 import { ArbiterInfo } from "@/services/arbiters/model/arbiter-info";
@@ -95,7 +94,7 @@ export const EditStakingDialog: FC<{
     return amount;
   }, [selectedNFTs, arbiter, stakeType, watchedCoinAmount]);
 
-  const newAmountAllowsStaking = useMemo(() => stakeAmount <= ArbiterMaxStakeValue, [stakeAmount]);
+  const newAmountAllowsStaking = useMemo(() => stakeAmount >= configSettings?.minStake && stakeAmount <= configSettings?.maxStake, [configSettings, stakeAmount]);
 
   const handleApproveNFTTransfer = useCallback(async () => {
     await approveNFTTransfer();
@@ -177,7 +176,7 @@ export const EditStakingDialog: FC<{
             {
               !newAmountAllowsStaking &&
               <div className='text-sm my-2 text-red-500'>
-                Stake value should be lower than {ArbiterMaxStakeValue} {activeChain?.nativeCurrency.symbol}.
+                Stake value should be higher than {Number(configSettings?.minStake)} {activeChain?.nativeCurrency.symbol} and lower than {Number(configSettings?.maxStake)} {activeChain?.nativeCurrency.symbol}.
                 Now {stakeAmount} {activeChain?.nativeCurrency.symbol}.
               </div>
             }

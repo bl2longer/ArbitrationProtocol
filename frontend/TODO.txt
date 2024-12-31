@@ -1,27 +1,18 @@
 ===> Target release date: dec 30
 
-- TO BE SORTED:
-  - TOP PRIORITY:
-    - loan app update
-    - Make a amount limit in loan dapp too, max loan amount is 100 usd
-  - P2:
-    - Bug: edit arbiter staking:
-        1. the max stake amount should be 100 not 50
-          - ArbiterMaxStakeValue should be replaced with config.maxStake
-        2. reopen this page , the "Stake value should be lower than 50 ELA. Now 72.5 ELA" is still displayed
-    - @benjaminpiette  maybe we should disable the "stake NFT" button when the nft ela votes less than 1ela?
-      - That's okay If Sum is more than 1 ela
-    - @benjaminpiette user cannot know the public key of the unisat btc wallet, maybe we should add "Import " button here?
-      - (in edit arbiter dialog)
-    - Hide "My dashboard" if not connected
-    - Add a footer:
-        BeL2 Website
-        BeL2 github
-        BeL2 twitter
-        BeL2 lending app
-        Elastos website (Elastos.info) 
-        Need help? Join TG (direct to Elastos Telegram) 
-    - Compensations: don't fetch data, just show "coming soon" for now
+- TOP PRIORITY:
+  - loan app update
+  - Make a amount limit in loan dapp too, max loan amount is 100 usd
+- P2:
+  - Hide "My dashboard" if not connected
+  - Add a footer:
+      BeL2 Website
+      BeL2 github
+      BeL2 twitter
+      BeL2 lending app
+      Elastos website (Elastos.info) 
+      Need help? Join TG (direct to Elastos Telegram) 
+  - Compensations: don't fetch data, just show "coming soon" for now
 
 
 
@@ -48,10 +39,14 @@ Aria Zuo, [31 Dec 2024 at 08:09:42]:
 
 ------- AFTER DEC 30 RELEASE ------
 
-- P2: Simple tooltips to explain main app pages (compensations? dapps? transactions?)
-- P2: arbiter registration: hide "operator" (self by default)
-- P2: "Install Metamask" should look like a real button
-- P2: Transaction list still seems to reload every time the page is entered.
+P2"
+- Bug: edit arbiter staking: reopen the dialog after a max stake red error: the "Stake value should be lower than 50 ELA. Now 72.5 ELA" is still displayed
+- Simple tooltips to explain main app pages (compensations? dapps? transactions?)
+- arbiter registration: hide "operator" (self by default)
+- "Install Metamask" should look like a real button
+- Transaction list still seems to reload every time the page is entered.
+- @benjaminpiette user cannot know the public key of the unisat btc wallet, maybe we should add "Import " button here?
+  - (in edit arbiter dialog)
 
 - Transaction list:
   - Submit arbitration:
