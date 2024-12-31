@@ -3,16 +3,19 @@
 - TOP PRIORITY:
   - loan app update
   - Make a amount limit in loan dapp too, max loan amount is 100 usd
-- P2:
-  - Hide "My dashboard" if not connected
-  - Add a footer:
-      BeL2 Website
-      BeL2 github
-      BeL2 twitter
-      BeL2 lending app
-      Elastos website (Elastos.info) 
-      Need help? Join TG (direct to Elastos Telegram) 
-  - Compensations: don't fetch data, just show "coming soon" for now
+  - Compensation requests:
+    - TBD: add a global request compensation button? 
+
+for loan dapp
+1. select an arbiter when alice submit the btc tx to dapp
+2. support alice to request the arbitration
+3. alice can check the status/result of the arbitration
+
+for arbiter dapp
+1. Alice can submit a request to punish the arbiter
+2. Bob can submit a request to punish the arbiter
+
+registerTransaction is in submitToLenderTransferProof method
 
 
 
@@ -47,6 +50,13 @@ P2"
 - Transaction list still seems to reload every time the page is entered.
 - @benjaminpiette user cannot know the public key of the unisat btc wallet, maybe we should add "Import " button here?
   - (in edit arbiter dialog)
+- Add a footer:
+      BeL2 Website
+      BeL2 github
+      BeL2 twitter
+      BeL2 lending app
+      Elastos website (Elastos.info) 
+      Need help? Join TG (direct to Elastos Telegram) 
 
 - Transaction list:
   - Submit arbitration:

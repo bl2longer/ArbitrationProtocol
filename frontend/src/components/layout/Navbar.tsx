@@ -3,23 +3,29 @@ import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 import { cn } from '@/utils/shadcn';
 import { Bars3Icon, WalletIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
-import { FC, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChildTooltip } from '../base/ChildTooltip';
 import { Button } from '../ui/button';
 import { Popover } from '../ui/popover';
 
-const navigation = [
-  { name: 'Arbiters', href: '/' },
-  { name: 'Transactions', href: '/transactions' },
-  { name: 'Compensations', href: '/compensations' },
-  { name: 'DApps', href: '/dapps' },
-  { name: 'My dashboard', href: '/dashboard' },
-];
-
 export const Navbar: FC = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const { evmAccount } = useWalletContext();
+
+  const navigation = useMemo(() => {
+    const nav = [
+      { name: 'Arbiters', href: '/' },
+      { name: 'Transactions', href: '/transactions' },
+      { name: 'Compensations', href: '/compensations' },
+      { name: 'DApps', href: '/dapps' },
+    ];
+
+    if (evmAccount)
+      nav.push({ name: 'My dashboard', href: '/dashboard' });
+    return nav;
+  }, [evmAccount]);
 
   return (
     <>
