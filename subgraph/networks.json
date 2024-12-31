@@ -1,8 +1,8 @@
 {
   "esc-prod": {
     "ArbitratorManager": {
-      "address": "0xdA73554143F1F92aE31801632BB9620B7AF1e709",
-      "startBlock": 28395810
+      "address": "0x288be5594327d9D688edC12452A0699E6fD256E4",
+      "startBlock": 28440972
     },
     "TransactionManager": {
       "address": "0x1E7899A60b1fE71Cdb856518eB1817CcA3Fb5804",

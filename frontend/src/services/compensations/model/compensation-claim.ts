@@ -2,14 +2,12 @@ import { CompensationClaim as CompensationClaimDTO } from "@/services/subgraph/d
 import { tokenToReadableValue } from "@/services/tokens/tokens";
 import { Expose, Transform } from "class-transformer";
 
-export class CompensationClaim implements Omit<CompensationClaimDTO, "ethAmount" | "createdAt"> {
+export class CompensationClaim implements Omit<CompensationClaimDTO, "amount" | "createdAt"> {
   @Expose() public id: string;
-  @Expose() public dapp: string;
+  @Expose() public claimer: string;
   @Expose() public arbiter: string;
-  @Expose() @Transform(({ value }) => tokenToReadableValue(value, 18)) public amount: bigint;
-  @Expose() public nftContract: string;
-  @Expose() public nftTokenIds: string[];
-  @Expose() public totalAmount: string;
-  @Expose() public withdrawn: boolean;
   @Expose() public claimType: string;
+  @Expose() public withdrawn: boolean;
+  @Expose() @Transform(({ value }) => tokenToReadableValue(value, 18)) public amount: bigint;
+  @Expose() public evidence: string;
 }

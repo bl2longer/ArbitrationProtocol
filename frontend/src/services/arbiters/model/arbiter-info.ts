@@ -63,10 +63,10 @@ export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdA
     arbiter.activeTransactionId = contractInfo.activeTransactionId;
     arbiter.operatorEvmAddress = contractInfo.operator;
     arbiter.operatorBtcAddress = contractInfo.operatorBtcAddress;
-    arbiter.operatorBtcPubKey = contractInfo.operatorBtcPubKey;
+    arbiter.operatorBtcPubKey = contractInfo.operatorBtcPubKey?.slice(2);
     arbiter.revenueEvmAddress = contractInfo.revenueETHAddress;
     arbiter.revenueBtcAddress = contractInfo.revenueBtcAddress;
-    arbiter.revenueBtcPubKey = contractInfo.revenueBtcPubKey;
+    arbiter.revenueBtcPubKey = contractInfo.revenueBtcPubKey?.slice(2);
 
     return arbiter;
   }

@@ -20,8 +20,8 @@ export const fetchCompensations = async (chain: ChainConfig, start = 0, limit = 
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const query = `query FetchArbiters {
-        arbiterInfos (
+      const query = `query FetchCompensations {
+        compensationClaims (
           skip: ${startAt}
           first:${resultsPerPage}
           orderBy: createdAt,
@@ -29,16 +29,12 @@ export const fetchCompensations = async (chain: ChainConfig, start = 0, limit = 
         ) { 
           id 
           createdAt 
-          status 
-          address 
-          ethAmount 
-          lastArbitrationTime 
-          currentFeeRate 
-          pendingFeeRate 
-          activeTransactionId 
-          operatorEvmAddress 
-          operatorBtcAddress 
-          operatorBtcPubKey
+          claimer
+          claimType
+          withdrawn
+          arbiter
+          amount
+          evidence
         }
       }`;
 
