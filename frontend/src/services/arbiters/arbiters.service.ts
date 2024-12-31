@@ -47,11 +47,11 @@ export const fetchArbiters = async (chain: ChainConfig, start = 0, limit = 100, 
         ) { 
           id 
           createdAt 
-          status 
+          paused 
           address 
           ethAmount 
           nftValue
-          lastArbitrationTime 
+          deadLine 
           currentFeeRate 
           pendingFeeRate 
           activeTransactionId 

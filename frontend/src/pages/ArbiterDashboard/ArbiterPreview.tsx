@@ -29,7 +29,7 @@ const InfoRow: FC<{
 export const ArbiterPreview: FC<{
   arbiter: ArbiterInfo;
 }> = ({ arbiter }) => {
-  const termEnd = arbiter.getTermEndDate();
+  const termEnd = arbiter.getDeadlineDate();
   const activeChain = useActiveEVMChainConfig();
   const { dynamicAddressFormat } = useDynamicAddressFormat();
   const [editFeeRateIsOpen, setEditFeeRateIsOpen] = useState(false);

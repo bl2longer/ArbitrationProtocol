@@ -21,7 +21,7 @@ export const GridView: FC<{
 
 const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
   const activeChain = useActiveEVMChainConfig();
-  const termEnd = arbiter.getTermEndDate();
+  const deadline = arbiter.getDeadlineDate();
 
   return <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
     <div className="flex justify-between items-start mb-4">
@@ -41,7 +41,7 @@ const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
       </div>
       <div className="flex justify-between">
         <span className="text-gray-600">Deadline</span>
-        <span>{termEnd ? formatDate(termEnd) : '-'}</span>
+        <span>{deadline ? formatDate(deadline) : '-'}</span>
       </div>
       <div className="flex justify-between">
         <span className="text-gray-600">Stake</span>

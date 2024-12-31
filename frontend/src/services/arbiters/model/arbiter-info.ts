@@ -11,9 +11,9 @@ export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdA
   @Expose() public address: string;
   @Expose() @Transform(({ value }) => tokenToReadableValue(value, 18)) public ethAmount: BigNumber; // Number of native coins not including NFT values
   @Expose() @Transform(({ value }) => tokenToReadableValue(value, 18)) public nftValue: BigNumber; // Readable amount of native coin represented by the staked NFTs.
-  @Expose() public paused: boolean;
+  @Expose({}) public paused: boolean;
   @Expose() @Transform(({ value }) => new Date(value * 1000)) public createdAt: Date;
-  @Expose() public deadline: number;
+  @Expose({ name: "deadLine" }) public deadline: number;
   @Expose() @Type(() => Number) public currentFeeRate: number; // Fee rate with 100 basis. 100 means 1%
   @Expose() @Type(() => Number) public pendingFeeRate: number;
   @Expose() public activeTransactionId: string;
@@ -28,7 +28,7 @@ export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdA
     return this.paused;
   }
 
-  public getTermEndDate(): Moment {
+  public getDeadlineDate(): Moment {
     if (!this.deadline)
       return null;
 
