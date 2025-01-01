@@ -1,20 +1,20 @@
 {
   "esc-prod": {
     "ArbitratorManager": {
-      "address": "0x288be5594327d9D688edC12452A0699E6fD256E4",
-      "startBlock": 28440972
+      "address": "0x5EF9bd1506d64754FA864708A743Ab952159d5B8",
+      "startBlock": 28454104
     },
     "TransactionManager": {
-      "address": "0x1E7899A60b1fE71Cdb856518eB1817CcA3Fb5804",
-      "startBlock": 28395825
+      "address": "0x8161b6b21A71F412804F3BfdC09eF9C9f4E8085b",
+      "startBlock": 28454120
     },
     "CompensationManager": {
-      "address": "0x11C42653ea0B7BC1e14cE09DE14E9D285f05F408",
-      "startBlock": 28395835
+      "address": "0x5a8b4adeE292095B329326Ac13b9b331611A486B",
+      "startBlock": 28454132
     },
     "DAppRegistry": {
-      "address": "0x682c832541507EbFd9B5A11576e1e79e1cad9598",
-      "startBlock": 28395800
+      "address": "0x88cA774F787399135BAbCbE395691cec36Abc72D",
+      "startBlock": 28454073
     },
     "BPosNFT": {
       "address": "0x8e286664c6B8811015F936592Dd654e94Af3F494",

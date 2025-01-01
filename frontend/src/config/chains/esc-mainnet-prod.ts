@@ -20,11 +20,11 @@ export const escMainnetProd: ChainConfig = {
     wrappedAddress: "0x517E9e5d46C1EA8aB6f78677d6114Ef47F71f6c4"
   },
   contracts: {
-    arbitratorManager: "0x288be5594327d9D688edC12452A0699E6fD256E4",
-    compensationManager: "0x11C42653ea0B7BC1e14cE09DE14E9D285f05F408",
-    configManager: "0x9095f635E128A4D8a593C812CffD8b3fCd3a0405",
-    dappRegistry: "0x682c832541507EbFd9B5A11576e1e79e1cad9598",
-    transactionManager: "0x1E7899A60b1fE71Cdb856518eB1817CcA3Fb5804",
+    arbitratorManager: "0x5EF9bd1506d64754FA864708A743Ab952159d5B8",
+    compensationManager: "0x5a8b4adeE292095B329326Ac13b9b331611A486B",
+    configManager: "0xF176E5aB219452E436E521213b6f7282E1D83C02",
+    dappRegistry: "0x88cA774F787399135BAbCbE395691cec36Abc72D",
+    transactionManager: "0x8161b6b21A71F412804F3BfdC09eF9C9f4E8085b",
     nftInfo: "0x0a218CC87C48BA26D60f438860710f6c0D4AA050",
     bPoSNFT: "0x8e286664c6B8811015F936592Dd654e94Af3F494"
   },
