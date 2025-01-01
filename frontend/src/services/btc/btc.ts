@@ -4,6 +4,7 @@ import BigNumber from "bignumber.js";
 import 'bip66';
 import { encode } from "bip66";
 // import { initEccLib } from "bitcoinjs-lib";
+import { Transaction } from "bitcoinjs-lib";
 
 // Init curve for BTC taproot address support
 // initEccLib(ecc);
@@ -29,6 +30,10 @@ export const toClosestValidValue = (btcAmount: BigNumber): BigNumber => {
     return undefined;
 
   return btcAmount.multipliedBy(satsPerBTC).decimalPlaces(0).dividedBy(satsPerBTC);
+}
+
+export const parseTransactionHex = (btcTxHex: string): Transaction => {
+  return Transaction.fromHex(btcTxHex);
 }
 
 /**

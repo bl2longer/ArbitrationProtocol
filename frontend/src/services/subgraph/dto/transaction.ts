@@ -1,4 +1,3 @@
-
 export interface Transaction {
   id: string;
   txId: string;
@@ -13,4 +12,5 @@ export interface Transaction {
   signature: string;
   compensationReceiver: string;
   timeoutCompensationReceiver: string;
+  script: string; // Bitcoin transaction script
 }

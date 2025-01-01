@@ -66,6 +66,8 @@ type Transaction @entity {
     signature: String # Arbiter's signature
     compensationReceiver: String
     timeoutCompensationReceiver: String
+    # utxos: String # TBD: JSON string?
+    script: String
 }
 
 type ArbitrationRequest @entity {

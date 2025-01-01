@@ -17,6 +17,7 @@ export function handleArbitrationRequested(event: ArbitrationRequested): void {
   transaction.dapp = event.params.dapp.toHexString();
   transaction.arbiter = event.params.arbitrator.toHexString(); // Useless, same arbiter already saved by TransactionRegistered
   transaction.status = "Arbitrated";
+  transaction.script = event.params.script.toHexString();
 
   // BTC tx
   if (event.params.btcTx)

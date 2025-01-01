@@ -1,6 +1,9 @@
 ===> Target release date: dec 30
 
-- forbid to stake while there is an activeTransactionId
+- dashboard: forbid to stake while there is an activeTransactionId
+- subgraph: catch compensationReceiver and timeoutcompensationReceiver for transactions, used to know who can request compensations on UI
+- transactions list: action button to "Request compensation". Only shown to transaction's compensator.
+- compensation list page: same as for transactions to request compensation.
 
 - TOP PRIORITY:
   - loan app update

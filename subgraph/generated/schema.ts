@@ -568,6 +568,40 @@ export class Transaction extends Entity {
       this.set("timeoutCompensationReceiver", Value.fromString(<string>value));
     }
   }
+
+  get utxos(): string | null {
+    let value = this.get("utxos");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set utxos(value: string | null) {
+    if (!value) {
+      this.unset("utxos");
+    } else {
+      this.set("utxos", Value.fromString(<string>value));
+    }
+  }
+
+  get script(): string | null {
+    let value = this.get("script");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set script(value: string | null) {
+    if (!value) {
+      this.unset("script");
+    } else {
+      this.set("script", Value.fromString(<string>value));
+    }
+  }
 }
 
 export class ArbitrationRequest extends Entity {

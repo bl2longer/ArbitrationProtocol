@@ -4,17 +4,21 @@ import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 import { useActiveEVMChainConfig } from '@/services/chains/hooks/useActiveEVMChainConfig';
+import { CompensationType } from '@/services/compensations/model/compensation-claim';
+import { isSameEVMAddress } from '@/services/evm/evm';
 import { Transaction } from '@/services/transactions/model/transaction';
 import { transactionStatusLabelColor, transactionStatusLabelTitle } from '@/services/transactions/transactions.service';
 import { formatDateWithoutYear } from '@/utils/dates';
 import { formatAddress } from '@/utils/formatAddress';
-import { FC } from 'react';
+import moment from 'moment';
+import { FC, useMemo } from 'react';
 import { transactionFieldLabels } from './TransactionList';
 
 export const TransactionRow: FC<{
   transaction: Transaction;
   onSubmitArbitration: () => void;
-}> = ({ transaction, onSubmitArbitration }) => {
+  onRequestCompensation: (compensationType: CompensationType) => void;
+}> = ({ transaction, onSubmitArbitration, onRequestCompensation }) => {
   const { evmAccount } = useWalletContext();
   const activeChain = useActiveEVMChainConfig();
 
@@ -37,6 +41,25 @@ export const TransactionRow: FC<{
     return value;
   };
 
+  const canSubmitArbitration = useMemo(() => {
+    return (
+      transaction.status === "Arbitrated" &&
+      isSameEVMAddress(transaction.arbiter, evmAccount)
+    );
+  }, [transaction, evmAccount]);
+
+  /* 
+   * If transaction deadline is passed, and transaction is in arbitration,
+   * then the timeoutCompensationReceiver can request a timeout compensation 
+   */
+  const canRequestTimeoutCompensation = useMemo(() => {
+    return (
+      transaction.status === "Arbitrated" &&
+      transaction.timeoutCompensationReceiver === evmAccount &&
+      moment().isAfter(transaction.deadline)
+    );
+  }, [transaction, evmAccount]);
+
   return (
     <TableRow>
       {Object.keys(transactionFieldLabels).map((field: keyof Transaction) => (
@@ -45,11 +68,32 @@ export const TransactionRow: FC<{
         </TableCell>
       ))}
       <TableCell>
-        {/* Transaction's elected arbiter can sign.*/}
+        {/* Transaction has an arbitration requested, so the arbiter can sign. */}
         {
-          transaction.status === "Active" && transaction.arbiter === evmAccount &&
+          canSubmitArbitration &&
           <Button onClick={onSubmitArbitration}>Submit signature</Button>
         }
+
+        {/* Request timeout compensation */}
+        {
+          canRequestTimeoutCompensation &&
+          <Button onClick={() => onRequestCompensation("Timeout")}>Request compensation</Button>
+        }
+
+        {/* 
+If the tx is not in arbitration, only show the compensation button to bob. 
+If the tx is in arbitration , only show the button to timeout compensation user( alice )
+ */}
+
+        {/* 
+        TODO:
+        If the transaction is registered but no arbitration is applied for, then Alice may collude with the arbiter, and Bob can apply for compensation here.
+        If Alice applies for arbitration, but the arbiter does not sign in time, then Alice can apply for compensation.
+        So these are different people.
+
+        So compensationReceiver and timeoutCompensationReceiver should be used differently.
+         */}
+
       </TableCell>
     </TableRow>
   )

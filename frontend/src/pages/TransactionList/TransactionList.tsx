@@ -7,11 +7,13 @@ import { SearchInput } from '@/components/base/SearchInput';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { tooltips } from '@/config/tooltips';
+import { CompensationType } from '@/services/compensations/model/compensation-claim';
 import { useTransactions } from '@/services/transactions/hooks/useTransactions';
 import { Transaction } from '@/services/transactions/model/transaction';
 import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
 import { RefreshCwIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { RequestCompensationDialog } from './dialogs/RequestCompensationDialog';
 import { SubmitSignatureDialog } from './dialogs/SubmitSignatureDialog';
 import { TransactionRow } from './TransactionRow';
 
@@ -31,6 +33,7 @@ export default function TransactionList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [requestedCompensationType, setRequestedCompensationType] = useState<CompensationType>(null);
 
   const transactions = useMemo(() => {
     return rawTransactions?.filter(tx => {
@@ -78,6 +81,10 @@ export default function TransactionList() {
               onSubmitArbitration={() => {
                 setSelectedTransaction(tx);
                 setIsSignDialogOpen(true);
+              }}
+              onRequestCompensation={(compensationType) => {
+                setSelectedTransaction(tx);
+                setRequestedCompensationType(compensationType);
               }} />)}
           </TableBody>
         </Table>
@@ -86,6 +93,7 @@ export default function TransactionList() {
       {loading && <Loading />}
 
       <SubmitSignatureDialog transaction={selectedTransaction} isOpen={isSignDialogOpen} onHandleClose={() => setIsSignDialogOpen(false)} />
+      <RequestCompensationDialog transaction={selectedTransaction} compensationType={requestedCompensationType} onHandleClose={() => setRequestedCompensationType(null)} />
 
     </PageContainer>
   );

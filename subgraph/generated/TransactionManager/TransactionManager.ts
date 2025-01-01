@@ -907,6 +907,40 @@ export class CompleteTransactionCall__Outputs {
   }
 }
 
+export class CompleteTransactionWithSlashCall extends ethereum.Call {
+  get inputs(): CompleteTransactionWithSlashCall__Inputs {
+    return new CompleteTransactionWithSlashCall__Inputs(this);
+  }
+
+  get outputs(): CompleteTransactionWithSlashCall__Outputs {
+    return new CompleteTransactionWithSlashCall__Outputs(this);
+  }
+}
+
+export class CompleteTransactionWithSlashCall__Inputs {
+  _call: CompleteTransactionWithSlashCall;
+
+  constructor(call: CompleteTransactionWithSlashCall) {
+    this._call = call;
+  }
+
+  get id(): Bytes {
+    return this._call.inputValues[0].value.toBytes();
+  }
+
+  get receivedCompensationAddress(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class CompleteTransactionWithSlashCall__Outputs {
+  _call: CompleteTransactionWithSlashCall;
+
+  constructor(call: CompleteTransactionWithSlashCall) {
+    this._call = call;
+  }
+}
+
 export class InitCompensationManagerCall extends ethereum.Call {
   get inputs(): InitCompensationManagerCall__Inputs {
     return new InitCompensationManagerCall__Inputs(this);

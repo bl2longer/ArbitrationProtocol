@@ -66,6 +66,25 @@ export const EnsureWalletNetwork: FC<{
     </button>
   }
 
+  if (btcAccountNeeded) {
+    if (!bitcoinAccount) {
+      return <PreStepButton
+        title="Connect Bitcoin Wallet"
+        continuesTo={continuesTo}
+        onClick={handleConnectBitcoinWallet}
+        fullWidth={fullWidth} />
+    }
+    else {
+      if (!isBitcoinAddressSupported) {
+        return <PreStepButton
+          title="Unsupported BTC address"
+          continuesTo={continuesTo}
+          onClick={promptBitcoinWallet}
+          fullWidth={fullWidth} />
+      }
+    }
+  }
+
   if (bitcoinSignDataNeeded && !bitcoinWalletCanSignData) {
     return <PreStepButton
       title="Use Essentials or Unisat"
@@ -88,25 +107,6 @@ export const EnsureWalletNetwork: FC<{
       continuesTo={continuesTo}
       onClick={handleConnectEVM}
       fullWidth={fullWidth} />
-  }
-
-  if (btcAccountNeeded) {
-    if (!bitcoinAccount) {
-      return <PreStepButton
-        title="Connect Bitcoin Wallet"
-        continuesTo={continuesTo}
-        onClick={handleConnectBitcoinWallet}
-        fullWidth={fullWidth} />
-    }
-    else {
-      if (!isBitcoinAddressSupported) {
-        return <PreStepButton
-          title="Unsupported BTC address"
-          continuesTo={continuesTo}
-          onClick={promptBitcoinWallet}
-          fullWidth={fullWidth} />
-      }
-    }
   }
 
   if (supportedNetworkNeeded && !supportedNetwork) {
