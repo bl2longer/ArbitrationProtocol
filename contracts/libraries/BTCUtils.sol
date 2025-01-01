@@ -202,7 +202,7 @@ library BTCUtils {
         for (uint256 i = 0; i < btcTx.inputs.length; i++) {
             // txid
             for (uint256 j = 0; j < 32; j++) {
-                result[offset + j] = btcTx.inputs[i].txid[j];
+                result[offset + j] = btcTx.inputs[i].txid[31 - j];
             }
             offset += 32;
 
@@ -291,7 +291,7 @@ library BTCUtils {
 
         // Parse txid (32 bytes)
         if (offset + 32 > data.length) revert Errors.INVALID_BTC_TX();
-        input.txid = bytes32(data[offset:offset + 32]);
+        input.txid = reverseTxid(bytes32(data[offset:offset + 32]));
         offset += 32;
 
         // Parse vout (4 bytes)
@@ -431,5 +431,19 @@ library BTCUtils {
                uint64(uint8(data[offset + 2])) << 16 |
                uint64(uint8(data[offset + 1])) << 8 |
                uint64(uint8(data[offset]));
+    }
+
+    /**
+     * @notice Reverse the byte order of a txid
+     * @dev Bitcoin txids are typically displayed in big-endian format but internally stored in little-endian
+     * @param txid The transaction ID to reverse
+     * @return The reversed transaction ID
+     */
+    function reverseTxid(bytes32 txid) internal pure returns (bytes32) {
+        bytes memory temp = new bytes(32);
+        for (uint256 i = 0; i < 32; i++) {
+            temp[i] = txid[31 - i];
+        }
+        return bytes32(temp);
     }
 }
