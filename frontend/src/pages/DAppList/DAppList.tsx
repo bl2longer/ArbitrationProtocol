@@ -40,7 +40,7 @@ const DAppList: FC = () => {
   return (
     <PageContainer>
       <PageTitleRow>
-        <PageTitle>DApp List <IconTooltip title='dApp' tooltip={tooltips.dappIntro} iconClassName='ml-2' iconSize={20} /></PageTitle>
+        <PageTitle>DApps <IconTooltip title='dApp' tooltip={tooltips.dappIntro} iconClassName='ml-2' iconSize={20} /></PageTitle>
         <div className='flex flex-row gap-2 items-center'>
           <Button variant="outline" size="icon" onClick={refreshDapps}>
             <RefreshCwIcon />

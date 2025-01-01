@@ -41,6 +41,10 @@ dataSources:
         - event: ArbitratorRegistered(indexed address,indexed
             address,address,string,bytes,uint256,uint256)
           handler: handleArbitratorRegistered
+        - event: ArbitratorWorking(indexed address,indexed bytes32)
+          handler: handleArbitratorWorking
+        - event: ArbitratorReleased(indexed address,indexed bytes32)
+          handler: handleArbitratorReleased
   - name: TransactionManager
     kind: ethereum/contract
     network: esc-staging

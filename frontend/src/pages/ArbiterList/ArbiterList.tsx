@@ -65,7 +65,7 @@ export default function ArbiterList() {
   return (
     <PageContainer>
       <PageTitleRow>
-        <PageTitle>Arbiter List</PageTitle>
+        <PageTitle>Arbiters</PageTitle>
         <div className="flex space-x-4 w-full sm:w-auto items-center">
           <Button variant="outline" size="icon" onClick={refreshArbiters} className='shrink-0'>
             <RefreshCwIcon />

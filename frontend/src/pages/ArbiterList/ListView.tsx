@@ -65,11 +65,12 @@ export const ListView: FC<{
             <TableCell className="whitespace-nowrap">
               <div className="text-sm">{Number(arbiter.getTotalValue())} {activeChain?.nativeCurrency.symbol}</div>
             </TableCell>
-            <TableCell className="whitespace-nowrap">
+            <TableCell className="whitespace-nowrap gap-1 flex">
               <StatusLabel
                 title={arbiterStatusLabelTitle(arbiter)}
                 color={arbiterStatusLabelColor(arbiter)}
               />
+              {arbiter.activeTransactionId && <StatusLabel title="Working" color="yellow" />}
             </TableCell>
           </TableRow>
         ))}

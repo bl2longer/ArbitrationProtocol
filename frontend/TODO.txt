@@ -1,34 +1,16 @@
 ===> Target release date: dec 30
 
+- forbid to stake while there is an activeTransactionId
+
 - TOP PRIORITY:
   - loan app update
-  - Compensation requests:
-    - TBD: add a global request compensation button? 
+  - sign arbitration transactions (with zehua)
+  - apply for compensations (with aria)
+    - add a global request compensation button? 
 
-- Update loan app with recent arbitration changes:
-  - Modified Interfaces:
-    - takeOrder now includes selectedArbitrator.
-    - getArbitrationRequestCost now includes a deadline parameter.
-  - New Interfaces:
-    - registerArbitrationTransaction
-    - requestArbitration
-    - borrowerAddArbitrationSignatures
-    - getArbitrationBtcTx
-  - auto arbiter selection:
-    - criteria: 
-      - deadline > order time, staking value > order value
-      - The arbiter with the smallest staking amount, and the staking amount is greater than the order amount
 
-  for loan dapp
-  1. auto select an arbiter when alice submit the btc tx to dapp
-  2. support alice to request the arbitration
-  3. alice can check the status/result of the arbitration
-
-  for arbiter dapp
-  1. Alice can submit a request to punish the arbiter
-  2. Bob can submit a request to punish the arbiter
-
-  registerTransaction is in submitToLenderTransferProof method
+  1. loan app borrower can submit a request to punish the arbiter
+  2. loan app lender can submit a request to punish the arbiter
 
 
 
@@ -55,7 +37,9 @@ Aria Zuo, [31 Dec 2024 at 08:09:42]:
 
 ------- AFTER DEC 30 RELEASE ------
 
-P2"
+P2:
+- Find a way to display a status when an arbiter has a "activeTransactionId". 
+  - Check if subgraph gets info about that.
 - Bug: edit arbiter staking: reopen the dialog after a max stake red error: the "Stake value should be lower than 50 ELA. Now 72.5 ELA" is still displayed
 - Simple tooltips to explain main app pages (compensations? dapps? transactions?)
 - arbiter registration: hide "operator" (self by default)

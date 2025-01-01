@@ -1,5 +1,5 @@
 import { BigInt, ethereum } from "@graphprotocol/graph-ts";
-import { ArbitratorDeadlineUpdated, ArbitratorFeeRateUpdated, ArbitratorPaused, ArbitratorRegistered, ArbitratorUnpaused, OperatorSet, RevenueAddressesSet, StakeAdded, StakeWithdrawn } from "../../generated/ArbitratorManager/ArbitratorManager";
+import { ArbitratorDeadlineUpdated, ArbitratorFeeRateUpdated, ArbitratorPaused, ArbitratorRegistered, ArbitratorReleased, ArbitratorUnpaused, ArbitratorWorking, OperatorSet, RevenueAddressesSet, StakeAdded, StakeWithdrawn } from "../../generated/ArbitratorManager/ArbitratorManager";
 import { ArbiterInfo } from "../../generated/schema";
 import { ZERO_ADDRESS } from "../constants";
 
@@ -92,6 +92,18 @@ export function handleOperatorSet(event: OperatorSet): void {
     arbitratorInfo.operatorEvmAddress = event.params.operator.toHexString();
     arbitratorInfo.operatorBtcAddress = event.params.btcAddress;
     arbitratorInfo.operatorBtcPubKey = event.params.btcPubKey.toHexString().slice(2);
+    arbitratorInfo.save();
+}
+
+export function handleArbitratorWorking(event: ArbitratorWorking): void {
+    const arbitratorInfo = getArbitratorInfo(event.block, event.params.arbitrator.toHexString());
+    arbitratorInfo.activeTransactionId = event.params.transactionId.toHexString();
+    arbitratorInfo.save();
+}
+
+export function handleArbitratorReleased(event: ArbitratorReleased): void {
+    const arbitratorInfo = getArbitratorInfo(event.block, event.params.arbitrator.toHexString());
+    arbitratorInfo.activeTransactionId = event.params.transactionId.toHexString();
     arbitratorInfo.save();
 }
 

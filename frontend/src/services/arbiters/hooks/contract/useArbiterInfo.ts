@@ -33,6 +33,8 @@ export const useArbiterInfo = (arbiterAddress: string) => {
     if (arbiter)
       arbiter.setNFTValue(nftValue);
 
+    console.log("Fetched arbiter info:", arbiter);
+
     return arbiter;
   }, [readContract, activeChain, arbiterAddress, fetchArbiterNFTStakeValue]);
 

@@ -29,10 +29,13 @@ const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
         {arbiter.address.slice(0, 6)}...{arbiter.address.slice(-4)}
         <CopyField value={arbiter.address} />
       </h3>
-      <StatusLabel
-        title={arbiterStatusLabelTitle(arbiter)}
-        color={arbiterStatusLabelColor(arbiter)}
-      />
+      <div className="flex gap-1">
+        <StatusLabel
+          title={arbiterStatusLabelTitle(arbiter)}
+          color={arbiterStatusLabelColor(arbiter)}
+        />
+        {arbiter.activeTransactionId && <StatusLabel title="Working" color="yellow" />}
+      </div>
     </div>
     <div className="space-y-3 text-sm">
       <div className="flex justify-between">

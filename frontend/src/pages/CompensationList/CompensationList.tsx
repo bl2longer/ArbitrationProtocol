@@ -1,16 +1,16 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
-import { Loading } from '@/components/base/Loading';
+import { IconTooltip } from '@/components/base/IconTooltip';
+import { PageContainer } from '@/components/base/PageContainer';
+import { PageTitle } from '@/components/base/PageTitle';
+import { PageTitleRow } from '@/components/base/PageTitleRow';
+import { StatusLabel } from '@/components/base/StatusLabel';
+import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { tooltips } from '@/config/tooltips';
 import { useCompensations } from '@/services/compensations/hooks/useCompensations';
 import { CompensationClaim } from '@/services/compensations/model/compensation-claim';
-import { CompensationDetailsDialog } from './CompensationDetailsDialog';
-import { PageTitle } from '@/components/base/PageTitle';
-import { PageContainer } from '@/components/base/PageContainer';
-import { PageTitleRow } from '@/components/base/PageTitleRow';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { StatusLabel } from '@/components/base/StatusLabel';
 import { RefreshCwIcon } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { CompensationDetailsDialog } from './CompensationDetailsDialog';
 
 // TODO
 const compensationTypeMap = {
@@ -29,7 +29,7 @@ export default function CompensationList() {
     <PageContainer>
       {/* Title header */}
       <PageTitleRow>
-        <PageTitle>Compensations</PageTitle>
+        <PageTitle>Compensations <IconTooltip title='Compensations' tooltip={tooltips.compensationIntro} iconClassName='ml-2' iconSize={20} /></PageTitle>
         <div className="flex space-x-4 w-full sm:w-auto items-center">
           <Button variant="outline" size="icon" onClick={refreshCompensations}>
             <RefreshCwIcon />

@@ -1,3 +1,4 @@
+import { IconTooltip } from '@/components/base/IconTooltip';
 import { Loading } from '@/components/base/Loading';
 import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitle } from '@/components/base/PageTitle';
@@ -5,6 +6,7 @@ import { PageTitleRow } from '@/components/base/PageTitleRow';
 import { SearchInput } from '@/components/base/SearchInput';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { tooltips } from '@/config/tooltips';
 import { useTransactions } from '@/services/transactions/hooks/useTransactions';
 import { Transaction } from '@/services/transactions/model/transaction';
 import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
@@ -46,7 +48,7 @@ export default function TransactionList() {
   return (
     <PageContainer>
       <PageTitleRow>
-        <PageTitle className="flex flex-grow sm:flex-grow-0">Transaction List</PageTitle>
+        <PageTitle className="flex flex-grow sm:flex-grow-0">Transactions <IconTooltip title='Transactions' tooltip={tooltips.transactionIntro} iconClassName='ml-2' iconSize={20} /></PageTitle>
         <div className="flex gap-2">
           <Button variant="outline" size="icon" onClick={refreshTransactions}>
             <RefreshCwIcon />
