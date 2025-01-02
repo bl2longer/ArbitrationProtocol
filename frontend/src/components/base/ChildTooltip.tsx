@@ -2,10 +2,15 @@ import { FC, ReactNode } from "react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
 
 export const ChildTooltip: FC<{
+  active?: boolean;
   title: string;
   tooltip: string;
   children: ReactNode;
-}> = ({ children, title, tooltip }) => {
+}> = ({ active = true, children, title, tooltip }) => {
+
+  if (!active)
+    return children;
+
   return (
     <HoverCard>
       <HoverCardTrigger>

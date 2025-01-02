@@ -1,4 +1,5 @@
 import { BoxTitle } from "@/components/base/BoxTitle";
+import { ChildTooltip } from "@/components/base/ChildTooltip";
 import { EnsureWalletNetwork } from "@/components/base/EnsureWalletNetwork/EnsureWalletNetwork";
 import { StatusLabel } from "@/components/base/StatusLabel";
 import { Button } from "@/components/ui/button";
@@ -58,7 +59,12 @@ export const ArbiterPreview: FC<{
         <div className='flex justify-between items-center mx-4 py-2'>
           <BoxTitle>Stake</BoxTitle>
           <EnsureWalletNetwork continuesTo="Edit" evmConnectedNeeded supportedNetworkNeeded>
-            <Button onClick={() => setEditStakingIsOpen(true)}><Layers2Icon />Edit</Button>
+            <ChildTooltip
+              active={!!arbiter.activeTransactionId}
+              title="Staking unavailable"
+              tooltip="Your arbiter is currently working on a transaction. Please wait for it to finish before editing the staking.">
+              <Button disabled={!!arbiter.activeTransactionId} onClick={() => setEditStakingIsOpen(true)}><Layers2Icon />Edit</Button>
+            </ChildTooltip>
           </EnsureWalletNetwork>
         </div>
         <InfoRow title="Stake Amount" value={`

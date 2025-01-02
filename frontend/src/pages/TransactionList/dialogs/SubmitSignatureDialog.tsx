@@ -28,7 +28,6 @@ export const SubmitSignatureDialog: FC<{
     console.log("Contract transaction:", contractTransaction)
 
     const satValue = parseInt(contractTransaction.utxos[0].amount);
-    console.log("satValue", satValue)
     const hashForWitness = bitcoinTransaction.hashForWitnessV0(
       0,
       Buffer.from(contractTransaction.script, "hex"),
@@ -36,7 +35,7 @@ export const SubmitSignatureDialog: FC<{
       BitcoinJSTransaction.SIGHASH_ALL
     ).toString("hex");
 
-    console.log("hashForWitness", hashForWitness)
+    console.log("Hash for witness:", hashForWitness)
 
     const _signature = await signScriptData(hashForWitness);
     setSignature(_signature);
