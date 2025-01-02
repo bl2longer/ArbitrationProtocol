@@ -2,99 +2,75 @@
 pragma solidity ^0.8.20;
 
 library Errors {
-    // Common errors
-    error ZERO_ADDRESS();
-    error NOT_AUTHORIZED();
-    error INVALID_PARAMETER();
-    error INSUFFICIENT_BALANCE();
-    error NOT_TRANSACTION_MANAGER();
-    error NOT_ARBITRATOR_MANAGER();
-    error NOT_CONFIG_MANAGER();
-    error NOT_DAPP_REGISTRY();
-    error NOT_INITIALIZED();
-    error ALREADY_INITIALIZED();
-    error INVALID_DURATION();
-    error LENGTH_MISMATCH();
+    // Common errors (Z0-Z9: Zero related, N0-N9: Not/No related, I0-I9: Invalid related)
+    string constant ZERO_ADDRESS = "Z0";
+    string constant NOT_AUTHORIZED = "N0";
+    string constant INVALID_PARAMETER = "I0";
+    string constant INSUFFICIENT_BALANCE = "B0";
+    string constant NOT_TRANSACTION_MANAGER = "N1";
+    string constant NOT_INITIALIZED = "N5";
+    string constant ALREADY_INITIALIZED = "A0";
+    string constant INVALID_DURATION = "I1";
+    string constant LENGTH_MISMATCH = "L0";
 
-    // DApp related errors
-    error DAPP_ALREADY_REGISTERED();
-    error DAPP_NOT_REGISTERED();
-    error DAPP_NOT_ACTIVE();
-    error INVALID_DAPP_STATUS();
+    // DApp related errors (D0-D9)
+    string constant DAPP_ALREADY_REGISTERED = "D0";
+    string constant DAPP_NOT_REGISTERED = "D1";
+    string constant DAPP_NOT_ACTIVE = "D2";
 
-    // Transaction related errors
-    error TRANSACTION_NOT_FOUND();
-    error TRANSACTION_EXPIRED();
-    error INVALID_TRANSACTION_STATUS();
-    error INVALID_DEADLINE();
-    error INVALID_FEE();
-    error INSUFFICIENT_FEE();
-    error INVALID_TRANSACTION_ID();
-    error INVALID_BTC_TX();
-    error CANNOT_COMPLETE_TRANSACTION();
-    error SUBMITTED_SIGNATURES_OUTTIME();
-    error INVALID_UTXO();
-    error INVALID_TRANSACTION();
-    error UTXO_ALREADY_UPLOADED();
-    error UTXO_NOT_UPLOADED();
+    // Transaction related errors (T0-T9, U0-U9)
+    string constant TRANSACTION_NOT_FOUND = "T0";
+    string constant INVALID_TRANSACTION_STATUS = "T2";
+    string constant INVALID_DEADLINE = "T3";
+    string constant INVALID_FEE = "T4";
+    string constant INSUFFICIENT_FEE = "T5";
+    string constant INVALID_TRANSACTION_ID = "T6";
+    string constant INVALID_BTC_TX = "T7";
+    string constant CANNOT_COMPLETE_TRANSACTION = "T8";
+    string constant SUBMITTED_SIGNATURES_OUTTIME = "T9";
+    string constant INVALID_UTXO = "U0";
+    string constant INVALID_TRANSACTION = "U1";
+    string constant UTXO_ALREADY_UPLOADED = "U2";
+    string constant UTXO_NOT_UPLOADED = "U3";
+    string constant UINT16_INSUFFICIENT_LENGHT = "U4";
+    string constant UINT32_INSUFFICIENT_LENGHT = "U5";
+    string constant UINT64_INSUFFICIENT_LENGHT = "U6";
 
-    // Arbitrator related errors
-    error ARBITRATOR_ALREADY_REGISTERED();
-    error ARBITRATOR_NOT_REGISTERED();
-    error ARBITRATOR_NOT_ACTIVE();
-    error ARBITRATOR_ALREADY_WORKING();
-    error ARBITRATOR_NOT_WORKING();
-    error INVALID_STAKE_AMOUNT();
-    error INVALID_FEE_RATE();
-    error STAKE_STILL_LOCKED();
-    error INSUFFICIENT_STAKE();
-    error STAKE_EXCEEDS_MAX();
-    error INVALID_TOKEN();
-    error INVALID_TOKEN_ID();
-    error TRANSFER_FAILED();
-    error IS_FROZEN();
-    error INVALID_OPERATOR();
-    error ARBITRATOR_FROZEN();
-    error NO_RECEIVE_METHOD();
-    error CONFIG_NOT_MODIFIABLE();
+    // Arbitrator related errors (A0-A9, S0-S9)
+    string constant ARBITRATOR_ALREADY_REGISTERED = "A1";
+    string constant ARBITRATOR_NOT_REGISTERED = "A2";
+    string constant ARBITRATOR_NOT_ACTIVE = "A3";
+    string constant ARBITRATOR_NOT_WORKING = "A5";
+    string constant INVALID_FEE_RATE = "F0";
+    string constant STAKE_STILL_LOCKED = "S1";
+    string constant INSUFFICIENT_STAKE = "S2";
+    string constant STAKE_EXCEEDS_MAX = "S3";
+    string constant TRANSFER_FAILED = "F1";
+    string constant INVALID_OPERATOR = "I4";
+    string constant ARBITRATOR_FROZEN = "A6";
+    string constant NO_RECEIVE_METHOD = "N6";
+    string constant CONFIG_NOT_MODIFIABLE = "C0";
+    string constant EMPTY_TOKEN_IDS = "E5";
+    string constant INVALID_NFT_CONTRACT = "I6";
 
-    // Config related errors
-    error INVALID_CONFIG_KEY();
-    error INVALID_CONFIG_VALUE();
-    error CONFIG_NOT_FOUND();
+    string constant NOT_COMPENSATION_MANAGER = "N7";
 
-    // Operator related errors
-    error OPERATOR_ALREADY_REGISTERED();
-    error OPERATOR_NOT_REGISTERED();
-    error OPERATOR_NOT_AUTHORIZED();
-    error NOT_COMPENSATION_MANAGER();
-
-    // Compensation related errors
-    error EMPTY_RAW_DATA();
-    error EMPTY_PUBLIC_KEY();
-    error EMPTY_HASH();
-    error EMPTY_SIGNATURE();
-    error EMPTY_OPERATOR_PUBLIC_KEY();
-    error INVALID_ZK_PROOF();
-    error TRANSACTION_EXISTS();
-    error PUBLIC_KEY_MISMATCH();
-    error BTC_TRANSACTION_MISMATCH();
-    error NO_STAKE_AVAILABLE();
-    error NOT_TRANSACTION_OWNER();
-    error NOT_TRANSACTION_ARBITRATOR();
-    error TRANSACTION_COMPLETED();
-    error DEADLINE_NOT_REACHED();
-    error SIGNATURE_ALREADY_SUBMITTED();
-    error SIGNATURE_NOT_SUBMITTED();
-    error SIGNATURE_MISMATCH();
-    error SIGNATURE_VERIFIED();
-    error COMPENSATION_WITHDRAWN();
-    error NO_COMPENSATION_AVAILABLE();
-    error TRANSACTION_NOT_COMPLETED();
-    error EMPTY_TOKEN_IDS();
-    error INVALID_NFT_CONTRACT();
-    error CANNOT_CLAIM_ARBITRATOR_FEE();
-    error NO_ACTIVE_TRANSACTION();
-    error INVALID_VERIFICATION_DATA();
-    error COMPENSATION_ALREADY_CLAIMED();
+    // Compensation related errors (M0-M9, E0-E9)
+    string constant EMPTY_PUBLIC_KEY = "E1";
+    string constant EMPTY_HASH = "E2";
+    string constant EMPTY_SIGNATURE = "E3";
+    string constant BTC_TRANSACTION_MISMATCH = "B1";
+    string constant NO_STAKE_AVAILABLE = "N8";
+    string constant NOT_TRANSACTION_ARBITRATOR = "M1";
+    string constant TRANSACTION_COMPLETED = "M2";
+    string constant DEADLINE_NOT_REACHED = "M3";
+    string constant SIGNATURE_ALREADY_SUBMITTED = "S4";
+    string constant SIGNATURE_NOT_SUBMITTED = "S5";
+    string constant SIGNATURE_MISMATCH = "S6";
+    string constant SIGNATURE_VERIFIED = "S7";
+    string constant COMPENSATION_WITHDRAWN = "M4";
+    string constant NO_COMPENSATION_AVAILABLE = "M5";
+    string constant NO_ACTIVE_TRANSACTION = "M8";
+    string constant INVALID_VERIFICATION_DATA = "I7";
+    string constant COMPENSATION_ALREADY_CLAIMED = "M9";
 }

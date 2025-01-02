@@ -42,23 +42,26 @@ describe("TransactionManager", function () {
             owner.address,  // Temporary NFT contract address
             owner.address   // Temporary NFT info contract address
         ], { initializer: 'initialize' });
+
+        // Deploy CompensationManager
+        const CompensationManager = await ethers.getContractFactory("CompensationManager");
+        compensationManager = await upgrades.deployProxy(CompensationManager, [
+            owner.address, // Mock ZkService not needed for this test
+            configManager.address,
+            arbitratorManager.address
+        ], { initializer: 'initialize' });
+
         // Deploy TransactionManager
         const TransactionManager = await ethers.getContractFactory("TransactionManager");
         transactionManager = await upgrades.deployProxy(TransactionManager, [
             arbitratorManager.address,
             dappRegistry.address,
-            configManager.address
-        ], { initializer: 'initialize' });
-        // Deploy CompensationManager
-        const CompensationManager = await ethers.getContractFactory("CompensationManager");
-        compensationManager = await upgrades.deployProxy(CompensationManager, [
-            owner.address, // Mock ZkService not needed for this test
-            transactionManager.address,
             configManager.address,
-            arbitratorManager.address
+            compensationManager.address
         ], { initializer: 'initialize' });
-        // Initialize compensation manager in TransactionManager
-        await transactionManager.initCompensationManager(compensationManager.address);
+
+        // Set transactionManager
+        await compensationManager.connect(owner).setTransactionManager(transactionManager.address);
 
         // Set minimum transaction duration in ConfigManager
         await configManager.setMinTransactionDuration(MIN_TRANSACTION_DURATION);
@@ -125,7 +128,7 @@ describe("TransactionManager", function () {
                     compensationReceiver.address,
                     { value: ethers.utils.parseEther("0.1") }
                 )
-            ).to.be.revertedWithCustomError(transactionManager, "ZERO_ADDRESS");
+            ).to.be.revertedWith("Z0");
         });
 
         it("Should fail to register transaction with invalid deadline", async function () {
@@ -138,7 +141,7 @@ describe("TransactionManager", function () {
                     compensationReceiver.address,
                     { value: ethers.utils.parseEther("0.1") }
                 )
-            ).to.be.revertedWithCustomError(transactionManager, "INVALID_DEADLINE");
+            ).to.be.revertedWith("T3");
         });
 
         it("Should fail to register transaction with insufficient fee", async function () {
@@ -152,7 +155,7 @@ describe("TransactionManager", function () {
                     compensationReceiver.address,
                     { value: 0 } // Zero fee
                 )
-            ).to.be.revertedWithCustomError(transactionManager, "INSUFFICIENT_FEE");
+            ).to.be.revertedWith("T5");
         });
     });
 
@@ -196,7 +199,7 @@ describe("TransactionManager", function () {
                 }
             ];
             await expect(transactionManager.connect(owner).uploadUTXOs(transactionId, utxos))
-                .to.be.revertedWithCustomError(transactionManager, "NOT_AUTHORIZED");
+                .to.be.revertedWith("N0");
         });
 
         it("Should upload utxos twice failed", async function () {
@@ -210,7 +213,7 @@ describe("TransactionManager", function () {
             ];
             await transactionManager.connect(dapp).uploadUTXOs(transactionId, utxos);
             await expect(transactionManager.connect(dapp).uploadUTXOs(transactionId, utxos))
-                .to.be.revertedWithCustomError(transactionManager, "UTXO_ALREADY_UPLOADED");
+                .to.be.revertedWith("U2");
         });
 
         it("Should upload utxos failed after completed", async function () {
@@ -224,7 +227,7 @@ describe("TransactionManager", function () {
             ];
             await transactionManager.connect(dapp).completeTransaction(transactionId);
             await expect(transactionManager.connect(dapp).uploadUTXOs(transactionId, utxos))
-                .to.be.revertedWithCustomError(transactionManager, "INVALID_TRANSACTION_STATUS");
+                .to.be.revertedWith("T2");
         });
     });
 
@@ -263,7 +266,7 @@ describe("TransactionManager", function () {
         it("Should fail to complete transaction by non-DApp", async function () {
             await expect(
                 transactionManager.connect(other).completeTransaction(transactionId)
-            ).to.be.revertedWithCustomError(transactionManager, "NOT_AUTHORIZED");
+            ).to.be.revertedWith("N0");
         });
     });
 });

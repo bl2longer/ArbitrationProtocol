@@ -52,25 +52,21 @@ contract CompensationManager is
     /**
      * @notice Initialize the contract with required addresses
      * @param _zkService Address of the ZkService contract
-     * @param _transactionManager Address of the transaction manager contract
      * @param _configManager Address of the config manager contract
      * @param _arbitratorManager Address of the arbitrator manager contract
      */
     function initialize(
         address _zkService,
-        address _transactionManager,
         address _configManager,
         address _arbitratorManager
     ) public initializer {
         __Ownable_init(msg.sender);
 
-        if (_zkService == address(0)) revert Errors.ZERO_ADDRESS();
-        if (_transactionManager == address(0)) revert Errors.ZERO_ADDRESS();
-        if (_configManager == address(0)) revert Errors.ZERO_ADDRESS();
-        if (_arbitratorManager == address(0)) revert Errors.ZERO_ADDRESS();
+        if (_zkService == address(0)
+            || _configManager == address(0)
+            || _arbitratorManager == address(0)) revert (Errors.ZERO_ADDRESS);
 
         zkService = IZkService(_zkService);
-        transactionManager = ITransactionManager(_transactionManager);
         configManager = IConfigManager(_configManager);
         arbitratorManager = IArbitratorManager(_arbitratorManager);
     }
@@ -81,24 +77,24 @@ contract CompensationManager is
     ) internal pure {
         // Check if UTXO arrays have the same length
         if (zkServiceUtxos.length != transactionUtxos.length) {
-            revert Errors.INVALID_UTXO();
+            revert (Errors.INVALID_UTXO);
         }
 
         // Compare each UTXO
         for (uint256 i = 0; i < zkServiceUtxos.length; i++) {
             // Compare txHash
             if (zkServiceUtxos[i].txHash != transactionUtxos[i].txHash) {
-                revert Errors.INVALID_UTXO();
+                revert (Errors.INVALID_UTXO);
             }
 
             // Compare index
             if (zkServiceUtxos[i].index != transactionUtxos[i].index) {
-                revert Errors.INVALID_UTXO();
+                revert (Errors.INVALID_UTXO);
             }
 
             // Compare amount
             if (zkServiceUtxos[i].amount != transactionUtxos[i].amount) {
-                revert Errors.INVALID_UTXO();
+                revert (Errors.INVALID_UTXO);
             }
         }
     }
@@ -111,18 +107,18 @@ contract CompensationManager is
         // Get arbitrator details
         DataTypes.ArbitratorInfo memory arbitratorInfo = arbitratorManager.getArbitratorInfo(arbitrator);
         if (arbitratorInfo.activeTransactionId == 0) {
-            revert Errors.NO_ACTIVE_TRANSACTION();
+            revert (Errors.NO_ACTIVE_TRANSACTION);
         }
 
         DataTypes.Transaction memory transaction = transactionManager.getTransactionById(arbitratorInfo.activeTransactionId);
         if (transaction.status != DataTypes.TransactionStatus.Active) {
-            revert Errors.NO_ACTIVE_TRANSACTION();
+            revert (Errors.NO_ACTIVE_TRANSACTION);
         }
 
         // Generate claim ID
         claimId = keccak256(abi.encodePacked(evidence, arbitrator, transaction.compensationReceiver, CompensationType.IllegalSignature));
         if (claims[claimId].claimer != address(0)) {
-            revert Errors.COMPENSATION_ALREADY_CLAIMED();
+            revert (Errors.COMPENSATION_ALREADY_CLAIMED);
         }
 
         // Get ZK verification details with minimal local variables
@@ -130,26 +126,26 @@ contract CompensationManager is
 
         // Basic data validation
         if(verification.pubKey.length == 0 || verification.txHash == bytes32(0)) {
-            revert Errors.INVALID_VERIFICATION_DATA();
+            revert (Errors.INVALID_VERIFICATION_DATA);
         }
         if (!verification.verified) {
-            revert Errors.SIGNATURE_MISMATCH();
+            revert (Errors.SIGNATURE_MISMATCH);
         }
 
         // Validate arbitrator details
         if (arbitratorInfo.operatorBtcPubKey.length == 0) {
-            revert Errors.INVALID_VERIFICATION_DATA();
+            revert (Errors.INVALID_VERIFICATION_DATA);
         }
 
         // Validate public key
         if (keccak256(verification.pubKey) != keccak256(arbitratorInfo.operatorBtcPubKey)) {
-            revert Errors.INVALID_VERIFICATION_DATA();
+            revert (Errors.INVALID_VERIFICATION_DATA);
         }
         // Validate transaction data
         BTCUtils.BTCTransaction memory parsedTx = BTCUtils.parseBTCTransaction(btcTx);
         bytes memory rawData = BTCUtils.serializeBTCTransaction(parsedTx);
         if (sha256(rawData) != verification.txHash) {
-            revert Errors.INVALID_VERIFICATION_DATA();
+            revert (Errors.INVALID_VERIFICATION_DATA);
         }
 
         // Validate UTXO consistency
@@ -158,7 +154,7 @@ contract CompensationManager is
         // Validate stake
         uint256 stakeAmount = arbitratorManager.getAvailableStake(arbitrator);
         if (stakeAmount == 0) {
-            revert Errors.NO_STAKE_AVAILABLE();
+            revert (Errors.NO_STAKE_AVAILABLE);
         }
 
         // Create compensation claim
@@ -188,20 +184,20 @@ contract CompensationManager is
         // Generate claim ID
         claimId = keccak256(abi.encodePacked(id, transaction.arbitrator, transaction.timeoutCompensationReceiver, CompensationType.Timeout));
         if (claims[claimId].claimer != address(0)) {
-            revert Errors.COMPENSATION_ALREADY_CLAIMED();
+            revert (Errors.COMPENSATION_ALREADY_CLAIMED);
         }
 
-        if (transaction.status == DataTypes.TransactionStatus.Completed) revert Errors.TRANSACTION_COMPLETED();
+        if (transaction.status == DataTypes.TransactionStatus.Completed) revert (Errors.TRANSACTION_COMPLETED);
         if (block.timestamp < transaction.deadline) {
             uint256 configTime = configManager.getArbitrationTimeout();
-            if (transaction.startTime + configTime > block.timestamp) revert Errors.DEADLINE_NOT_REACHED();
+            if (transaction.startTime + configTime > block.timestamp) revert (Errors.DEADLINE_NOT_REACHED);
         }
-        if (transaction.signature.length > 0) revert Errors.SIGNATURE_ALREADY_SUBMITTED();
+        if (transaction.signature.length > 0) revert (Errors.SIGNATURE_ALREADY_SUBMITTED);
 
         // Get arbitrator's stake amount
         DataTypes.ArbitratorInfo memory arbitratorInfo = arbitratorManager.getArbitratorInfo(transaction.arbitrator);
         uint256 stakeAmount = arbitratorManager.getAvailableStake(transaction.arbitrator);
-        if (stakeAmount == 0) revert Errors.NO_STAKE_AVAILABLE();
+        if (stakeAmount == 0) revert (Errors.NO_STAKE_AVAILABLE);
 
         // Create compensation claim
         claims[claimId] = CompensationClaim({
@@ -228,36 +224,36 @@ contract CompensationManager is
     ) external override returns (bytes32 claimId) {
         // Get ZK verification details
         DataTypes.ZKVerification memory verification = zkService.getZkVerification(evidence);
-        if (verification.pubKey.length == 0) revert Errors.EMPTY_PUBLIC_KEY();
-        if (verification.txHash == bytes32(0)) revert Errors.EMPTY_HASH();
-        if (verification.signature.length == 0) revert Errors.EMPTY_SIGNATURE();
-        if (verification.verified) {revert Errors.SIGNATURE_VERIFIED();}
+        if (verification.pubKey.length == 0) revert (Errors.EMPTY_PUBLIC_KEY);
+        if (verification.txHash == bytes32(0)) revert (Errors.EMPTY_HASH);
+        if (verification.signature.length == 0) revert (Errors.EMPTY_SIGNATURE);
+        if (verification.verified) {revert (Errors.SIGNATURE_VERIFIED);}
 
         // Get transaction details
         DataTypes.Transaction memory transaction = transactionManager.getTransaction(verification.txHash);
 
         BTCUtils.BTCTransaction memory parsedTx = BTCUtils.parseBTCTransaction(btcTx);
         bytes memory rawData = BTCUtils.serializeBTCTransaction(parsedTx);
-        if (sha256(rawData) != transaction.btcTxHash) revert Errors.BTC_TRANSACTION_MISMATCH();
+        if (sha256(rawData) != transaction.btcTxHash) revert (Errors.BTC_TRANSACTION_MISMATCH);
 
         // Generate claim ID
         claimId = keccak256(abi.encodePacked(evidence, transaction.arbitrator, transaction.compensationReceiver, CompensationType.FailedArbitration));
         if (claims[claimId].claimer != address(0)) {
-            revert Errors.COMPENSATION_ALREADY_CLAIMED();
+            revert (Errors.COMPENSATION_ALREADY_CLAIMED);
         }
 
         // Validate UTXO consistency
         _validateUTXOConsistency(verification.utxos, transaction.utxos);
 
-        if (transaction.signature.length == 0) revert Errors.SIGNATURE_NOT_SUBMITTED();
+        if (transaction.signature.length == 0) revert (Errors.SIGNATURE_NOT_SUBMITTED);
 
         // Get transaction signature and verify
-        if (keccak256(transaction.signature) != keccak256(verification.signature)) revert Errors.SIGNATURE_MISMATCH();
+        if (keccak256(transaction.signature) != keccak256(verification.signature)) revert (Errors.SIGNATURE_MISMATCH);
 
         // Get arbitrator's stake amount
         DataTypes.ArbitratorInfo memory arbitratorInfo = arbitratorManager.getArbitratorInfo(transaction.arbitrator);
         uint256 stakeAmount = arbitratorManager.getAvailableStake(transaction.arbitrator);
-        if (stakeAmount == 0) revert Errors.NO_STAKE_AVAILABLE();
+        if (stakeAmount == 0) revert (Errors.NO_STAKE_AVAILABLE);
 
         // Create compensation claim
         claims[claimId] = CompensationClaim({
@@ -281,7 +277,7 @@ contract CompensationManager is
     function claimArbitratorFee(bytes32 txId) external override returns (bytes32) {
         // Get transaction details
         DataTypes.Transaction memory transaction = transactionManager.getTransactionById(txId);
-        if (transaction.arbitrator != msg.sender) revert Errors.NOT_TRANSACTION_ARBITRATOR();
+        if (transaction.arbitrator != msg.sender) revert (Errors.NOT_TRANSACTION_ARBITRATOR);
         // Transfer fees and terminate transaction
         (uint256 arbitratorFee, ) = transactionManager.transferArbitrationFee(txId);
 
@@ -289,7 +285,7 @@ contract CompensationManager is
         // Generate claim ID
         bytes32 claimId = keccak256(abi.encodePacked(txId, transaction.arbitrator, arbitratorInfo.revenueETHAddress, CompensationType.ArbitratorFee));
         if (claims[claimId].claimer != address(0)) {
-            revert Errors.COMPENSATION_ALREADY_CLAIMED();
+            revert (Errors.COMPENSATION_ALREADY_CLAIMED);
         }
 
         // Create compensation claim
@@ -311,13 +307,13 @@ contract CompensationManager is
 
     function withdrawCompensation(bytes32 claimId) external override payable {
         CompensationClaim storage claim = claims[claimId];
-        if (claim.withdrawn) revert Errors.COMPENSATION_WITHDRAWN();
-        if (claim.ethAmount == 0 && claim.nftTokenIds.length == 0) revert Errors.NO_COMPENSATION_AVAILABLE();
+        if (claim.withdrawn) revert (Errors.COMPENSATION_WITHDRAWN);
+        if (claim.ethAmount == 0 && claim.nftTokenIds.length == 0) revert (Errors.NO_COMPENSATION_AVAILABLE);
 
         uint256 systemFeeRate = configManager.getSystemCompensationFeeRate();
         uint256 systemFee = claim.totalAmount * systemFeeRate / 10000;
-        if (msg.value < systemFee) revert Errors.INSUFFICIENT_FEE();
-        if (claim.receivedCompensationAddress == address(0)) revert Errors.NO_COMPENSATION_AVAILABLE();
+        if (msg.value < systemFee) revert (Errors.INSUFFICIENT_FEE);
+        if (claim.receivedCompensationAddress == address(0)) revert (Errors.NO_COMPENSATION_AVAILABLE);
         uint256 ethAmount = claim.ethAmount;
         // Mark as withdrawn
         claim.withdrawn = true;

@@ -46,7 +46,6 @@ interface ICompensationManager {
     // Initialize compensation manager
     function initialize(
         address _zkService,
-        address _transactionManager,
         address _configManager,
         address _arbitratorManager
     ) external;

@@ -38,11 +38,9 @@ contract TransactionManager is
 
     // State variables
     address public compensationManager;
-    bool private initialized;
 
     modifier onlyCompensationManager() {
-        if (msg.sender != compensationManager) revert Errors.NOT_COMPENSATION_MANAGER();
-        if (!initialized) revert Errors.NOT_INITIALIZED();
+        if (msg.sender != compensationManager) revert(Errors.NOT_COMPENSATION_MANAGER);
         _;
     }
 
@@ -56,34 +54,26 @@ contract TransactionManager is
      * @param _arbitratorManager Address of the arbitrator manager contract
      * @param _dappRegistry Address of the DApp registry contract
      * @param _configManager Address of the config manager contract
+     * @param _compensationManager Address of the compensation manager contract
      */
     function initialize(
         address _arbitratorManager,
         address _dappRegistry,
-        address _configManager
+        address _configManager,
+        address _compensationManager
     ) public initializer {
         __ReentrancyGuard_init();
         __Ownable_init(msg.sender);
 
-        if (_arbitratorManager == address(0)) revert Errors.ZERO_ADDRESS();
-        if (_dappRegistry == address(0)) revert Errors.ZERO_ADDRESS();
-        if (_configManager == address(0)) revert Errors.ZERO_ADDRESS();
+        if (_arbitratorManager == address(0)
+            || _dappRegistry == address(0)
+            || _configManager == address(0)
+            || _compensationManager == address(0)) revert(Errors.ZERO_ADDRESS);
 
         arbitratorManager = IArbitratorManager(_arbitratorManager);
         dappRegistry = IDAppRegistry(_dappRegistry);
         configManager = ConfigManager(_configManager);
-    }
-
-    /**
-     * @notice Initialize the compensation manager address
-     * @param _compensationManager Address of the compensation manager contract
-     * @custom:security Address is checked for zero address to prevent invalid initialization
-     */
-    function initCompensationManager(address _compensationManager) external onlyOwner {
-        if (_compensationManager == address(0)) revert Errors.ZERO_ADDRESS();
         compensationManager = _compensationManager;
-        initialized = true;
-        emit CompensationManagerInitialized(_compensationManager);
     }
 
     /**
@@ -99,33 +89,33 @@ contract TransactionManager is
         address compensationReceiver
     ) external payable nonReentrant returns (bytes32) {
         if (arbitrator == address(0) || compensationReceiver == address(0)) {
-            revert Errors.ZERO_ADDRESS();
+            revert(Errors.ZERO_ADDRESS);
         }
 
         // Check DApp status
         if (!dappRegistry.isActiveDApp(msg.sender)) {
-            revert Errors.DAPP_NOT_ACTIVE();
+            revert(Errors.DAPP_NOT_ACTIVE);
         }
 
         // Validate arbitrator
         if (!arbitratorManager.isActiveArbitrator(arbitrator))
-            revert Errors.ARBITRATOR_NOT_ACTIVE();
+            revert(Errors.ARBITRATOR_NOT_ACTIVE);
 
         // Validate deadline
         if (deadline <= block.timestamp)
-            revert Errors.INVALID_DEADLINE();
+            revert(Errors.INVALID_DEADLINE);
         uint256 duration = deadline - block.timestamp;
         if (duration < configManager.getConfig(configManager.MIN_TRANSACTION_DURATION()) ||
             duration > configManager.getConfig(configManager.MAX_TRANSACTION_DURATION())) {
-            revert Errors.INVALID_DURATION();
+            revert(Errors.INVALID_DURATION);
         }
 
         // Calculate and validate fee
         // fee = stake * (duration / secondsPerYear) * (feeRate / feeRateMultiplier)
         uint256 fee = this.getRegisterTransactionFee(deadline, arbitrator);
    
-        if (fee == 0) revert Errors.INVALID_FEE();
-        if (msg.value < fee) revert Errors.INSUFFICIENT_FEE();
+        if (fee == 0) revert(Errors.INVALID_FEE);
+        if (msg.value < fee) revert(Errors.INSUFFICIENT_FEE);
 
         // Generate transaction ID
         bytes32 id = keccak256(
@@ -146,11 +136,8 @@ contract TransactionManager is
         transaction.arbitrator = arbitrator;
         transaction.startTime = block.timestamp;
         transaction.deadline = deadline;
-        transaction.btcTx = new bytes(0);
-        transaction.btcTxHash = bytes32(0);
         transaction.status = DataTypes.TransactionStatus.Active;
         transaction.depositedFee = msg.value;
-        transaction.signature = new bytes(0);
         transaction.compensationReceiver = compensationReceiver;
 
         emit TransactionRegistered(id, msg.sender, arbitrator, deadline, msg.value, compensationReceiver);
@@ -166,26 +153,26 @@ contract TransactionManager is
         bytes32 id,
         DataTypes.UTXO[] calldata utxos) external {
         // Validate UTXO input
-        if (utxos.length == 0) revert Errors.INVALID_UTXO();
+        if (utxos.length == 0) revert(Errors.INVALID_UTXO);
 
         DataTypes.Transaction storage transaction = transactions[id];
         if (transaction.status != DataTypes.TransactionStatus.Active) {
-            revert Errors.INVALID_TRANSACTION_STATUS();
+            revert(Errors.INVALID_TRANSACTION_STATUS);
         }
 
         if (msg.sender != transaction.dapp) {
-            revert Errors.NOT_AUTHORIZED();
+            revert(Errors.NOT_AUTHORIZED);
         }
 
         if (transaction.utxos.length != 0) {
-            revert Errors.UTXO_ALREADY_UPLOADED();
+            revert(Errors.UTXO_ALREADY_UPLOADED);
         }
 
         for (uint i = 0; i < utxos.length; i++) {
             transaction.utxos.push(utxos[i]);
         }
 
-        emit UTXOsUploaded(id, msg.sender, utxos);
+        emit UTXOsUploaded(id, msg.sender);
     }
 
     /**
@@ -195,11 +182,11 @@ contract TransactionManager is
     function completeTransaction(bytes32 id) external {
         DataTypes.Transaction storage transaction = transactions[id];
         if (!this.isAbleCompletedTransaction(id)) {
-            revert Errors.CANNOT_COMPLETE_TRANSACTION();
+            revert(Errors.CANNOT_COMPLETE_TRANSACTION);
         }
 
         if (msg.sender != transaction.dapp) {
-            revert Errors.NOT_AUTHORIZED();
+            revert(Errors.NOT_AUTHORIZED);
         }
 
         _completeTransaction(id, transaction);
@@ -241,18 +228,18 @@ contract TransactionManager is
         DataTypes.Transaction storage transaction = transactions[id];
 
         if (transaction.status == DataTypes.TransactionStatus.Completed) {
-            revert Errors.INVALID_TRANSACTION_STATUS();
+            revert(Errors.INVALID_TRANSACTION_STATUS);
         }
         // Validate received compensation address
         if (receivedCompensationAddress == address(0)) {
-            revert Errors.ZERO_ADDRESS();
+            revert(Errors.ZERO_ADDRESS);
         }
         // Update transaction status to Expired
         transaction.status = DataTypes.TransactionStatus.Completed;
         // Transfer deposited fee to compensation address
         (bool success, ) = payable(receivedCompensationAddress).call{value: transaction.depositedFee}("");
         if (!success) {
-            revert Errors.TRANSFER_FAILED();
+            revert(Errors.TRANSFER_FAILED);
         }
         // Release arbitrator from working status
         arbitratorManager.releaseArbitrator(transaction.arbitrator, id);
@@ -290,17 +277,17 @@ contract TransactionManager is
 
         // Pay system fee to collector
         (bool success1, ) = feeCollector.call{value: systemFee}("");
-        if (!success1) revert Errors.TRANSFER_FAILED();
+        if (!success1) revert(Errors.TRANSFER_FAILED);
 
         // Pay arbitrator
         (bool success2, ) = arbitratorInfo.revenueETHAddress.call{value: finalArbitratorFee}("");
-        if (!success2) revert Errors.TRANSFER_FAILED();
+        if (!success2) revert(Errors.TRANSFER_FAILED);
 
         // Refund remaining balance to DApp
         uint256 remainingBalance = transaction.depositedFee - arbitratorFee;
         if (remainingBalance > 0) {
             (bool success3, ) = transaction.dapp.call{value: remainingBalance}("");
-            if (!success3) revert Errors.NO_RECEIVE_METHOD();
+            if (!success3) revert(Errors.NO_RECEIVE_METHOD);
         }
         return (finalArbitratorFee, systemFee);
     }
@@ -319,37 +306,36 @@ contract TransactionManager is
         address timeoutCompensationReceiver
     ) external override nonReentrant {
         if (timeoutCompensationReceiver == address(0)) {
-            revert Errors.ZERO_ADDRESS();
+            revert(Errors.ZERO_ADDRESS);
         }
 
         DataTypes.Transaction storage transaction = transactions[id];
 
         // Validate transaction status and ownership
         if (transaction.status != DataTypes.TransactionStatus.Active) {
-            revert Errors.INVALID_TRANSACTION_STATUS();
+            revert(Errors.INVALID_TRANSACTION_STATUS);
         }
         if (msg.sender != transaction.dapp) {
-            revert Errors.NOT_AUTHORIZED();
+            revert(Errors.NOT_AUTHORIZED);
         }
         if (transaction.utxos.length == 0) {
-            revert Errors.UTXO_NOT_UPLOADED();
+            revert(Errors.UTXO_NOT_UPLOADED);
         }
 
         // Parse and validate Bitcoin transaction
         BTCUtils.BTCTransaction memory parsedTx = BTCUtils.parseBTCTransaction(btcTx);
         if(parsedTx.inputs.length != transaction.utxos.length) {
-            revert Errors.INVALID_TRANSACTION();
+            revert(Errors.INVALID_TRANSACTION);
         }
         for(uint i = 0; i < parsedTx.inputs.length; i++) {
             if(parsedTx.inputs[i].txid != transaction.utxos[i].txHash
                 || parsedTx.inputs[i].vout != transaction.utxos[i].index) {
-                revert Errors.INVALID_TRANSACTION();
+                revert(Errors.INVALID_TRANSACTION);
             }
         }
 
         // Calculate transaction hash with empty input scripts
-        bytes memory serializedTx = BTCUtils.serializeBTCTransaction(parsedTx);
-        bytes32 txHash = sha256(serializedTx);
+        bytes32 txHash = sha256(BTCUtils.serializeBTCTransaction(parsedTx));
 
         transaction.status = DataTypes.TransactionStatus.Arbitrated;
         transaction.btcTx = btcTx;
@@ -374,15 +360,15 @@ contract TransactionManager is
         DataTypes.Transaction storage transaction = transactions[id];
 
         if (transaction.status != DataTypes.TransactionStatus.Arbitrated) {
-            revert Errors.INVALID_TRANSACTION_STATUS();
+            revert(Errors.INVALID_TRANSACTION_STATUS);
         }
 
         if (isSubmitArbitrationOutTime(transaction)) {
-            revert Errors.SUBMITTED_SIGNATURES_OUTTIME();
+            revert(Errors.SUBMITTED_SIGNATURES_OUTTIME);
         }
 
         if (!arbitratorManager.isOperatorOf(transaction.arbitrator, msg.sender)) {
-            revert Errors.NOT_AUTHORIZED();
+            revert(Errors.NOT_AUTHORIZED);
         }
 
         transaction.status = DataTypes.TransactionStatus.Submitted;
@@ -409,7 +395,7 @@ contract TransactionManager is
     function getTransaction(bytes32 txHash) external view override returns (DataTypes.Transaction memory) {
         bytes32 id = txHashToId[txHash];
         if (id == bytes32(0)) {
-            revert Errors.TRANSACTION_NOT_FOUND();
+            revert(Errors.TRANSACTION_NOT_FOUND);
         }
         return transactions[id];
     }
@@ -426,10 +412,10 @@ contract TransactionManager is
     ) external override onlyCompensationManager returns (uint256 arbitratorFee, uint256 systemFee) {
         DataTypes.Transaction storage transaction = transactions[id];
         if (transaction.status != DataTypes.TransactionStatus.Submitted) {
-            revert Errors.INVALID_TRANSACTION_STATUS();
+            revert(Errors.INVALID_TRANSACTION_STATUS);
         }
         if(arbitratorManager.isFrozenStatus(transaction.arbitrator)) {
-            revert Errors.ARBITRATOR_FROZEN();
+            revert(Errors.ARBITRATOR_FROZEN);
         }
         return _completeTransaction(id, transaction);
     }
@@ -444,11 +430,11 @@ contract TransactionManager is
         uint256 duration = deadline > block.timestamp ? deadline - block.timestamp : 0;
         if (duration < configManager.getConfig(configManager.MIN_TRANSACTION_DURATION()) ||
             duration > configManager.getConfig(configManager.MAX_TRANSACTION_DURATION())) {
-            revert Errors.INVALID_DURATION();
+            revert(Errors.INVALID_DURATION);
         }
 
         if (arbitrator == address(0)) {
-            revert Errors.ZERO_ADDRESS();
+            revert(Errors.ZERO_ADDRESS);
         }
         DataTypes.ArbitratorInfo memory arbitratorInfo = arbitratorManager.getArbitratorInfo(arbitrator);
 

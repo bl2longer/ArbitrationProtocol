@@ -61,7 +61,7 @@ interface ITransactionManager {
         uint256 deadline,
         uint256 depositFee,
         address compensationReceiver);
-    event UTXOsUploaded(bytes32 indexed txId, address indexed dapp, DataTypes.UTXO[] utxos);
+    event UTXOsUploaded(bytes32 indexed txId, address indexed dapp);
     event TransactionCompleted(bytes32 indexed txId, address indexed dapp);
     event ArbitrationRequested(
         bytes32 indexed txId,
@@ -75,11 +75,9 @@ interface ITransactionManager {
         address indexed dapp,
         address indexed arbitrator,
         bytes btcTxSignature);
-    event CompensationManagerInitialized(address indexed compensationManager);
     event SetArbitratorManager(address indexed arbitratorManager);
 
     // Functions
-    function initialize(address _arbitratorManager, address _dappRegistry, address _configManager) external;
-    function initCompensationManager(address _compensationManager) external;
+    function initialize(address _arbitratorManager, address _dappRegistry, address _configManager, address _compensationManager) external;
     function setArbitratorManager(address _arbitratorManager) external;
 }
