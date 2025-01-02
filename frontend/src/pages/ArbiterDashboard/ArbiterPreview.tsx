@@ -63,7 +63,7 @@ export const ArbiterPreview: FC<{
               active={!!arbiter.activeTransactionId}
               title="Staking unavailable"
               tooltip="Your arbiter is currently working on a transaction. Please wait for it to finish before editing the staking.">
-              <Button disabled={!!arbiter.activeTransactionId} onClick={() => setEditStakingIsOpen(true)}><Layers2Icon />Edit</Button>
+              <Button disabled={!arbiter.isActive} onClick={() => setEditStakingIsOpen(true)}><Layers2Icon />Edit</Button>
             </ChildTooltip>
           </EnsureWalletNetwork>
         </div>
