@@ -61,6 +61,7 @@ export const fetchArbiters = async (chain: ChainConfig, start = 0, limit = 100, 
           revenueEvmAddress 
           revenueBtcAddress 
           revenueBtcPubKey
+          isActive
         }
       }`;
 
@@ -104,15 +105,15 @@ export const fetchArbiters = async (chain: ChainConfig, start = 0, limit = 100, 
 }
 
 export const arbiterStatusLabelTitle = (arbiter: ArbiterInfo): string => {
-  if (arbiter.isPaused())
-    return "Paused";
+  if (!arbiter.isActive)
+    return "Unavailable";
   else
-    return "Active";
+    return "Available";
 }
 
 export const arbiterStatusLabelColor = (arbiter: ArbiterInfo): StatusLabelColor => {
-  if (arbiter.isPaused())
-    return "red";
+  if (!arbiter.isActive)
+    return "yellow";
   else
     return "green";
 }

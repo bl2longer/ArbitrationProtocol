@@ -45,6 +45,10 @@ dataSources:
           handler: handleArbitratorWorking
         - event: ArbitratorReleased(indexed address,indexed bytes32)
           handler: handleArbitratorReleased
+        - event: ArbitratorFrozen(indexed address)
+          handler: handleArbitratorFrozen
+        - event: ArbitratorTerminatedWithSlash(indexed address)
+          handler: handleArbitratorTerminatedWithSlash
   - name: TransactionManager
     kind: ethereum/contract
     network: esc-staging
@@ -148,3 +152,25 @@ dataSources:
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleNFTTransferred
+  - name: ConfigManager
+    kind: ethereum/contract
+    network: esc-staging
+    source:
+      abi: ConfigManager
+      address: "0x4421c63241A262C423277FFA82C376953072d25f"
+      startBlock: 28329718
+    mapping:
+      file: ./src/event-handlers/ConfigManager.ts
+      language: wasm/assemblyscript
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      entities:
+        - ConfigEntry
+      abis:
+        - name: ConfigManager
+          file: ./src/abis/ConfigManager.json
+      eventHandlers:
+        - event: ConfigUpdated(indexed bytes32,uint256,uint256)
+          handler: handleConfigUpdated
+        - event: Initialized(uint64)
+          handler: handleInitialized

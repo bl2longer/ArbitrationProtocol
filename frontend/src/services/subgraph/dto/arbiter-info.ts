@@ -18,4 +18,7 @@ export interface ArbiterInfo {
   revenueEvmAddress: string;
   revenueBtcAddress: string;
   revenueBtcPubKey: string;
+
+  // Computed
+  isActive: boolean;
 }

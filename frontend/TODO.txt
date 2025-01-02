@@ -1,6 +1,12 @@
 ===> Target release date: dec 30
 
-- subgraph: catch compensationReceiver and timeoutcompensationReceiver for transactions, used to know who can request compensations on UI
+- subgraph changes (TBC):
+  - need to mimic and store isActive on the subgraph side. Copy isActiveArbitrator(). Dependencies:
+    - event ConfigUpdated(bytes32 indexed key, uint256 oldValue, uint256 newValue); 
+      - store values, to be able to compute the arbitrator active status
+    - event ArbitratorTerminatedWithSlash(address indexed arbitrator)
+      - clean amount in these two events.
+
 - transactions list: action button to "Request compensation". Only shown to transaction's compensator.
 - compensation list page: same as for transactions to request compensation.
 
@@ -16,6 +22,11 @@
 
 
 ------- AFTER DEC 30 RELEASE ------
+
+- Subgraph sucks! (backward compatibility in case of event change, missing params in events, inability to call methods...).
+  - We should consider using subgraph only to LIST items (arbiters, transactions) but with minimal information,
+    for example information we need for search queries (pagination, search tx id...)
+  - Everything else should be handled by multicalls from the client app.
 
 P2:
 - Find a way to display a status when an arbiter has a "activeTransactionId". 

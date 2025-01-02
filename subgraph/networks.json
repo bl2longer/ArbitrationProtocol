@@ -19,6 +19,10 @@
     "BPosNFT": {
       "address": "0x8e286664c6B8811015F936592Dd654e94Af3F494",
       "startBlock": 18033297
+    },
+    "ConfigManager": {
+      "address": "0xF176E5aB219452E436E521213b6f7282E1D83C02",
+      "startBlock": 28454047
     }
   },
   "esc-staging": {
@@ -41,6 +45,10 @@
     "BPosNFT": {
       "address": "0x8e286664c6B8811015F936592Dd654e94Af3F494",
       "startBlock": 28330216
+    },
+    "ConfigManager": {
+      "address": "0x4421c63241A262C423277FFA82C376953072d25f",
+      "startBlock": 28329718
     }
   },
   "esc-testnet": {

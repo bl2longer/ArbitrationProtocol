@@ -4,7 +4,7 @@ import { useCreateCompensationRequest } from '@/services/compensations/hooks/con
 import { CompensationType } from '@/services/compensations/model/compensation-claim';
 import { Transaction } from '@/services/transactions/model/transaction';
 import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 
 export const RequestCompensationDialog: FC<{
   compensationType: CompensationType;
@@ -29,13 +29,29 @@ export const RequestCompensationDialog: FC<{
     }
   };
 
+  const introText = useMemo(() => {
+    if (!compensationType)
+      return null;
+
+    switch (compensationType) {
+      case "Timeout":
+        return "The arbitration request has not been signed on time by the arbiter. Please confirm you want to request compensation.";
+      case "FailedArbitration":
+        return "The arbitration request has been signed by the arbiter but you consider the arbiter has signed the wrong transaction. Please confirm you want to request compensation.";
+      case "IllegalSignature":
+        return "No arbitration has been requested, but the arbiter has submitted a bitcoin transaction when it shouldnt have. Please confirm you want to request compensation.";
+      default:
+        throw new Error(`Unknown compensation type: ${compensationType}`);
+    }
+  }, [compensationType]);
+
   return <Dialog open={!isNullOrUndefined(compensationType)} onOpenChange={onHandleClose}  >
     <DialogContent aria-description="Submit signature">
       <DialogHeader>
         <DialogTitle>Request compensation</DialogTitle>
       </DialogHeader>
 
-      {compensationType}
+      {introText}
 
       <div className="flex justify-end space-x-4">
         <Button variant="ghost" disabled={isPending} onClick={onHandleClose}>

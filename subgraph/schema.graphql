@@ -39,6 +39,7 @@ type ArbiterInfo @entity {
     erc20Token: String # ERC20 token address
     nftContract: String # NFT contract address
     nftTokenIds: [BigInt!] # NFT token IDs
+    lastSubmittedWorkTime: Int
     
     # Operator
     operatorEvmAddress: String # Operator EVM address
@@ -49,6 +50,9 @@ type ArbiterInfo @entity {
     revenueEvmAddress: String # Revenue EVM address
     revenueBtcPubKey: String # Bitcoin public key
     revenueBtcAddress: String # Bitcoin address
+
+    # Computed on the subgraph side
+    isActive: Boolean 
 }
 
 type Transaction @entity {
@@ -104,4 +108,11 @@ type BPosNFT @entity {
     createdAt: Int! # Timestamp, DB side only, not on chain - block time at which the bpos nft was first found (first event)
     owner: String! # EVM address
     tokenId: BigInt!
+}
+
+# One entry per config key: min stake, tx duration, etc.
+type ConfigEntry @entity {
+    id: ID!
+    key: String! # same as id - key provided by the contract event. eg MIN_STAKE, ARBITRATION_TIMEOUT, etc
+    value: BigInt!
 }

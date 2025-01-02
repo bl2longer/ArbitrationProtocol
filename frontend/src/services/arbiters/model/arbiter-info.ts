@@ -23,6 +23,7 @@ export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdA
   @Expose() public revenueEvmAddress: string;
   @Expose() public revenueBtcAddress: string;
   @Expose() public revenueBtcPubKey: string;
+  @Expose() public isActive: boolean;
 
   public isPaused(): boolean {
     return this.paused;

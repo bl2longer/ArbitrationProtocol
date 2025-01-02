@@ -71,6 +71,17 @@ export const TransactionRow: FC<{
     );
   }, [transaction, evmAccount]);
 
+  /**
+   * Nobody submitted an arbitration request, but the arbiter might have collided with one of the 
+   * users to submit the bitcoin transaction. The other user can then submit the malicious transaction.
+   */
+  const canRequestIllegalSignatureCompensation = useMemo(() => {
+    return (
+      transaction.status !== "Arbitrated" &&
+      transaction.compensationReceiver === evmAccount
+    );
+  }, [transaction, evmAccount]);
+
   return (
     <TableRow>
       {Object.keys(transactionFieldLabels).map((field: keyof Transaction) => (
@@ -95,6 +106,12 @@ export const TransactionRow: FC<{
         {
           canRequestFailedArbitrationCompensation &&
           <Button onClick={() => onRequestCompensation("FailedArbitration")}>Request compensation</Button>
+        }
+
+        {/* Request illegal signature compensation */}
+        {
+          canRequestIllegalSignatureCompensation &&
+          <Button onClick={() => onRequestCompensation("IllegalSignature")}>Request compensation</Button>
         }
 
         {/* 
