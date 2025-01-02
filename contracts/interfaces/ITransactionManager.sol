@@ -55,12 +55,21 @@ interface ITransactionManager {
         address indexed dapp,
         address indexed arbitrator,
         uint256 deadline,
-        uint256 depositFee);
-    event TransactionCompleted(address indexed dapp, bytes32 indexed txId);
-    event ArbitrationRequested(address indexed dapp, bytes32 indexed txId, bytes btcTx, bytes script, address arbitrator);
-    event ArbitrationSubmitted(address indexed dapp, bytes32 indexed txId);
-    event TransactionCreated(bytes32 indexed id, address indexed sender, address indexed arbitrator);
-    event TransactionCancelled(bytes32 indexed id);
+        uint256 depositFee,
+        address compensationReceiver);
+    event TransactionCompleted(bytes32 indexed txId, address indexed dapp);
+    event ArbitrationRequested(
+        bytes32 indexed txId,
+        address indexed dapp,
+        address arbitrator,
+        bytes btcTx,
+        bytes script,
+        address timeoutCompensationReceiver);
+    event ArbitrationSubmitted(
+        bytes32 indexed txId,
+        address indexed dapp,
+        address indexed arbitrator,
+        bytes btcTxSignature);
     event CompensationManagerInitialized(address indexed compensationManager);
     event SetArbitratorManager(address indexed arbitratorManager);
 

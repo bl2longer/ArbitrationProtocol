@@ -157,6 +157,9 @@ contract CompensationManager is
             revert Errors.INVALID_VERIFICATION_DATA();
         }
 
+        // Validate UTXO consistency
+        _validateUTXOConsistency(verification.utxos, transaction.utxos);
+
         // Validate stake
         uint256 stakeAmount = arbitratorManager.getAvailableStake(arbitrator);
         if (stakeAmount == 0) {

@@ -157,7 +157,6 @@ contract TransactionManager is
         transaction.depositedFee = msg.value;
         transaction.signature = new bytes(0);
         transaction.compensationReceiver = compensationReceiver;
-        transaction.timeoutCompensationReceiver = compensationReceiver;
         
         // Manually copy UTXO array
         delete transaction.utxos;
@@ -165,7 +164,7 @@ contract TransactionManager is
             transaction.utxos.push(utxos[i]);
         }
 
-        emit TransactionRegistered(id, msg.sender, arbitrator, deadline, transaction.depositedFee);
+        emit TransactionRegistered(id, msg.sender, arbitrator, deadline, msg.value, compensationReceiver);
         return id;
     }
 
@@ -238,7 +237,7 @@ contract TransactionManager is
         // Release arbitrator from working status
         arbitratorManager.releaseArbitrator(transaction.arbitrator, id);
 
-        emit TransactionCompleted(transaction.dapp, id);
+        emit TransactionCompleted(id, transaction.dapp);
     }
 
     function _completeTransaction(bytes32 id, DataTypes.Transaction storage transaction) internal returns(uint256, uint256) {
@@ -249,7 +248,7 @@ contract TransactionManager is
         arbitratorManager.releaseArbitrator(transaction.arbitrator, id);
 
         transaction.status = DataTypes.TransactionStatus.Completed;
-        emit TransactionCompleted(transaction.dapp, id);
+        emit TransactionCompleted(id, transaction.dapp);
 
         return (finalArbitratorFee, systemFee);
     }
@@ -337,7 +336,7 @@ contract TransactionManager is
         // Store txHash to id mapping
         txHashToId[txHash] = id;
 
-        emit ArbitrationRequested(transaction.dapp, id, btcTx, script,transaction.arbitrator);
+        emit ArbitrationRequested(id, msg.sender, transaction.arbitrator, btcTx, script, timeoutCompensationReceiver);
     }
 
     /**
@@ -367,7 +366,7 @@ contract TransactionManager is
         transaction.signature = btcTxSignature;
         arbitratorManager.frozenArbitrator(transaction.arbitrator);
 
-        emit ArbitrationSubmitted(transaction.dapp, id);
+        emit ArbitrationSubmitted(id, transaction.dapp, msg.sender, btcTxSignature);
     }
 
     /**
