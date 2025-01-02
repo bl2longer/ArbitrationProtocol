@@ -101,16 +101,9 @@ describe("TransactionManager", function () {
             expect(availableStake).to.equal(STAKE_AMOUNT);
         });
         it("Should register a transaction with valid parameters", async function () {
-            const utxos = [{
-                txHash: ethers.utils.randomBytes(32),
-                index: 0,
-                script: ethers.utils.randomBytes(20),
-                amount: ethers.utils.parseEther("1")
-            }];
             const deadline = (await time.latest()) + 2 * 24 * 60 * 60; // 2 days from now
             console.log("Deadline:", deadline);
             const registerTx = await transactionManager.connect(dapp).registerTransaction(
-                utxos,
                 arbitrator.address,
                 deadline,
                 compensationReceiver.address,
@@ -123,64 +116,115 @@ describe("TransactionManager", function () {
         });
 
         it("Should fail to register transaction with zero address", async function () {
-            const utxos = [{
-                txHash: ethers.utils.randomBytes(32),
-                index: 0,
-                script: ethers.utils.randomBytes(20),
-                amount: ethers.utils.parseEther("1")
-            }];
             const deadline = (await time.latest()) + 2 * 24 * 60 * 60; // 2 days from now
 
             await expect(
                 transactionManager.connect(dapp).registerTransaction(
-                    utxos,
                     ethers.constants.AddressZero,
                     deadline,
                     compensationReceiver.address,
                     { value: ethers.utils.parseEther("0.1") }
                 )
-            ).to.be.revertedWith("Zero address");
+            ).to.be.revertedWithCustomError(transactionManager, "ZERO_ADDRESS");
         });
 
         it("Should fail to register transaction with invalid deadline", async function () {
-            const utxos = [{
-                txHash: ethers.utils.randomBytes(32),
-                index: 0,
-                script: ethers.utils.randomBytes(20),
-                amount: ethers.utils.parseEther("1")
-            }];
             const deadline = (await time.latest()) - 2 * 24 * 60 * 60; // 2 days in the past
 
             await expect(
                 transactionManager.connect(dapp).registerTransaction(
-                    utxos,
                     arbitrator.address,
                     deadline,
                     compensationReceiver.address,
                     { value: ethers.utils.parseEther("0.1") }
                 )
-            ).to.be.revertedWith("Invalid deadline");
+            ).to.be.revertedWithCustomError(transactionManager, "INVALID_DEADLINE");
         });
 
         it("Should fail to register transaction with insufficient fee", async function () {
-            const utxos = [{
-                txHash: ethers.utils.randomBytes(32),
-                index: 0,
-                script: ethers.utils.randomBytes(20),
-                amount: ethers.utils.parseEther("1")
-            }];
             const deadline = (await time.latest()) + 2 * 24 * 60 * 60; // 2 days from now
 
             // Try to register with zero fee
             await expect(
                 transactionManager.connect(dapp).registerTransaction(
-                    utxos,
                     arbitrator.address,
                     deadline,
                     compensationReceiver.address,
                     { value: 0 } // Zero fee
                 )
-            ).to.be.revertedWith("Insufficient fee");
+            ).to.be.revertedWithCustomError(transactionManager, "INSUFFICIENT_FEE");
+        });
+    });
+
+    describe("Transaction Upload utxos", function () {
+        beforeEach(async function () {
+            const deadline = (await time.latest()) + 2 * 24 * 60 * 60; // 2 days from now
+
+            const registerTx = await transactionManager.connect(dapp).registerTransaction(
+                arbitrator.address,
+                deadline,
+                compensationReceiver.address,
+                { value: ethers.utils.parseEther("0.1") }
+            );
+
+            const receipt = await registerTx.wait();
+            const event = receipt.events.find(e => e.event === "TransactionRegistered");
+            transactionId = event.args[0];
+            console.log("Transaction ID:", transactionId);
+        });
+
+        it("Should upload utxos successfully", async function () {
+            const utxos = [
+                {
+                    txHash: ethers.utils.randomBytes(32),
+                    index: 0,
+                    script: ethers.utils.randomBytes(20),
+                    amount: ethers.utils.parseEther("1")
+                }
+            ];
+            expect(await transactionManager.connect(dapp).uploadUTXOs(transactionId, utxos))
+                .to.emit(transactionManager, "UtxosUploaded").withArgs(transactionId, dapp.address, utxos);
+        });
+
+        it("Should upload utxos fail with not authorized", async function () {
+            const utxos = [
+                {
+                    txHash: ethers.utils.randomBytes(32),
+                    index: 0,
+                    script: ethers.utils.randomBytes(20),
+                    amount: ethers.utils.parseEther("1")
+                }
+            ];
+            await expect(transactionManager.connect(owner).uploadUTXOs(transactionId, utxos))
+                .to.be.revertedWithCustomError(transactionManager, "NOT_AUTHORIZED");
+        });
+
+        it("Should upload utxos twice failed", async function () {
+            const utxos = [
+                {
+                    txHash: ethers.utils.randomBytes(32),
+                    index: 0,
+                    script: ethers.utils.randomBytes(20),
+                    amount: ethers.utils.parseEther("1")
+                }
+            ];
+            await transactionManager.connect(dapp).uploadUTXOs(transactionId, utxos);
+            await expect(transactionManager.connect(dapp).uploadUTXOs(transactionId, utxos))
+                .to.be.revertedWithCustomError(transactionManager, "UTXO_ALREADY_UPLOADED");
+        });
+
+        it("Should upload utxos failed after completed", async function () {
+            const utxos = [
+                {
+                    txHash: ethers.utils.randomBytes(32),
+                    index: 0,
+                    script: ethers.utils.randomBytes(20),
+                    amount: ethers.utils.parseEther("1")
+                }
+            ];
+            await transactionManager.connect(dapp).completeTransaction(transactionId);
+            await expect(transactionManager.connect(dapp).uploadUTXOs(transactionId, utxos))
+                .to.be.revertedWithCustomError(transactionManager, "INVALID_TRANSACTION_STATUS");
         });
     });
 
@@ -188,16 +232,9 @@ describe("TransactionManager", function () {
         let transactionId;
 
         beforeEach(async function () {
-            const utxos = [{
-                txHash: ethers.utils.randomBytes(32),
-                index: 0,
-                script: ethers.utils.randomBytes(20),
-                amount: ethers.utils.parseEther("1")
-            }];
             const deadline = (await time.latest()) + 2 * 24 * 60 * 60; // 2 days from now
 
             const registerTx = await transactionManager.connect(dapp).registerTransaction(
-                utxos,
                 arbitrator.address,
                 deadline,
                 compensationReceiver.address,
@@ -219,16 +256,14 @@ describe("TransactionManager", function () {
             let transaction = await transactionManager.getTransactionById(transactionId);
             expect(transaction.status).to.equal(1);//completed
 
-            let arbitratorInfo = await arbitratorManager.getArbitratorInfo(arbitrator.address);
-            expect(arbitratorInfo.status).to.equal(0);//active
-            console.log("completed transaction arbitratorInfo.status:", arbitratorInfo.status, "transactionId ", transactionId);
-            
+            let isActive = await arbitratorManager.isActiveArbitrator(arbitrator.address);
+            expect(isActive).to.equal(true);//active
         });
 
         it("Should fail to complete transaction by non-DApp", async function () {
             await expect(
                 transactionManager.connect(other).completeTransaction(transactionId)
-            ).to.be.revertedWith("Not authorized");
+            ).to.be.revertedWithCustomError(transactionManager, "NOT_AUTHORIZED");
         });
     });
 });
