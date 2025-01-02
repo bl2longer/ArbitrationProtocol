@@ -9,6 +9,7 @@ export function handleTransactionRegistered(event: TransactionRegistered): void 
   transaction.startTime = event.block.timestamp.toI32();
   transaction.deadline = event.params.deadline.toI32();
   transaction.depositedFee = event.params.depositFee;
+  transaction.compensationReceiver = event.params.compensationReceiver.toHexString();
   transaction.save();
 }
 
@@ -18,6 +19,7 @@ export function handleArbitrationRequested(event: ArbitrationRequested): void {
   transaction.arbiter = event.params.arbitrator.toHexString(); // Useless, same arbiter already saved by TransactionRegistered
   transaction.status = "Arbitrated";
   transaction.script = event.params.script.toHexString();
+  transaction.timeoutCompensationReceiver = event.params.timeoutCompensationReceiver.toHexString();
 
   // BTC tx
   if (event.params.btcTx)

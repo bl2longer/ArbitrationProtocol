@@ -64,16 +64,18 @@ dataSources:
         - name: TransactionManager
           file: ./src/abis/TransactionManager.json
       eventHandlers:
-        - event: ArbitrationRequested(indexed address,indexed bytes32,bytes,bytes,address)
+        - event: ArbitrationRequested(indexed bytes32,indexed
+            address,address,bytes,bytes,address)
           handler: handleArbitrationRequested
-        - event: ArbitrationSubmitted(indexed address,indexed bytes32)
+        - event: ArbitrationSubmitted(indexed bytes32,indexed address,indexed
+            address,bytes)
           handler: handleArbitrationSubmitted
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
-        - event: TransactionCompleted(indexed address,indexed bytes32)
+        - event: TransactionCompleted(indexed bytes32,indexed address)
           handler: handleTransactionCompleted
         - event: TransactionRegistered(indexed bytes32,indexed address,indexed
-            address,uint256,uint256)
+            address,uint256,uint256,address)
           handler: handleTransactionRegistered
   - name: CompensationManager
     kind: ethereum/contract

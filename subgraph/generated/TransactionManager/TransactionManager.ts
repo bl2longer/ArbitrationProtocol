@@ -23,24 +23,28 @@ export class ArbitrationRequested__Params {
     this._event = event;
   }
 
-  get dapp(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
   get txId(): Bytes {
-    return this._event.parameters[1].value.toBytes();
+    return this._event.parameters[0].value.toBytes();
   }
 
-  get btcTx(): Bytes {
-    return this._event.parameters[2].value.toBytes();
-  }
-
-  get script(): Bytes {
-    return this._event.parameters[3].value.toBytes();
+  get dapp(): Address {
+    return this._event.parameters[1].value.toAddress();
   }
 
   get arbitrator(): Address {
-    return this._event.parameters[4].value.toAddress();
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get btcTx(): Bytes {
+    return this._event.parameters[3].value.toBytes();
+  }
+
+  get script(): Bytes {
+    return this._event.parameters[4].value.toBytes();
+  }
+
+  get timeoutCompensationReceiver(): Address {
+    return this._event.parameters[5].value.toAddress();
   }
 }
 
@@ -57,12 +61,20 @@ export class ArbitrationSubmitted__Params {
     this._event = event;
   }
 
-  get dapp(): Address {
-    return this._event.parameters[0].value.toAddress();
+  get txId(): Bytes {
+    return this._event.parameters[0].value.toBytes();
   }
 
-  get txId(): Bytes {
-    return this._event.parameters[1].value.toBytes();
+  get dapp(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get arbitrator(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get btcTxSignature(): Bytes {
+    return this._event.parameters[3].value.toBytes();
   }
 }
 
@@ -142,24 +154,6 @@ export class SetArbitratorManager__Params {
   }
 }
 
-export class TransactionCancelled extends ethereum.Event {
-  get params(): TransactionCancelled__Params {
-    return new TransactionCancelled__Params(this);
-  }
-}
-
-export class TransactionCancelled__Params {
-  _event: TransactionCancelled;
-
-  constructor(event: TransactionCancelled) {
-    this._event = event;
-  }
-
-  get id(): Bytes {
-    return this._event.parameters[0].value.toBytes();
-  }
-}
-
 export class TransactionCompleted extends ethereum.Event {
   get params(): TransactionCompleted__Params {
     return new TransactionCompleted__Params(this);
@@ -173,38 +167,12 @@ export class TransactionCompleted__Params {
     this._event = event;
   }
 
-  get dapp(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
   get txId(): Bytes {
-    return this._event.parameters[1].value.toBytes();
-  }
-}
-
-export class TransactionCreated extends ethereum.Event {
-  get params(): TransactionCreated__Params {
-    return new TransactionCreated__Params(this);
-  }
-}
-
-export class TransactionCreated__Params {
-  _event: TransactionCreated;
-
-  constructor(event: TransactionCreated) {
-    this._event = event;
-  }
-
-  get id(): Bytes {
     return this._event.parameters[0].value.toBytes();
   }
 
-  get sender(): Address {
+  get dapp(): Address {
     return this._event.parameters[1].value.toAddress();
-  }
-
-  get arbitrator(): Address {
-    return this._event.parameters[2].value.toAddress();
   }
 }
 
@@ -239,6 +207,10 @@ export class TransactionRegistered__Params {
 
   get depositFee(): BigInt {
     return this._event.parameters[4].value.toBigInt();
+  }
+
+  get compensationReceiver(): Address {
+    return this._event.parameters[5].value.toAddress();
   }
 }
 

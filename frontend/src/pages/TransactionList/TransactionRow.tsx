@@ -60,6 +60,17 @@ export const TransactionRow: FC<{
     );
   }, [transaction, evmAccount]);
 
+  /**
+   * Arbiter has submitted a signature but user considers this is a malicious activity from the arbiter.
+   * User can submit a failed arbitration compensation request.
+   */
+  const canRequestFailedArbitrationCompensation = useMemo(() => {
+    return (
+      transaction.status === "Arbitrated" &&
+      transaction.timeoutCompensationReceiver === evmAccount
+    );
+  }, [transaction, evmAccount]);
+
   return (
     <TableRow>
       {Object.keys(transactionFieldLabels).map((field: keyof Transaction) => (
@@ -78,6 +89,12 @@ export const TransactionRow: FC<{
         {
           canRequestTimeoutCompensation &&
           <Button onClick={() => onRequestCompensation("Timeout")}>Request compensation</Button>
+        }
+
+        {/* Request failed arbitration compensation */}
+        {
+          canRequestFailedArbitrationCompensation &&
+          <Button onClick={() => onRequestCompensation("FailedArbitration")}>Request compensation</Button>
         }
 
         {/* 

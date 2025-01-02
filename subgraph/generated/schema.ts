@@ -569,23 +569,6 @@ export class Transaction extends Entity {
     }
   }
 
-  get utxos(): string | null {
-    let value = this.get("utxos");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
-  }
-
-  set utxos(value: string | null) {
-    if (!value) {
-      this.unset("utxos");
-    } else {
-      this.set("utxos", Value.fromString(<string>value));
-    }
-  }
-
   get script(): string | null {
     let value = this.get("script");
     if (!value || value.kind == ValueKind.NULL) {

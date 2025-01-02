@@ -103,7 +103,7 @@ export function handleArbitratorWorking(event: ArbitratorWorking): void {
 
 export function handleArbitratorReleased(event: ArbitratorReleased): void {
     const arbitratorInfo = getArbitratorInfo(event.block, event.params.arbitrator.toHexString());
-    arbitratorInfo.activeTransactionId = event.params.transactionId.toHexString();
+    arbitratorInfo.activeTransactionId = null;
     arbitratorInfo.save();
 }
 

@@ -15,28 +15,6 @@
   2. loan app lender can submit a request to punish the arbiter
 
 
-
-Aria Zuo, [31 Dec 2024 at 08:09:42]:
-  请求路径：http://103.1.65.125:8018/prove - The return value is the id for the signature verification of this transaction, which can be used to submit to the contract
-      POST 请求 Json：
-      {
-          "app": "tx_signature_proof",
-          "rawtx": "str...",
-          "utxos": ["str..."],
-          "input_index": 0,
-          "signature_index": 0,
-          "pubkey": "str..."
-      }
-
-      返回 Json：
-      {
-          "id": "0x..."
-      }
-  used for dapp to apply for compensation
-  For example, the arbitrator gave the wrong signature or signed a transaction that should not have been signed.
-
-
-
 ------- AFTER DEC 30 RELEASE ------
 
 P2:
