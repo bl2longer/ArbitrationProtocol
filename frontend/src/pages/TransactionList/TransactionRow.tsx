@@ -8,7 +8,7 @@ import { CompensationType } from '@/services/compensations/model/compensation-cl
 import { isSameEVMAddress } from '@/services/evm/evm';
 import { Transaction } from '@/services/transactions/model/transaction';
 import { transactionStatusLabelColor, transactionStatusLabelTitle } from '@/services/transactions/transactions.service';
-import { formatDateWithoutYear } from '@/utils/dates';
+import { formatDate } from '@/utils/dates';
 import { formatAddress } from '@/utils/formatAddress';
 import moment from 'moment';
 import { FC, useMemo } from 'react';
@@ -23,9 +23,10 @@ export const TransactionRow: FC<{
   const activeChain = useActiveEVMChainConfig();
 
   const formatValue = (key: keyof typeof transactionFieldLabels, value: any) => {
-    if (key === 'startTime' || key === 'deadline')
-      return value ? <div className='flex flex-row items-center'>{formatDateWithoutYear(value)} <CopyField value={value} /></div> : "-";
-
+    if (key === 'startTime' || key === 'deadline') {
+      console.log("value", value)
+      return value ? <div className='flex flex-row items-center'>{formatDate(value)} <CopyField value={value} /></div> : "-";
+    }
     if (key === 'status')
       return <StatusLabel title={transactionStatusLabelTitle(transaction)} color={transactionStatusLabelColor(transaction)} />
 

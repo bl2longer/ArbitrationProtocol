@@ -14,8 +14,8 @@ export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline
   @Expose() public dapp: string;
   @Expose() public arbiter: string;
   @Expose() public status: TransactionStatus;
-  @Expose() @Transform(({ value }) => value && moment.unix(value * 1000)) public startTime: Moment;
-  @Expose() @Transform(({ value }) => value && moment.unix(value * 1000)) public deadline: Moment;
+  @Expose() @Transform(({ value }) => value && moment.unix(value)) public startTime: Moment;
+  @Expose() @Transform(({ value }) => value && moment.unix(value)) public deadline: Moment;
   @Expose() public btcTx: string;
   @Expose() public btcTxHash: string;
   @Expose() @Transform(({ value }) => value && tokenToReadableValue(value, 18)) public depositedFee: BigNumber;
