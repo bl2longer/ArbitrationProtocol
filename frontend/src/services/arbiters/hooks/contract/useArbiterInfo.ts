@@ -4,6 +4,7 @@ import { useCallback } from 'react';
 import { abi } from "../../../../../contracts/core/ArbitratorManager.sol/ArbitratorManager.json";
 import { ContractArbiterInfo } from '../../dto/contract-arbiter-info';
 import { ArbiterInfo } from '../../model/arbiter-info';
+import { useArbiterIsActive } from './useArbiterIsActive';
 import { useArbiterNFTStakeValue } from './useArbiterNFTStakeValue';
 
 /**
@@ -15,6 +16,7 @@ export const useArbiterInfo = (arbiterAddress: string) => {
   const activeChain = useActiveEVMChainConfig();
   const { readContract } = useContractCall();
   const { fetchArbiterNFTStakeValue } = useArbiterNFTStakeValue();
+  const { fetchArbiterIsActive } = useArbiterIsActive();
 
   const fetchArbiterInfo = useCallback(async (): Promise<ArbiterInfo> => {
     const contractArbiterInfo: ContractArbiterInfo = await readContract({
@@ -33,10 +35,12 @@ export const useArbiterInfo = (arbiterAddress: string) => {
     if (arbiter)
       arbiter.setNFTValue(nftValue);
 
+    arbiter.isActive = await fetchArbiterIsActive(arbiterAddress);
+
     console.log("Fetched arbiter info:", arbiter);
 
     return arbiter;
-  }, [readContract, activeChain, arbiterAddress, fetchArbiterNFTStakeValue]);
+  }, [readContract, activeChain, arbiterAddress, fetchArbiterNFTStakeValue, fetchArbiterIsActive]);
 
   return { fetchArbiterInfo };
 };
