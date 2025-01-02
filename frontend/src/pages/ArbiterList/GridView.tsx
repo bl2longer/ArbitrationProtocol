@@ -47,6 +47,10 @@ const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
         <span className="text-gray-600">Stake</span>
         <span>{arbiter.getTotalValue().toNumber()} {activeChain?.nativeCurrency.symbol}</span>
       </div>
+      <div className="flex justify-between items-center">
+        <span className="text-gray-600">Active transaction</span>
+        {arbiter.activeTransactionId ? <div className="flex items-center gap-2">{formatAddress(arbiter.activeTransactionId)} <CopyField value={arbiter.activeTransactionId} padding={false} /></div> : "-"}
+      </div>
       <div className="mt-4 pt-4 border-t">
         <Collapsible>
           <CollapsibleTrigger className="w-full">
