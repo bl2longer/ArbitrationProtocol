@@ -88,14 +88,12 @@ contract TransactionManager is
 
     /**
      * @notice Register a new transaction
-     * @param utxos UTXO array
      * @param arbitrator The arbitrator address
      * @param deadline The deadline for the transaction
      * @param compensationReceiver Address to receive compensation in case of timeout
      * @return id The unique transaction ID
      */
     function registerTransaction(
-        DataTypes.UTXO[] calldata utxos,
         address arbitrator,
         uint256 deadline,
         address compensationReceiver
@@ -103,9 +101,6 @@ contract TransactionManager is
         if (arbitrator == address(0) || compensationReceiver == address(0)) {
             revert Errors.ZERO_ADDRESS();
         }
-
-        // Validate UTXO input
-        if (utxos.length == 0) revert Errors.INVALID_UTXO();
 
         // Check DApp status
         if (!dappRegistry.isActiveDApp(msg.sender)) {
@@ -157,15 +152,40 @@ contract TransactionManager is
         transaction.depositedFee = msg.value;
         transaction.signature = new bytes(0);
         transaction.compensationReceiver = compensationReceiver;
-        
-        // Manually copy UTXO array
-        delete transaction.utxos;
+
+        emit TransactionRegistered(id, msg.sender, arbitrator, deadline, msg.value, compensationReceiver);
+        return id;
+    }
+
+    /**
+    * @notice Upload UTXOs for a transaction, only once
+    * @param id Transaction ID
+    * @param utxos UTXO array
+    */
+    function uploadUTXOs(
+        bytes32 id,
+        DataTypes.UTXO[] calldata utxos) external {
+        // Validate UTXO input
+        if (utxos.length == 0) revert Errors.INVALID_UTXO();
+
+        DataTypes.Transaction storage transaction = transactions[id];
+        if (transaction.status != DataTypes.TransactionStatus.Active) {
+            revert Errors.INVALID_TRANSACTION_STATUS();
+        }
+
+        if (msg.sender != transaction.dapp) {
+            revert Errors.NOT_AUTHORIZED();
+        }
+
+        if (transaction.utxos.length != 0) {
+            revert Errors.UTXO_ALREADY_UPLOADED();
+        }
+
         for (uint i = 0; i < utxos.length; i++) {
             transaction.utxos.push(utxos[i]);
         }
 
-        emit TransactionRegistered(id, msg.sender, arbitrator, deadline, msg.value, compensationReceiver);
-        return id;
+        emit UTXOsUploaded(id, msg.sender, utxos);
     }
 
     /**
@@ -310,6 +330,9 @@ contract TransactionManager is
         }
         if (msg.sender != transaction.dapp) {
             revert Errors.NOT_AUTHORIZED();
+        }
+        if (transaction.utxos.length == 0) {
+            revert Errors.UTXO_NOT_UPLOADED();
         }
 
         // Parse and validate Bitcoin transaction

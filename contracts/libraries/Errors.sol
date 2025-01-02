@@ -35,6 +35,8 @@ library Errors {
     error SUBMITTED_SIGNATURES_OUTTIME();
     error INVALID_UTXO();
     error INVALID_TRANSACTION();
+    error UTXO_ALREADY_UPLOADED();
+    error UTXO_NOT_UPLOADED();
 
     // Arbitrator related errors
     error ARBITRATOR_ALREADY_REGISTERED();

@@ -6,11 +6,15 @@ import "../libraries/DataTypes.sol";
 interface ITransactionManager {   
     // Register transaction
     function registerTransaction(
-        DataTypes.UTXO[] calldata utxos,
         address arbitrator,
         uint256 deadline,
         address compensationReceiver
     ) external payable returns (bytes32 id);
+
+    // Upload transaction utxos, only once
+    function uploadUTXOs(
+        bytes32 id,
+        DataTypes.UTXO[] calldata utxos) external;
     
     // Complete transaction
     function completeTransaction(bytes32 id) external;
@@ -57,6 +61,7 @@ interface ITransactionManager {
         uint256 deadline,
         uint256 depositFee,
         address compensationReceiver);
+    event UTXOsUploaded(bytes32 indexed txId, address indexed dapp, DataTypes.UTXO[] utxos);
     event TransactionCompleted(bytes32 indexed txId, address indexed dapp);
     event ArbitrationRequested(
         bytes32 indexed txId,

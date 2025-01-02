@@ -96,11 +96,6 @@ contract CompensationManager is
                 revert Errors.INVALID_UTXO();
             }
 
-            // Compare script
-            if (keccak256(zkServiceUtxos[i].script) != keccak256(transactionUtxos[i].script)) {
-                revert Errors.INVALID_UTXO();
-            }
-
             // Compare amount
             if (zkServiceUtxos[i].amount != transactionUtxos[i].amount) {
                 revert Errors.INVALID_UTXO();
