@@ -54,7 +54,7 @@ library BTCUtils {
 
         // Parse version (4 bytes)
         if (offset + VERSION_SIZE > txLength) revert Errors.INVALID_BTC_TX();
-        transaction.version = uint32(bytes4(txBytes[offset:offset + VERSION_SIZE]));
+        transaction.version = littleEndianToUint32(txBytes, offset);
         offset += VERSION_SIZE;
 
         // Check for segwit marker and flag
@@ -190,7 +190,7 @@ library BTCUtils {
         // Version
         bytes4 versionBytes = bytes4(uint32(btcTx.version));
         for (uint256 i = 0; i < 4; i++) {
-            result[offset + i] = versionBytes[i];
+            result[offset + i] = versionBytes[3 - i];
         }
         offset += 4;
 
@@ -208,7 +208,7 @@ library BTCUtils {
             // vout
             bytes4 voutBytes = bytes4(btcTx.inputs[i].vout);
             for (uint256 j = 0; j < 4; j++) {
-                result[offset + j] = voutBytes[j];
+                result[offset + j] = voutBytes[3 - j];
             }
             offset += 4;
 
@@ -219,7 +219,7 @@ library BTCUtils {
             // sequence
             bytes4 seqBytes = bytes4(btcTx.inputs[i].sequence);
             for (uint256 j = 0; j < 4; j++) {
-                result[offset + j] = seqBytes[j];
+                result[offset + j] = seqBytes[3 - j];
             }
             offset += 4;
         }
@@ -232,7 +232,7 @@ library BTCUtils {
             // value
             bytes8 valueBytes = bytes8(btcTx.outputs[i].value);
             for (uint256 j = 0; j < 8; j++) {
-                result[offset + j] = valueBytes[j];
+                result[offset + j] = valueBytes[7 - j];
             }
             offset += 8;
 
@@ -295,7 +295,7 @@ library BTCUtils {
 
         // Parse vout (4 bytes)
         if (offset + 4 > data.length) revert Errors.INVALID_BTC_TX();
-        input.vout = uint32(bytes4(data[offset:offset + 4]));
+        input.vout = littleEndianToUint32(data, offset);
         offset += 4;
 
         // Parse scriptSig
@@ -307,7 +307,7 @@ library BTCUtils {
 
         // Parse sequence (4 bytes)
         if (offset + 4 > data.length) revert Errors.INVALID_BTC_TX();
-        input.sequence = uint32(bytes4(data[offset:offset + 4]));
+        input.sequence = littleEndianToUint32(data, offset);
         offset += 4;
 
         return (input, offset - startOffset);
@@ -325,7 +325,7 @@ library BTCUtils {
 
         // Parse value (8 bytes)
         if (offset + 8 > data.length) revert Errors.INVALID_BTC_TX();
-        output.value = uint64(bytes8(data[offset:offset + 8]));
+        output.value = littleEndianToUint64(data, offset);
         offset += 8;
 
         // Parse scriptPubKey
@@ -369,21 +369,21 @@ library BTCUtils {
         } else if (value <= 0xffff) {
             data[offset] = bytes1(VARINT_TWO_BYTES);
             bytes2 valueBytes = bytes2(uint16(value));
-            data[offset + 1] = valueBytes[0];
-            data[offset + 2] = valueBytes[1];
+            data[offset + 1] = valueBytes[1];
+            data[offset + 2] = valueBytes[0];
             return 3;
         } else if (value <= 0xffffffff) {
             data[offset] = bytes1(VARINT_FOUR_BYTES);
             bytes4 valueBytes = bytes4(uint32(value));
             for (uint256 i = 0; i < 4; i++) {
-                data[offset + 1 + i] = valueBytes[i];
+                data[offset + 1 + i] = valueBytes[3 - i];
             }
             return 5;
         } else {
             data[offset] = bytes1(VARINT_EIGHT_BYTES);
             bytes8 valueBytes = bytes8(uint64(value));
             for (uint256 i = 0; i < 8; i++) {
-                data[offset + 1 + i] = valueBytes[i];
+                data[offset + 1 + i] = valueBytes[7 - i];
             }
             return 9;
         }
