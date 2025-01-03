@@ -8,11 +8,15 @@ export const useTransactionSubmitArbitration = () => {
   const { writeContract, isPending, isSuccess, error } = useContractCall();
 
   const submitArbitration = useCallback(async (txId: string, signature: string): Promise<boolean> => {
+
     const { hash, receipt } = await writeContract({
       contractAddress: activeChain?.contracts.transactionManager,
       abi,
       functionName: 'submitArbitration',
-      args: [txId, signature]
+      args: [
+        txId,
+        `${signature}`
+      ]
     });
 
     console.log("StakeETH result:", hash, receipt)

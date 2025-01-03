@@ -22,6 +22,9 @@ export type FetchArbitersQueryParams = {
 export const fetchArbiters = async (chain: ChainConfig, start = 0, limit = 100, queryParams: FetchArbitersQueryParams = {}): Promise<{ arbiters: ArbiterInfo[], total: number }> => {
   let whereQuery = "";
 
+  // Got this arbiter once for unknown reason (contract tests?) so... filter out.
+  whereQuery += ` address_not: "0x0000000000000000000000000000000000000000"`;
+
   if (queryParams.creatorEvmAddress)
     whereQuery += ` address: "${queryParams.creatorEvmAddress.toLowerCase()}"`;
   if (queryParams.operatorEvmAddress)

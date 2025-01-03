@@ -23,10 +23,9 @@ export const TransactionRow: FC<{
   const activeChain = useActiveEVMChainConfig();
 
   const formatValue = (key: keyof typeof transactionFieldLabels, value: any) => {
-    if (key === 'startTime' || key === 'deadline') {
-      console.log("value", value)
+    if (key === 'startTime' || key === 'deadline')
       return value ? <div className='flex flex-row items-center'>{formatDate(value)} <CopyField value={value} /></div> : "-";
-    }
+
     if (key === 'status')
       return <StatusLabel title={transactionStatusLabelTitle(transaction)} color={transactionStatusLabelColor(transaction)} />
 

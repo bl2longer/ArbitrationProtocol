@@ -1,7 +1,7 @@
+import { deepABIErrorExtract } from "@/services/evm/errors";
 import * as Sentry from "@sentry/react";
 import { useSnackbar } from "notistack";
 import { ReactNode, createContext, memo, useCallback, useContext } from "react";
-import { BaseError, ContractFunctionExecutionError, TransactionExecutionError } from "viem";
 
 export type ErrorHandlerProvider = {
   children: ReactNode;
@@ -93,10 +93,17 @@ export const ErrorHandlerProvider = memo(
 
     const handleError = useCallback(
       (error: any) => {
-        const errorMessage = mapToErrorMessage(error);
+        let errorMessage = mapToErrorMessage(error);
 
-        // Print to console before showing to user
-        console.error("Error handled:", error);
+        // Print to console (as real object) before showing to user
+        console.error("Error:", Object.assign({}, error));
+
+        // Try to extract a relevant EVM error
+        const evmErrorDescription = deepABIErrorExtract(error);
+        if (evmErrorDescription) {
+          console.error("Extracted EVM Error:", evmErrorDescription);
+          errorMessage = `Contract error: ${evmErrorDescription.name}`;
+        }
 
         // Send manually to sentry
         Sentry.captureException(error);
@@ -105,6 +112,7 @@ export const ErrorHandlerProvider = memo(
           variant: "error",
           message: errorMessage,
           autoHideDuration: 6000,
+          style: { overflowWrap: "anywhere" },
         });
       },
       [enqueueSnackbar]

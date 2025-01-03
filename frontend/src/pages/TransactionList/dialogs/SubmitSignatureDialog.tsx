@@ -44,16 +44,12 @@ export const SubmitSignatureDialog: FC<{
   }, [signScriptData, transaction, fetchTransaction]);
 
   const handleSubmitSignature = useCallback(async () => {
-    try {
-      const derSignature = rsSignatureToDer(signature);
-      console.log("DER signature:", derSignature);
+    const derSignature = rsSignatureToDer(signature);
+    console.log("DER signature:", derSignature);
 
-      await submitArbitration(transaction.id, derSignature);
-      onHandleClose();
-      setSignature('');
-    } catch (error) {
-      console.error('Error submitting arbitration:', error);
-    }
+    await submitArbitration(transaction.id, derSignature);
+    onHandleClose();
+    setSignature('');
   }, [onHandleClose, signature, submitArbitration, transaction]);
 
   return <Dialog open={isOpen} onOpenChange={onHandleClose}  >

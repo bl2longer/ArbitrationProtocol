@@ -76,14 +76,21 @@ export const useContractCall = () => {
     }
 
     if (waitForReceipt) {
-      const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: _hash });
-      console.log("receipt", receipt);
+      try {
+        const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: _hash });
+        console.log("receipt", receipt);
 
-      setIsPending(false);
-      setIsSuccess(!!receipt.status);
-      // TODO: ERROR
+        setIsPending(false);
+        setIsSuccess(!!receipt.status);
 
-      return { hash: _hash, receipt };
+        return { hash: _hash, receipt };
+      }
+      catch (e) {
+        handleError(e);
+        setIsPending(false);
+        setIsSuccess(false);
+        return { hash: _hash };
+      }
     }
     else {
       setIsPending(false);

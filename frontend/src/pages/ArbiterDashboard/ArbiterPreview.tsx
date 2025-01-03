@@ -4,6 +4,7 @@ import { EnsureWalletNetwork } from "@/components/base/EnsureWalletNetwork/Ensur
 import { StatusLabel } from "@/components/base/StatusLabel";
 import { Button } from "@/components/ui/button";
 import { arbiterStatusLabelColor, arbiterStatusLabelTitle } from "@/services/arbiters/arbiters.service";
+import { useArbiterConfigModifiable } from "@/services/arbiters/hooks/contract/useArbiterConfigModifiable";
 import { useOwnedArbiter } from "@/services/arbiters/hooks/useOwnedArbiter";
 import { ArbiterInfo } from "@/services/arbiters/model/arbiter-info";
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
@@ -39,6 +40,7 @@ export const ArbiterPreview: FC<{
   const [editStakingIsOpen, setEditStakingIsOpen] = useState(false);
   const [editRevenueIsOpen, setEditRevenueIsOpen] = useState(false);
   const { fetchOwnedArbiter } = useOwnedArbiter();
+  const isArbiterConfigModifiable = useArbiterConfigModifiable(arbiter);
 
   const handleArbiterUpdated = useCallback(() => {
     void fetchOwnedArbiter();
@@ -60,10 +62,10 @@ export const ArbiterPreview: FC<{
           <BoxTitle>Stake</BoxTitle>
           <EnsureWalletNetwork continuesTo="Edit" evmConnectedNeeded supportedNetworkNeeded>
             <ChildTooltip
-              active={!!arbiter.activeTransactionId}
+              active={!isArbiterConfigModifiable}
               title="Staking unavailable"
               tooltip="Your arbiter is currently working on a transaction. Please wait for it to finish before editing the staking.">
-              <Button disabled={!arbiter.isActive} onClick={() => setEditStakingIsOpen(true)}><Layers2Icon />Edit</Button>
+              <Button disabled={!isArbiterConfigModifiable} onClick={() => setEditStakingIsOpen(true)}><Layers2Icon />Edit</Button>
             </ChildTooltip>
           </EnsureWalletNetwork>
         </div>
@@ -81,14 +83,14 @@ export const ArbiterPreview: FC<{
         <div className="flex flex-row justify-between items-center pr-4">
           <InfoRow title="Fee Rate" value={`${arbiter.currentFeeRate / 100}%`} />
           <EnsureWalletNetwork continuesTo="Edit" evmConnectedNeeded supportedNetworkNeeded>
-            <Button onClick={() => setEditFeeRateIsOpen(true)}><DollarSignIcon />Edit</Button>
+            <Button disabled={!isArbiterConfigModifiable} onClick={() => setEditFeeRateIsOpen(true)}><DollarSignIcon />Edit</Button>
           </EnsureWalletNetwork>
         </div>
         {/* Deadline */}
         <div className="flex flex-row justify-between items-center pr-4">
           <InfoRow title="Deadline" value={termEnd ? formatDate(termEnd) : "-"} />
           <EnsureWalletNetwork continuesTo="Edit" evmConnectedNeeded supportedNetworkNeeded>
-            <Button onClick={() => setEditDeadlineIsOpen(true)}><CalendarIcon />Edit</Button>
+            <Button disabled={!isArbiterConfigModifiable} onClick={() => setEditDeadlineIsOpen(true)}><CalendarIcon />Edit</Button>
           </EnsureWalletNetwork>
         </div>
       </div>
@@ -97,7 +99,7 @@ export const ArbiterPreview: FC<{
         <div className='flex justify-between items-center mx-4 py-2'>
           <BoxTitle>Operator</BoxTitle>
           <EnsureWalletNetwork continuesTo="Edit" evmConnectedNeeded supportedNetworkNeeded>
-            <Button onClick={() => setEditOperatorIsOpen(true)}><StarIcon />Edit</Button>
+            <Button disabled={!isArbiterConfigModifiable} onClick={() => setEditOperatorIsOpen(true)}><StarIcon />Edit</Button>
           </EnsureWalletNetwork>
         </div>
         <InfoRow title="EVM Address" value={dynamicAddressFormat(arbiter.operatorEvmAddress) || "-"} />
@@ -109,7 +111,7 @@ export const ArbiterPreview: FC<{
         <div className='flex justify-between items-center mx-4 py-2'>
           <BoxTitle>Revenue</BoxTitle>
           <EnsureWalletNetwork continuesTo="Edit" evmConnectedNeeded supportedNetworkNeeded>
-            <Button onClick={() => setEditRevenueIsOpen(true)}><DollarSignIcon />Edit</Button>
+            <Button disabled={!isArbiterConfigModifiable} onClick={() => setEditRevenueIsOpen(true)}><DollarSignIcon />Edit</Button>
           </EnsureWalletNetwork>
         </div>
         <InfoRow title="EVM Address" value={dynamicAddressFormat(arbiter.revenueEvmAddress) || "-"} />

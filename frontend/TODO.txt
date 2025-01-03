@@ -1,25 +1,16 @@
 ===> Target release date: dec 30
 
-- subgraph changes (TBC):
-  - need to mimic and store isActive on the subgraph side. Copy isActiveArbitrator(). Dependencies:
-    - event ConfigUpdated(bytes32 indexed key, uint256 oldValue, uint256 newValue); 
-      - store values, to be able to compute the arbitrator active status
-    - event ArbitratorTerminatedWithSlash(address indexed arbitrator)
-      - clean amount in these two events.
+- TBD: transactions list submit signature: should it check the current btc address is the same as the arbiter operator or transaction one?
 
 - transactions list: action button to "Request compensation". Only shown to transaction's compensator.
 - compensation list page: same as for transactions to request compensation.
-
-- TOP PRIORITY:
-  - loan app update
-  - sign arbitration transactions (with zehua)
-  - apply for compensations (with aria)
     - add a global request compensation button? 
 
-
-  1. loan app borrower can submit a request to punish the arbiter
-  2. loan app lender can submit a request to punish the arbiter
-
+- Submit arbitration requests by contract
+  - zkService doc：https://github.com/BeL2Labs/cairo-suite/blob/alex/feat_check_sig/doc/IZkService%20Interface%20Documentation.md
+  - contract code: https://github.com/BeL2Labs/cairo-suite/blob/alex/feat_check_sig/solidity-stark-verifier-cairo-os/src/apps/TxSigProof.sol
+  - contract address：0x158efe95e74480a7C1973B5D0530D7433C3695A9
+  - Call submitArbitration to submit data to zk for verification
 
 ------- AFTER DEC 30 RELEASE ------
 
@@ -29,10 +20,7 @@
   - Everything else should be handled by multicalls from the client app.
 
 P2:
-- Find a way to display a status when an arbiter has a "activeTransactionId". 
-  - Check if subgraph gets info about that.
 - Bug: edit arbiter staking: reopen the dialog after a max stake red error: the "Stake value should be lower than 50 ELA. Now 72.5 ELA" is still displayed
-- Simple tooltips to explain main app pages (compensations? dapps? transactions?)
 - arbiter registration: hide "operator" (self by default)
 - "Install Metamask" should look like a real button
 - Transaction list still seems to reload every time the page is entered.
