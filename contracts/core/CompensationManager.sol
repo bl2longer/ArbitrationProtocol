@@ -122,7 +122,8 @@ contract CompensationManager is
         }
 
         // Get ZK verification details with minimal local variables
-        DataTypes.ZKVerification memory verification = zkService.getZkVerification(evidence);
+        DataTypes.ZKVerification memory verification;
+        verification = zkService.getZkVerification(evidence);
         if (verification.status != 0) {
             revert(Errors.ZK_PROOF_FAILED);
         }
@@ -224,7 +225,8 @@ contract CompensationManager is
         bytes32 evidence
     ) external override returns (bytes32 claimId) {
         // Get ZK verification details
-        DataTypes.ZKVerification memory verification = zkService.getZkVerification(evidence);
+        DataTypes.ZKVerification memory verification;
+        verification = zkService.getZkVerification(evidence);
         if (verification.status != 0) {
             revert(Errors.ZK_PROOF_FAILED);
         }
