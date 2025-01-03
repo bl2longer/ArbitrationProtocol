@@ -32,10 +32,10 @@ export const useArbiterInfo = (arbiterAddress: string) => {
     const nftValue = await fetchArbiterNFTStakeValue(arbiterAddress);
 
     const arbiter = ArbiterInfo.fromContractArbiterInfo(contractArbiterInfo);
-    if (arbiter)
+    if (arbiter) {
       arbiter.setNFTValue(nftValue);
-
-    arbiter.isActive = await fetchArbiterIsActive(arbiterAddress);
+      arbiter.isActive = await fetchArbiterIsActive(arbiterAddress);
+    }
 
     console.log("Fetched arbiter info:", arbiter);
 
