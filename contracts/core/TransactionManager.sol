@@ -212,7 +212,7 @@ contract TransactionManager is
             return true;
         }
         uint256 configTime = configManager.getArbitrationTimeout();
-       return block.timestamp > transaction.startTime + configTime;
+        return block.timestamp > transaction.requestArbitrationTime + configTime;
     }
 
         /**
@@ -234,7 +234,7 @@ contract TransactionManager is
         if (receivedCompensationAddress == address(0)) {
             revert(Errors.ZERO_ADDRESS);
         }
-        // Update transaction status to Expired
+        // Update transaction status to Completed
         transaction.status = DataTypes.TransactionStatus.Completed;
         // Transfer deposited fee to compensation address
         (bool success, ) = payable(receivedCompensationAddress).call{value: transaction.depositedFee}("");
@@ -322,6 +322,10 @@ contract TransactionManager is
             revert(Errors.UTXO_NOT_UPLOADED);
         }
 
+        if (block.timestamp + configManager.getArbitrationTimeout() > transaction.deadline) {
+            revert(Errors.REQUEST_ARBITRATION_OUTTIME);
+        }
+
         // Parse and validate Bitcoin transaction
         BTCUtils.BTCTransaction memory parsedTx = BTCUtils.parseBTCTransaction(btcTx);
         if(parsedTx.inputs.length != transaction.utxos.length) {
@@ -342,6 +346,7 @@ contract TransactionManager is
         transaction.btcTxHash = txHash;
         transaction.timeoutCompensationReceiver = timeoutCompensationReceiver;
         transaction.script = script;
+        transaction.requestArbitrationTime = block.timestamp;
         // Store txHash to id mapping
         txHashToId[txHash] = id;
 
@@ -393,11 +398,7 @@ contract TransactionManager is
      * @return Transaction struct
      */
     function getTransaction(bytes32 txHash) external view override returns (DataTypes.Transaction memory) {
-        bytes32 id = txHashToId[txHash];
-        if (id == bytes32(0)) {
-            revert(Errors.TRANSACTION_NOT_FOUND);
-        }
-        return transactions[id];
+        return transactions[txHashToId[txHash]];
     }
 
     /**

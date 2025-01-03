@@ -122,8 +122,10 @@ contract CompensationManager is
         }
 
         // Get ZK verification details with minimal local variables
-        DataTypes.ZKVerification memory verification;
-        verification = zkService.getZkVerification(evidence);
+        DataTypes.ZKVerification memory verification = zkService.getZkVerification(evidence);
+        if (verification.status != 0) {
+            revert(Errors.ZK_PROOF_FAILED);
+        }
 
         // Basic data validation
         if(verification.pubKey.length == 0 || verification.txHash == bytes32(0)) {
@@ -140,13 +142,13 @@ contract CompensationManager is
 
         // Validate public key
         if (keccak256(verification.pubKey) != keccak256(arbitratorInfo.operatorBtcPubKey)) {
-            revert (Errors.INVALID_VERIFICATION_DATA);
+            revert (Errors.PUBLIC_KEY_MISMATCH);
         }
         // Validate transaction data
         BTCUtils.BTCTransaction memory parsedTx = BTCUtils.parseBTCTransaction(btcTx);
         bytes memory rawData = BTCUtils.serializeBTCTransaction(parsedTx);
         if (sha256(rawData) != verification.txHash) {
-            revert (Errors.INVALID_VERIFICATION_DATA);
+            revert (Errors.BTC_TRANSACTION_MISMATCH);
         }
 
         // Validate UTXO consistency
@@ -188,12 +190,10 @@ contract CompensationManager is
             revert (Errors.COMPENSATION_ALREADY_CLAIMED);
         }
 
-        if (transaction.status == DataTypes.TransactionStatus.Completed) revert (Errors.TRANSACTION_COMPLETED);
-        if (block.timestamp < transaction.deadline) {
-            uint256 configTime = configManager.getArbitrationTimeout();
-            if (transaction.startTime + configTime > block.timestamp) revert (Errors.DEADLINE_NOT_REACHED);
-        }
-        if (transaction.signature.length > 0) revert (Errors.SIGNATURE_ALREADY_SUBMITTED);
+        if (transaction.status != DataTypes.TransactionStatus.Arbitrated) revert (Errors.TRANSACTION_NOT_IN_ARBITRATED);
+
+        uint256 configTime = configManager.getArbitrationTimeout();
+        if (transaction.requestArbitrationTime + configTime > block.timestamp) revert (Errors.DEADLINE_NOT_REACHED);
 
         // Get arbitrator's stake amount
         DataTypes.ArbitratorInfo memory arbitratorInfo = arbitratorManager.getArbitratorInfo(transaction.arbitrator);
@@ -224,8 +224,11 @@ contract CompensationManager is
         bytes32 evidence
     ) external override returns (bytes32 claimId) {
         // Get ZK verification details
-        DataTypes.ZKVerification memory verification;
-        verification = zkService.getZkVerification(evidence);
+        DataTypes.ZKVerification memory verification = zkService.getZkVerification(evidence);
+        if (verification.status != 0) {
+            revert(Errors.ZK_PROOF_FAILED);
+        }
+
         if (verification.pubKey.length == 0) revert (Errors.EMPTY_PUBLIC_KEY);
         if (verification.txHash == bytes32(0)) revert (Errors.EMPTY_HASH);
         if (verification.signature.length == 0) revert (Errors.EMPTY_SIGNATURE);
@@ -252,8 +255,14 @@ contract CompensationManager is
         // Get transaction signature and verify
         if (keccak256(transaction.signature) != keccak256(verification.signature)) revert (Errors.SIGNATURE_MISMATCH);
 
-        // Get arbitrator's stake amount
         DataTypes.ArbitratorInfo memory arbitratorInfo = arbitratorManager.getArbitratorInfo(transaction.arbitrator);
+
+        // Validate public key
+        if (keccak256(verification.pubKey) != keccak256(arbitratorInfo.operatorBtcPubKey)) {
+            revert (Errors.PUBLIC_KEY_MISMATCH);
+        }
+
+        // Get arbitrator's stake amount
         uint256 stakeAmount = arbitratorManager.getAvailableStake(transaction.arbitrator);
         if (stakeAmount == 0) revert (Errors.NO_STAKE_AVAILABLE);
 
@@ -311,25 +320,22 @@ contract CompensationManager is
         CompensationClaim storage claim = claims[claimId];
         if (claim.withdrawn) revert (Errors.COMPENSATION_WITHDRAWN);
         if (claim.ethAmount == 0 && claim.nftTokenIds.length == 0) revert (Errors.NO_COMPENSATION_AVAILABLE);
+        if (claim.receivedCompensationAddress == address(0)) revert (Errors.ZERO_ADDRESS);
 
         uint256 systemFeeRate = configManager.getSystemCompensationFeeRate();
         uint256 systemFee = claim.totalAmount * systemFeeRate / 10000;
         if (msg.value < systemFee) revert (Errors.INSUFFICIENT_FEE);
-        if (claim.receivedCompensationAddress == address(0)) revert (Errors.NO_COMPENSATION_AVAILABLE);
-        uint256 ethAmount = claim.ethAmount;
+
         // Mark as withdrawn
         claim.withdrawn = true;
-        if (claim.ethAmount > 0 && claim.receivedCompensationAddress != address(0)) {
-            claim.ethAmount = 0;
-            (bool success, ) = claim.receivedCompensationAddress.call{value: ethAmount}("");
+        if (claim.ethAmount > 0) {
+            (bool success, ) = claim.receivedCompensationAddress.call{value: claim.ethAmount}("");
             require(success, "TransferFailed");
         }
 
         // Transfer NFT compensation
-        if (claim.receivedCompensationAddress != address(0)) {
-            for (uint256 i = 0; i < claim.nftTokenIds.length; i++) {
-                IERC721(claim.nftContract).transferFrom(address(this), claim.receivedCompensationAddress, claim.nftTokenIds[i]);
-            }
+        for (uint256 i = 0; i < claim.nftTokenIds.length; i++) {
+            IERC721(claim.nftContract).transferFrom(address(this), claim.receivedCompensationAddress, claim.nftTokenIds[i]);
         }
 
         // Transfer system fee to fee collector
@@ -342,7 +348,7 @@ contract CompensationManager is
             require(success, "TransferFailed");
         }
 
-        emit CompensationWithdrawn(claimId);
+        emit CompensationWithdrawn(claimId, msg.sender, systemFee);
     }
 
     function getClaimableAmount(bytes32 claimId) external view override returns (uint256) {

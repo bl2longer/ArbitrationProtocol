@@ -16,13 +16,19 @@ contract MockZkService is IZkService {
         bytes32 evidence,
         bytes memory pubKey,
         bytes32 txHash,
-        bytes memory signature
+        bytes memory signature,
+        DataTypes.UTXO[] calldata utxos
     ) external {
         DataTypes.ZKVerification storage verification = _verifications[evidence];
+        verification.status = 0;
         verification.verified = true;
         verification.pubKey = pubKey;
         verification.txHash = txHash;
         verification.signature = signature;
+        delete verification.utxos;
+        for (uint256 i = 0; i < utxos.length; i++) {
+            verification.utxos.push(utxos[i]);
+        }
     }
 
     /**
@@ -30,15 +36,22 @@ contract MockZkService is IZkService {
      */
     function setInvalidVerification(
         bytes32 evidence,
+        uint256 status,
         bytes memory pubKey,
         bytes32 txHash,
-        bytes memory signature
+        bytes memory signature,
+        DataTypes.UTXO[] calldata utxos
     ) external {
         DataTypes.ZKVerification storage verification = _verifications[evidence];
         verification.verified = false;
         verification.pubKey = pubKey;
         verification.txHash = txHash;
         verification.signature = signature;
+        verification.status = status;
+        delete verification.utxos;
+        for (uint256 i = 0; i < utxos.length; i++) {
+            verification.utxos.push(utxos[i]);
+        }
     }
 
 
@@ -58,6 +71,7 @@ contract MockZkService is IZkService {
         verification.txHash = keccak256("test");
         verification.signature = "0x5678";
         verification.verified = true;
+        verification.status = 0;
     }
 
     function setEmptyPubKey(bytes32 evidence) external {
@@ -66,6 +80,7 @@ contract MockZkService is IZkService {
         verification.txHash = keccak256("test");
         verification.signature = "0x5678";
         verification.verified = true;
+        verification.status = 0;
     }
 
     function setEmptyTxHash(bytes32 evidence) external {
@@ -74,5 +89,6 @@ contract MockZkService is IZkService {
         verification.txHash = bytes32(0);
         verification.signature = "0x9012";
         verification.verified = true;
+        verification.status = 0;
     }
 }

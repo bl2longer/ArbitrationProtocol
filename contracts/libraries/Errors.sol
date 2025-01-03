@@ -35,6 +35,7 @@ library Errors {
     string constant UINT16_INSUFFICIENT_LENGHT = "U4";
     string constant UINT32_INSUFFICIENT_LENGHT = "U5";
     string constant UINT64_INSUFFICIENT_LENGHT = "U6";
+    string constant REQUEST_ARBITRATION_OUTTIME = "U7";
 
     // Arbitrator related errors (A0-A9, S0-S9)
     string constant ARBITRATOR_ALREADY_REGISTERED = "A1";
@@ -62,7 +63,7 @@ library Errors {
     string constant BTC_TRANSACTION_MISMATCH = "B1";
     string constant NO_STAKE_AVAILABLE = "N8";
     string constant NOT_TRANSACTION_ARBITRATOR = "M1";
-    string constant TRANSACTION_COMPLETED = "M2";
+    string constant TRANSACTION_NOT_IN_ARBITRATED = "M2";
     string constant DEADLINE_NOT_REACHED = "M3";
     string constant SIGNATURE_ALREADY_SUBMITTED = "S4";
     string constant SIGNATURE_NOT_SUBMITTED = "S5";
@@ -73,4 +74,6 @@ library Errors {
     string constant NO_ACTIVE_TRANSACTION = "M8";
     string constant INVALID_VERIFICATION_DATA = "I7";
     string constant COMPENSATION_ALREADY_CLAIMED = "M9";
+    string constant ZK_PROOF_FAILED = "M6";
+    string constant PUBLIC_KEY_MISMATCH = "M7";
 }

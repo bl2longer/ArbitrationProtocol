@@ -58,7 +58,7 @@ interface ICompensationManager {
 
     // Events
     event CompensationClaimed(bytes32 indexed claimId, address indexed claimer, uint8 claimType);
-    event CompensationWithdrawn(bytes32 indexed claimId);
+    event CompensationWithdrawn(bytes32 indexed claimId, address indexed recipient, uint256 fee);
     event ZkServiceUpdated(address indexed newZkService);
     event TransactionManagerUpdated(address indexed newTransactionManager);
     event ConfigManagerUpdated(address indexed newConfigManager);
