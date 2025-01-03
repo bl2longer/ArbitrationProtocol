@@ -86,8 +86,8 @@ dataSources:
     network: esc-staging
     source:
       abi: CompensationManager
-      address: "0x34832C9283f9915DCff196241d00D7306147e151"
-      startBlock: 28330302
+      address: "0x9F8B0E8aEa662994C4Fd36De07398339559cd57E"
+      startBlock: 28461858
     mapping:
       file: ./src/event-handlers/CompensationManager.ts
       language: wasm/assemblyscript

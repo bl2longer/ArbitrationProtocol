@@ -78,24 +78,6 @@ export class ArbitrationSubmitted__Params {
   }
 }
 
-export class CompensationManagerInitialized extends ethereum.Event {
-  get params(): CompensationManagerInitialized__Params {
-    return new CompensationManagerInitialized__Params(this);
-  }
-}
-
-export class CompensationManagerInitialized__Params {
-  _event: CompensationManagerInitialized;
-
-  constructor(event: CompensationManagerInitialized) {
-    this._event = event;
-  }
-
-  get compensationManager(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-}
-
 export class Initialized extends ethereum.Event {
   get params(): Initialized__Params {
     return new Initialized__Params(this);
@@ -211,6 +193,28 @@ export class TransactionRegistered__Params {
 
   get compensationReceiver(): Address {
     return this._event.parameters[5].value.toAddress();
+  }
+}
+
+export class UTXOsUploaded extends ethereum.Event {
+  get params(): UTXOsUploaded__Params {
+    return new UTXOsUploaded__Params(this);
+  }
+}
+
+export class UTXOsUploaded__Params {
+  _event: UTXOsUploaded;
+
+  constructor(event: UTXOsUploaded) {
+    this._event = event;
+  }
+
+  get txId(): Bytes {
+    return this._event.parameters[0].value.toBytes();
+  }
+
+  get dapp(): Address {
+    return this._event.parameters[1].value.toAddress();
   }
 }
 
@@ -913,36 +917,6 @@ export class CompleteTransactionWithSlashCall__Outputs {
   }
 }
 
-export class InitCompensationManagerCall extends ethereum.Call {
-  get inputs(): InitCompensationManagerCall__Inputs {
-    return new InitCompensationManagerCall__Inputs(this);
-  }
-
-  get outputs(): InitCompensationManagerCall__Outputs {
-    return new InitCompensationManagerCall__Outputs(this);
-  }
-}
-
-export class InitCompensationManagerCall__Inputs {
-  _call: InitCompensationManagerCall;
-
-  constructor(call: InitCompensationManagerCall) {
-    this._call = call;
-  }
-
-  get _compensationManager(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-}
-
-export class InitCompensationManagerCall__Outputs {
-  _call: InitCompensationManagerCall;
-
-  constructor(call: InitCompensationManagerCall) {
-    this._call = call;
-  }
-}
-
 export class InitializeCall extends ethereum.Call {
   get inputs(): InitializeCall__Inputs {
     return new InitializeCall__Inputs(this);
@@ -971,6 +945,10 @@ export class InitializeCall__Inputs {
   get _configManager(): Address {
     return this._call.inputValues[2].value.toAddress();
   }
+
+  get _compensationManager(): Address {
+    return this._call.inputValues[3].value.toAddress();
+  }
 }
 
 export class InitializeCall__Outputs {
@@ -998,20 +976,16 @@ export class RegisterTransactionCall__Inputs {
     this._call = call;
   }
 
-  get utxos(): Array<RegisterTransactionCallUtxosStruct> {
-    return this._call.inputValues[0].value.toTupleArray<RegisterTransactionCallUtxosStruct>();
-  }
-
   get arbitrator(): Address {
-    return this._call.inputValues[1].value.toAddress();
+    return this._call.inputValues[0].value.toAddress();
   }
 
   get deadline(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
+    return this._call.inputValues[1].value.toBigInt();
   }
 
   get compensationReceiver(): Address {
-    return this._call.inputValues[3].value.toAddress();
+    return this._call.inputValues[2].value.toAddress();
   }
 }
 
@@ -1024,24 +998,6 @@ export class RegisterTransactionCall__Outputs {
 
   get value0(): Bytes {
     return this._call.outputValues[0].value.toBytes();
-  }
-}
-
-export class RegisterTransactionCallUtxosStruct extends ethereum.Tuple {
-  get txHash(): Bytes {
-    return this[0].toBytes();
-  }
-
-  get index(): BigInt {
-    return this[1].toBigInt();
-  }
-
-  get script(): Bytes {
-    return this[2].toBytes();
-  }
-
-  get amount(): BigInt {
-    return this[3].toBigInt();
   }
 }
 
@@ -1242,5 +1198,57 @@ export class TransferOwnershipCall__Outputs {
 
   constructor(call: TransferOwnershipCall) {
     this._call = call;
+  }
+}
+
+export class UploadUTXOsCall extends ethereum.Call {
+  get inputs(): UploadUTXOsCall__Inputs {
+    return new UploadUTXOsCall__Inputs(this);
+  }
+
+  get outputs(): UploadUTXOsCall__Outputs {
+    return new UploadUTXOsCall__Outputs(this);
+  }
+}
+
+export class UploadUTXOsCall__Inputs {
+  _call: UploadUTXOsCall;
+
+  constructor(call: UploadUTXOsCall) {
+    this._call = call;
+  }
+
+  get id(): Bytes {
+    return this._call.inputValues[0].value.toBytes();
+  }
+
+  get utxos(): Array<UploadUTXOsCallUtxosStruct> {
+    return this._call.inputValues[1].value.toTupleArray<UploadUTXOsCallUtxosStruct>();
+  }
+}
+
+export class UploadUTXOsCall__Outputs {
+  _call: UploadUTXOsCall;
+
+  constructor(call: UploadUTXOsCall) {
+    this._call = call;
+  }
+}
+
+export class UploadUTXOsCallUtxosStruct extends ethereum.Tuple {
+  get txHash(): Bytes {
+    return this[0].toBytes();
+  }
+
+  get index(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get script(): Bytes {
+    return this[2].toBytes();
+  }
+
+  get amount(): BigInt {
+    return this[3].toBigInt();
   }
 }

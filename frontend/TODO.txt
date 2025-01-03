@@ -1,5 +1,6 @@
 ===> Target release date: dec 30
 
+- Major debug issue: wagmi doesn't return contract error codes (error.data, etc)... ethers could.
 - TBD: transactions list submit signature: should it check the current btc address is the same as the arbiter operator or transaction one?
 
 - transactions list: action button to "Request compensation". Only shown to transaction's compensator.

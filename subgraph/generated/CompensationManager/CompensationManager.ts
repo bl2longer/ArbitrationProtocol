@@ -726,16 +726,12 @@ export class InitializeCall__Inputs {
     return this._call.inputValues[0].value.toAddress();
   }
 
-  get _transactionManager(): Address {
+  get _configManager(): Address {
     return this._call.inputValues[1].value.toAddress();
   }
 
-  get _configManager(): Address {
-    return this._call.inputValues[2].value.toAddress();
-  }
-
   get _arbitratorManager(): Address {
-    return this._call.inputValues[3].value.toAddress();
+    return this._call.inputValues[2].value.toAddress();
   }
 }
 
