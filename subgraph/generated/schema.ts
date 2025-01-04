@@ -791,6 +791,19 @@ export class CompensationClaim extends Entity {
     this.set("createdAt", Value.fromI32(value));
   }
 
+  get claimType(): string {
+    let value = this.get("claimType");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set claimType(value: string) {
+    this.set("claimType", Value.fromString(value));
+  }
+
   get claimer(): string | null {
     let value = this.get("claimer");
     if (!value || value.kind == ValueKind.NULL) {
@@ -806,32 +819,6 @@ export class CompensationClaim extends Entity {
     } else {
       this.set("claimer", Value.fromString(<string>value));
     }
-  }
-
-  get claimType(): string {
-    let value = this.get("claimType");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toString();
-    }
-  }
-
-  set claimType(value: string) {
-    this.set("claimType", Value.fromString(value));
-  }
-
-  get withdrawn(): boolean {
-    let value = this.get("withdrawn");
-    if (!value || value.kind == ValueKind.NULL) {
-      return false;
-    } else {
-      return value.toBoolean();
-    }
-  }
-
-  set withdrawn(value: boolean) {
-    this.set("withdrawn", Value.fromBoolean(value));
   }
 
   get arbiter(): string | null {
@@ -851,8 +838,8 @@ export class CompensationClaim extends Entity {
     }
   }
 
-  get amount(): BigInt | null {
-    let value = this.get("amount");
+  get ethAmount(): BigInt | null {
+    let value = this.get("ethAmount");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
@@ -860,16 +847,33 @@ export class CompensationClaim extends Entity {
     }
   }
 
-  set amount(value: BigInt | null) {
+  set ethAmount(value: BigInt | null) {
     if (!value) {
-      this.unset("amount");
+      this.unset("ethAmount");
     } else {
-      this.set("amount", Value.fromBigInt(<BigInt>value));
+      this.set("ethAmount", Value.fromBigInt(<BigInt>value));
     }
   }
 
-  get evidence(): string | null {
-    let value = this.get("evidence");
+  get totalAmount(): BigInt | null {
+    let value = this.get("totalAmount");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalAmount(value: BigInt | null) {
+    if (!value) {
+      this.unset("totalAmount");
+    } else {
+      this.set("totalAmount", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get receivedCompensationAddress(): string | null {
+    let value = this.get("receivedCompensationAddress");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
@@ -877,11 +881,58 @@ export class CompensationClaim extends Entity {
     }
   }
 
-  set evidence(value: string | null) {
+  set receivedCompensationAddress(value: string | null) {
     if (!value) {
-      this.unset("evidence");
+      this.unset("receivedCompensationAddress");
     } else {
-      this.set("evidence", Value.fromString(<string>value));
+      this.set("receivedCompensationAddress", Value.fromString(<string>value));
+    }
+  }
+
+  get withdrawn(): boolean {
+    let value = this.get("withdrawn");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set withdrawn(value: boolean) {
+    this.set("withdrawn", Value.fromBoolean(value));
+  }
+
+  get systemFee(): BigInt | null {
+    let value = this.get("systemFee");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set systemFee(value: BigInt | null) {
+    if (!value) {
+      this.unset("systemFee");
+    } else {
+      this.set("systemFee", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get excessPaymentToClaimer(): BigInt | null {
+    let value = this.get("excessPaymentToClaimer");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set excessPaymentToClaimer(value: BigInt | null) {
+    if (!value) {
+      this.unset("excessPaymentToClaimer");
+    } else {
+      this.set("excessPaymentToClaimer", Value.fromBigInt(<BigInt>value));
     }
   }
 }

@@ -33,8 +33,11 @@ export const fetchCompensations = async (chain: ChainConfig, start = 0, limit = 
           claimType
           withdrawn
           arbiter
-          amount
-          evidence
+          ethAmount
+          totalAmount
+          excessPaymentToClaimer
+          systemFee
+          receivedCompensationAddress
         }
       }`;
 

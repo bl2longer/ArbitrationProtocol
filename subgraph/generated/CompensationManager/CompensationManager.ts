@@ -49,8 +49,28 @@ export class CompensationClaimed__Params {
     return this._event.parameters[1].value.toAddress();
   }
 
+  get arbitrator(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get ethAmount(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+
+  get nftTokenIds(): Array<BigInt> {
+    return this._event.parameters[4].value.toBigIntArray();
+  }
+
+  get totalAmount(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+
+  get receivedCompensationAddress(): Address {
+    return this._event.parameters[6].value.toAddress();
+  }
+
   get claimType(): i32 {
-    return this._event.parameters[2].value.toI32();
+    return this._event.parameters[7].value.toI32();
   }
 }
 
@@ -71,12 +91,28 @@ export class CompensationWithdrawn__Params {
     return this._event.parameters[0].value.toBytes();
   }
 
-  get recipient(): Address {
+  get claimer(): Address {
     return this._event.parameters[1].value.toAddress();
   }
 
-  get fee(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+  get receivedCompensationAddress(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get ethAmount(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+
+  get nftTokenIds(): Array<BigInt> {
+    return this._event.parameters[4].value.toBigIntArray();
+  }
+
+  get systemFee(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+
+  get excessPaymenttoClaimer(): BigInt {
+    return this._event.parameters[6].value.toBigInt();
   }
 }
 

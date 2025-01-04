@@ -54,8 +54,8 @@ dataSources:
     network: esc-staging
     source:
       abi: TransactionManager
-      address: "0xA10b92006743Ef3B12077da67e465963743b03D3"
-      startBlock: 28330216
+      address: "0x6b316d07a7f403aC6200ce44878a5fc633ccb775"
+      startBlock: 28506656
     mapping:
       file: ./src/event-handlers/TransactionManager.ts
       language: wasm/assemblyscript
@@ -100,9 +100,11 @@ dataSources:
         - name: CompensationManager
           file: ./src/abis/CompensationManager.json
       eventHandlers:
-        - event: CompensationClaimed(indexed bytes32,indexed address,uint8)
+        - event: CompensationClaimed(indexed bytes32,indexed address,indexed
+            address,uint256,uint256[],uint256,address,uint8)
           handler: handleCompensationClaimed
-        - event: CompensationWithdrawn(indexed bytes32,indexed address,uint256)
+        - event: CompensationWithdrawn(indexed bytes32,indexed address,indexed
+            address,uint256,uint256[],uint256,uint256)
           handler: handleCompensationWithdrawn
   - name: DAppRegistry
     kind: ethereum/contract

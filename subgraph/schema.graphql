@@ -87,12 +87,15 @@ type ArbitrationRequest @entity {
 type CompensationClaim @entity {
     id: ID!
     createdAt: Int! # Timestamp, DB side only, not on chain - block time at which the compensation was first found (first event)
-    claimer: String
     claimType: CompensationType!
+    claimer: String
+    arbiter: String 
+    ethAmount: BigInt
+    totalAmount: BigInt
+    receivedCompensationAddress: String # Who receives the compensation
     withdrawn: Boolean!
-    arbiter: String
-    amount: BigInt
-    evidence: String
+    systemFee: BigInt
+    excessPaymentToClaimer: BigInt
 }
 
 type DApp @entity {

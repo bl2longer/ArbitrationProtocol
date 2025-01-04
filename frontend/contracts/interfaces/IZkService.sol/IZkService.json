@@ -16,6 +16,11 @@
         {
           "components": [
             {
+              "internalType": "uint256",
+              "name": "status",
+              "type": "uint256"
+            },
+            {
               "internalType": "bytes",
               "name": "pubKey",
               "type": "bytes"

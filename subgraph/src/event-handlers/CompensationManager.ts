@@ -6,6 +6,9 @@ export function handleCompensationClaimed(event: CompensationClaimed): void {
   const compensationClaim = getCompensationClaim(event.block, event.params.claimId.toHexString());
   compensationClaim.claimer = event.params.claimer.toHexString();
   compensationClaim.claimType = contractClaimTypeToString(event.params.claimType);
+  compensationClaim.ethAmount = event.params.ethAmount;
+  compensationClaim.totalAmount = event.params.totalAmount;
+  compensationClaim.receivedCompensationAddress = event.params.receivedCompensationAddress.toHexString();
   compensationClaim.withdrawn = false;
   compensationClaim.save();
 }
@@ -13,6 +16,10 @@ export function handleCompensationClaimed(event: CompensationClaimed): void {
 export function handleCompensationWithdrawn(event: CompensationWithdrawn): void {
   const compensationClaim = getCompensationClaim(event.block, event.params.claimId.toHexString());
   compensationClaim.withdrawn = true;
+  compensationClaim.ethAmount = event.params.ethAmount;
+  compensationClaim.receivedCompensationAddress = event.params.receivedCompensationAddress.toHexString();
+  compensationClaim.systemFee = event.params.systemFee;
+  compensationClaim.excessPaymentToClaimer = event.params.excessPaymenttoClaimer;
   compensationClaim.save();
 }
 
