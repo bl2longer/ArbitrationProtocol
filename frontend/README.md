@@ -27,3 +27,9 @@ In view of the possibility of evil in different links of the transaction, we pro
 
 2 (2.1, 2.2, 2.3) are all initiated by A, that is, timeoutCompensationReceiver
 3 is initiated by B, that is, compensationReceiver
+
+## Contract errors
+
+Some short string errors such as "N0" are thrown by the arbitration protocol and can be found here:
+
+- https://github.com/BeL2Labs/ArbitrationProtocol/blob/main/contracts/libraries/Errors.sol

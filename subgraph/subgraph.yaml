@@ -54,8 +54,8 @@ dataSources:
     network: esc-staging
     source:
       abi: TransactionManager
-      address: "0x6b316d07a7f403aC6200ce44878a5fc633ccb775"
-      startBlock: 28506656
+      address: "0xA10b92006743Ef3B12077da67e465963743b03D3"
+      startBlock: 28330216
     mapping:
       file: ./src/event-handlers/TransactionManager.ts
       language: wasm/assemblyscript
