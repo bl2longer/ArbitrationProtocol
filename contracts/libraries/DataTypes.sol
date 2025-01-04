@@ -15,6 +15,8 @@ library DataTypes {
         Active,
         Completed,
         Arbitrated,
+        Expired,
+        Disputed,
         Submitted
     }
 
@@ -56,7 +58,6 @@ library DataTypes {
         address dapp;
         address arbitrator;
         uint256 startTime;
-        uint256 requestArbitrationTime;
         uint256 deadline;
         bytes btcTx;               // Unsigned Bitcoin transaction
         bytes32 btcTxHash;         // Hash of the Bitcoin transaction with empty input scripts
@@ -67,6 +68,7 @@ library DataTypes {
         address timeoutCompensationReceiver;    // Timeout compensation receiver address
         UTXO[] utxos;                         // Array of UTXOs associated with the transaction
         bytes script;                         // Bitcoin transaction script
+        uint256 requestArbitrationTime;
     }
 
     struct ZKVerification {
