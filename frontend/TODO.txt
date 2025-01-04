@@ -1,24 +1,19 @@
 ===> Target release date: dec 30
 
+P1:
+- Compensation page is totally broken.
 - Major debug issue: wagmi doesn't return contract error codes (error.data, etc)... ethers could.
-- TBD: transactions list submit signature: should it check the current btc address is the same as the arbiter operator or transaction one?
-
-- transactions list: action button to "Request compensation". Only shown to transaction's compensator.
-- compensation list page: same as for transactions to request compensation.
-    - add a global request compensation button? 
+- TBD compensation list page: request compensation button? 
 
 - Submit arbitration requests by contract
   - zkService doc：https://github.com/BeL2Labs/cairo-suite/blob/alex/feat_check_sig/doc/IZkService%20Interface%20Documentation.md
   - contract code: https://github.com/BeL2Labs/cairo-suite/blob/alex/feat_check_sig/solidity-stark-verifier-cairo-os/src/apps/TxSigProof.sol
-  - contract address：0x158efe95e74480a7C1973B5D0530D7433C3695A9
+  - contract address: 0x8B1755c8cEA289025f8f0669028095c4F81021f7
   - Call submitArbitration to submit data to zk for verification
 
 ------- AFTER DEC 30 RELEASE ------
 
-- Subgraph sucks! (backward compatibility in case of event change, missing params in events, inability to call methods...).
-  - We should consider using subgraph only to LIST items (arbiters, transactions) but with minimal information,
-    for example information we need for search queries (pagination, search tx id...)
-  - Everything else should be handled by multicalls from the client app.
+- transactions list submit signature: should check if the current btc address is the same as the arbiter operator or transaction one?
 
 P2:
 - Bug: edit arbiter staking: reopen the dialog after a max stake red error: the "Stake value should be lower than 50 ELA. Now 72.5 ELA" is still displayed
@@ -49,10 +44,13 @@ P2:
   - need to create a backend
   - we already have bel2.org belayer2.org in zoho mail
 
-P2:
 - Ability to unregister dapp: 
   - TBD: from dapps list of from my dashboard?
 
+- Subgraph sucks! (backward compatibility in case of event change, missing params in events, inability to call methods...).
+  - We should consider using subgraph only to LIST items (arbiters, transactions) but with minimal information,
+    for example information we need for search queries (pagination, search tx id...)
+  - Everything else should be handled by multicalls from the client app.
 
 
 

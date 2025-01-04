@@ -5,7 +5,7 @@ import { CompensationClaim as CompensationClaimDTO } from '../subgraph/dto/compe
 import { SubgraphGQLResponse } from '../subgraph/gql-response';
 
 type FetchCompensationsResponse = SubgraphGQLResponse<{
-  compensations: CompensationClaimDTO[];
+  compensationClaims: CompensationClaimDTO[];
 }>;
 
 /**
@@ -52,7 +52,7 @@ export const fetchCompensations = async (chain: ChainConfig, start = 0, limit = 
       }
 
       const data = gqlResponse?.data;
-      pageCompensations.push(...(data?.compensations || []));
+      pageCompensations.push(...(data?.compensationClaims || []));
       total += pageCompensations?.length || 0;
 
       if (pageCompensations.length < resultsPerPage) {

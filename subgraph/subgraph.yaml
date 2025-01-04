@@ -102,7 +102,7 @@ dataSources:
       eventHandlers:
         - event: CompensationClaimed(indexed bytes32,indexed address,uint8)
           handler: handleCompensationClaimed
-        - event: CompensationWithdrawn(indexed bytes32)
+        - event: CompensationWithdrawn(indexed bytes32,indexed address,uint256)
           handler: handleCompensationWithdrawn
   - name: DAppRegistry
     kind: ethereum/contract

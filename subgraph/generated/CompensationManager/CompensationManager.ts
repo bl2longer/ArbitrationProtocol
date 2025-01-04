@@ -70,6 +70,14 @@ export class CompensationWithdrawn__Params {
   get claimId(): Bytes {
     return this._event.parameters[0].value.toBytes();
   }
+
+  get recipient(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get fee(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
 }
 
 export class ConfigManagerUpdated extends ethereum.Event {
