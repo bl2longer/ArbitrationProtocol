@@ -1,11 +1,12 @@
 ===> Target release date: dec 30
 
 P1:
-- Compensation page is totally broken.
-- Major debug issue: wagmi doesn't return contract error codes (error.data, etc)... ethers could.
-- TBD compensation list page: request compensation button? 
+- arbiter website needs to add a button to close the transaction for arbiters
+  - if the transaction is time to end , arbiter can click it to close it. If dapp didn't call complete method 
+  - if arbiters submitted signatures, after frozen time, he can click it
 
 - Submit arbitration requests by contract
+  - (illegal signature + failed arbitration)
   - zkService doc：https://github.com/BeL2Labs/cairo-suite/blob/alex/feat_check_sig/doc/IZkService%20Interface%20Documentation.md
   - contract code: https://github.com/BeL2Labs/cairo-suite/blob/alex/feat_check_sig/solidity-stark-verifier-cairo-os/src/apps/TxSigProof.sol
   - contract address: 0x8B1755c8cEA289025f8f0669028095c4F81021f7

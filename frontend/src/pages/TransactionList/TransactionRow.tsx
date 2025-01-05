@@ -4,6 +4,7 @@ import { TokenWithValue } from '@/components/base/TokenWithValue';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
+import { useArbiterFrozen } from '@/services/arbiters/hooks/contract/useArbiterFrozen';
 import { useActiveEVMChainConfig } from '@/services/chains/hooks/useActiveEVMChainConfig';
 import { CompensationType } from '@/services/compensations/model/compensation-claim';
 import { isSameEVMAddress } from '@/services/evm/evm';
@@ -12,7 +13,7 @@ import { transactionStatusLabelColor, transactionStatusLabelTitle } from '@/serv
 import { formatDate } from '@/utils/dates';
 import { formatAddress } from '@/utils/formatAddress';
 import moment from 'moment';
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { transactionFieldLabels } from './TransactionList';
 
 export const TransactionRow: FC<{
@@ -22,8 +23,13 @@ export const TransactionRow: FC<{
 }> = ({ transaction, onSubmitArbitration, onRequestCompensation }) => {
   const { evmAccount } = useWalletContext();
   const activeChain = useActiveEVMChainConfig();
+  const { fetchArbiterFrozen } = useArbiterFrozen();
+  const [isArbiterFrozen, setIsArbiterFrozen] = useState(undefined);
 
   const formatValue = (key: keyof typeof transactionFieldLabels, value: any) => {
+    if (key === 'id')
+      return value ? <div className='flex flex-row items-center'>{formatAddress(value)} <CopyField value={value} /></div> : "-";
+
     if (key === 'startTime' || key === 'deadline')
       return value ? <div className='flex flex-row items-center'>{formatDate(value)} <CopyField value={value} /></div> : "-";
 
@@ -33,14 +39,15 @@ export const TransactionRow: FC<{
     if (key === 'dapp' || key === 'arbiter')
       return value ? <div className='flex flex-row items-center'>{formatAddress(value)} <CopyField value={value} /></div> : "-";
 
-    if (key === 'btcTx')
-      return value ? <div className='flex flex-row items-center'>{formatAddress(value)} <CopyField value={value} /></div> : "-";
-
     if (key === 'depositedFee')
       return value ? <TokenWithValue amount={value} token={activeChain?.nativeCurrency} decimals={5} /> : "-";
 
     return value;
   };
+
+  useEffect(() => {
+    void fetchArbiterFrozen(transaction?.arbiter).then(setIsArbiterFrozen);
+  }, [transaction, fetchArbiterFrozen]);
 
   const canSubmitArbitration = useMemo(() => {
     return (
@@ -83,6 +90,21 @@ export const TransactionRow: FC<{
     );
   }, [transaction, evmAccount]);
 
+  /**
+   * Condition 1:
+   * - Only the arbiter.
+   * - If the transaction status is active, and the deadline has passed.
+   * 
+   * Condition 2:
+   * - Only the arbiter.
+   * - Status is submitted and arbiter is not frozen
+   */
+  const canCloseTransaction = useMemo(() => {
+    const condition1 = transaction.arbiter === evmAccount && transaction.status === "Active" && moment().isAfter(transaction.deadline);
+    const condition2 = transaction.arbiter === evmAccount && transaction.status === "Submitted" && isArbiterFrozen === false;
+    return condition1 || condition2;
+  }, [transaction, evmAccount, isArbiterFrozen]);
+
   return (
     <TableRow>
       {Object.keys(transactionFieldLabels).map((field: keyof Transaction) => (
@@ -106,28 +128,20 @@ export const TransactionRow: FC<{
         {/* Request failed arbitration compensation */}
         {
           canRequestFailedArbitrationCompensation &&
-          <Button onClick={() => onRequestCompensation("FailedArbitration")}>Request compensation</Button>
+          <Button onClick={() => onRequestCompensation("FailedArbitration")}>Request Failed Arbitration</Button>
         }
 
         {/* Request illegal signature compensation */}
         {
           canRequestIllegalSignatureCompensation &&
-          <Button onClick={() => onRequestCompensation("IllegalSignature")}>Request compensation</Button>
+          <Button onClick={() => onRequestCompensation("IllegalSignature")}>Request Illegal Signature</Button>
         }
 
-        {/* 
-If the tx is not in arbitration, only show the compensation button to bob. 
-If the tx is in arbitration , only show the button to timeout compensation user( alice )
- */}
-
-        {/* 
-        TODO:
-        If the transaction is registered but no arbitration is applied for, then Alice may collude with the arbiter, and Bob can apply for compensation here.
-        If Alice applies for arbitration, but the arbiter does not sign in time, then Alice can apply for compensation.
-        So these are different people.
-
-        So compensationReceiver and timeoutCompensationReceiver should be used differently.
-         */}
+        {/* Close transaction */}
+        {
+          canCloseTransaction &&
+          <Button onClick={() => onRequestCompensation("ArbitratorFee")}>Claim Arbiter Fee</Button>
+        }
 
       </TableCell>
     </TableRow>

@@ -3,12 +3,6 @@ import { useContractCall } from '@/services/evm/hooks/useContractCall';
 import { useCallback } from 'react';
 import { abi } from "../../../../../contracts/core/CompensationManager.sol/CompensationManager.json";
 
-// claimIllegalSignatureCompensation
-// claimTimeoutCompensation
-// claimFailedArbitrationCompensation
-// claimArbitratorFee
-// withdrawCompensation
-
 export const useCreateCompensationRequest = () => {
   const activeChain = useActiveEVMChainConfig();
   const { writeContract, isPending, isSuccess, error } = useContractCall();
@@ -49,10 +43,23 @@ export const useCreateCompensationRequest = () => {
     return !!receipt;
   }, [activeChain, writeContract]);
 
+  const claimArbitratorFee = useCallback(async (transactionId: string): Promise<boolean> => {
+    const { hash, receipt } = await writeContract({
+      contractAddress: activeChain?.contracts.compensationManager,
+      abi,
+      functionName: 'claimArbitratorFee',
+      args: [transactionId]
+    });
+
+    console.log("Claim failed arbitration compensation result:", hash, receipt)
+    return !!receipt;
+  }, [activeChain, writeContract]);
+
   return {
     claimIllegalSignatureCompensation,
     claimTimeoutCompensation,
     claimFailedArbitrationCompensation,
+    claimArbitratorFee,
     isPending, isSuccess, error
   };
 };

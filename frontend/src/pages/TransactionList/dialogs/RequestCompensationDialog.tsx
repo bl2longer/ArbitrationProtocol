@@ -11,7 +11,7 @@ export const RequestCompensationDialog: FC<{
   transaction?: Transaction;
   onHandleClose: () => void;
 }> = ({ transaction, compensationType, onHandleClose }) => {
-  const { claimIllegalSignatureCompensation, claimTimeoutCompensation, claimFailedArbitrationCompensation, isPending } = useCreateCompensationRequest();
+  const { claimIllegalSignatureCompensation, claimTimeoutCompensation, claimFailedArbitrationCompensation, claimArbitratorFee, isPending } = useCreateCompensationRequest();
 
   const handleRequestCompensation = async () => {
     try {
@@ -21,6 +21,9 @@ export const RequestCompensationDialog: FC<{
         await claimTimeoutCompensation(transaction.id);
       } else if (compensationType === "FailedArbitration") {
         // TODO await claimFailedArbitrationCompensation(transaction.id);
+      }
+      else if (compensationType === "ArbitratorFee") {
+        await claimArbitratorFee(transaction.id);
       }
 
       onHandleClose();
@@ -40,6 +43,8 @@ export const RequestCompensationDialog: FC<{
         return "The arbitration request has been signed by the arbiter but you consider the arbiter has signed the wrong transaction. Please confirm you want to request compensation.";
       case "IllegalSignature":
         return "No arbitration has been requested, but the arbiter has submitted a bitcoin transaction when it shouldnt have. Please confirm you want to request compensation.";
+      case "ArbitratorFee":
+        return "This transaction has not been handled on time by the arbiter. You can close it.";
       default:
         throw new Error(`Unknown compensation type: ${compensationType}`);
     }

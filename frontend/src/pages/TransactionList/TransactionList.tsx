@@ -18,11 +18,11 @@ import { SubmitSignatureDialog } from './dialogs/SubmitSignatureDialog';
 import { TransactionRow } from './TransactionRow';
 
 export const transactionFieldLabels: Partial<Record<keyof Transaction, string>> = {
+  id: 'ID',
   dapp: 'DApp',
   arbiter: 'Arbiter',
   startTime: 'Start Time',
   deadline: 'Deadline',
-  btcTx: 'BTC Tx',
   depositedFee: 'Deposited Fee',
   status: 'Status',
   // signature: 'Signature'
@@ -32,6 +32,7 @@ export default function TransactionList() {
   const { transactions: rawTransactions, refreshTransactions } = useTransactions();
   const [searchTerm, setSearchTerm] = useState('');
   const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
+  const [isCloseTransactionOpen, setIsCloseTransactionOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [requestedCompensationType, setRequestedCompensationType] = useState<CompensationType>(null);
 
@@ -90,7 +91,8 @@ export default function TransactionList() {
               onRequestCompensation={(compensationType) => {
                 setSelectedTransaction(tx);
                 setRequestedCompensationType(compensationType);
-              }} />)}
+              }}
+            />)}
           </TableBody>
         </Table>
       </div>
