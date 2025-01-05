@@ -59,20 +59,20 @@ export const TransactionRow: FC<{
     );
   }, [transaction, evmAccount]);
 
-  /* 
+  /*
    * If transaction deadline is passed, and transaction is in arbitration,
-   * then the timeoutCompensationReceiver can request a timeout compensation 
+   * then the timeoutCompensationReceiver can request a timeout compensation
    */
   const canRequestTimeoutCompensation = useMemo(() => {
     return (
       transaction.status === "Arbitrated" &&
-      transaction.timeoutCompensationReceiver === evmAccount &&
+      isSameEVMAddress(transaction.timeoutCompensationReceiver, evmAccount) &&
       // Follow the logic of transactionManager.isSubmitArbitrationOutTime()
       moment().isAfter(transaction.deadline) &&
       !!configSettings &&
       moment().isAfter(transaction.requestArbitrationTime.add(Number(configSettings.arbitrationTimeout), "seconds"))
     );
-  }, [transaction, evmAccount]);
+  }, [transaction, evmAccount, configSettings]);
 
   /**
    * Arbiter has submitted a signature but user considers this is a malicious activity from the arbiter.
@@ -81,18 +81,18 @@ export const TransactionRow: FC<{
   const canRequestFailedArbitrationCompensation = useMemo(() => {
     return (
       transaction.status === "Arbitrated" &&
-      transaction.timeoutCompensationReceiver === evmAccount
+      isSameEVMAddress(transaction.timeoutCompensationReceiver, evmAccount)
     );
   }, [transaction, evmAccount]);
 
   /**
-   * Nobody submitted an arbitration request, but the arbiter might have collided with one of the 
+   * Nobody submitted an arbitration request, but the arbiter might have collided with one of the
    * users to submit the bitcoin transaction. The other user can then submit the malicious transaction.
    */
   const canRequestIllegalSignatureCompensation = useMemo(() => {
     return (
       transaction.status !== "Arbitrated" &&
-      transaction.compensationReceiver === evmAccount
+      isSameEVMAddress(transaction.compensationReceiver, evmAccount)
     );
   }, [transaction, evmAccount]);
 
@@ -100,14 +100,14 @@ export const TransactionRow: FC<{
    * Condition 1:
    * - Only the arbiter.
    * - If the transaction status is active, and the deadline has passed.
-   * 
+   *
    * Condition 2:
    * - Only the arbiter.
    * - Status is submitted and arbiter is not frozen
    */
   const canCloseTransaction = useMemo(() => {
-    const condition1 = transaction.arbiter === evmAccount && transaction.status === "Active" && moment().isAfter(transaction.deadline);
-    const condition2 = transaction.arbiter === evmAccount && transaction.status === "Submitted" && isArbiterFrozen === false;
+    const condition1 = isSameEVMAddress(transaction.arbiter, evmAccount) && transaction.status === "Active" && moment().isAfter(transaction.deadline);
+    const condition2 = isSameEVMAddress(transaction.arbiter, evmAccount) && transaction.status === "Submitted" && isArbiterFrozen === false;
     return condition1 || condition2;
   }, [transaction, evmAccount, isArbiterFrozen]);
 
