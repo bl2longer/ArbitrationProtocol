@@ -20,6 +20,7 @@ describe("CompensationManager", function () {
     let compensationReceiver;
     let timeoutReceiver;
     let transactionId;
+    const duration = 30 * 24 * 60 * 60; // 30days
 
     const VALID_BTC_TX = "0x0200000000010153d6c3d859dfa233045771e55cea4e14b409c1393fa4917fb64f364b69ddf8fd00000000000000000001ec280000000000001976a9143d9ec353ad9df31924ffdb63027af35f135a4ae088ac054730440220287e9e41c54b48c30e46ea442aa80ab793dac56d3816dbb2a5ea465f0c6e26e1022079aed874e9774b23c98ad9a60b38f37918591d50af83f49b92e63b9ce74fdedf014730440220724b11c130ca4f290b8b09276b1d7c80248dfb8b0a9457843d3def3215998bb802202a7363e6dcd6025aba032859bc137e20c598cdca0cd90b22d4101e0c24b5b94901010100fd0a01632103cb0ee3eb3e9cdfdfdd6a5b276f7e480153caa491c590f8ac4a15dbde0442e6eaad2102005ec91740e2a7d8c06060a0ff7777630767d296160dc502e56eb2b6bb83d8a7ac67632103cb0ee3eb3e9cdfdfdd6a5b276f7e480153caa491c590f8ac4a15dbde0442e6eaad2102b1a82d3c01657ffa2b2b3433896386ac3fcad4cd04cffc74a90cba4c4bd8addeac676303ab0440b2752102005ec91740e2a7d8c06060a0ff7777630767d296160dc502e56eb2b6bb83d8a7ada8205a0737e8cbcfa24dcc118b0ab1e6d98bee17c57daa8a1686024159aae707ed6f876703b20440b2752103cb0ee3eb3e9cdfdfdd6a5b276f7e480153caa491c590f8ac4a15dbde0442e6eaac68686800000000";
     const VALID_SIGNATURE = "0x30440220287e9e41c54b48c30e46ea442aa80ab793dac56d3816dbb2a5ea465f0c6e26e1022079aed874e9774b23c98ad9a60b38f37918591d50af83f49b92e63b9ce74fdedf01";
@@ -88,7 +89,7 @@ describe("CompensationManager", function () {
         );
 
         const btcAddress = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
-        const deadline = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60; // 30 days from now
+        const deadline = Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60; // 356 days from now
         const feeRate = 1000; // 10%
         let tx = await arbitratorManager.connect(arbitrator).registerArbitratorByStakeETH(
             btcAddress,
@@ -108,7 +109,7 @@ describe("CompensationManager", function () {
 
         const registerTx = await transactionManager.connect(dapp).registerTransaction(
             arbitrator.address,
-            Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60, // 30 days from now
+            Math.floor(Date.now() / 1000) + duration, // 30 days from now
             compensationReceiver.address,
             { value: ethers.utils.parseEther("0.1") }
         );
@@ -145,7 +146,7 @@ describe("CompensationManager", function () {
             const receipt = await claimTx.wait();
             const claimEvent = receipt.events.find(e => e.event === 'CompensationClaimed');
             expect(claimEvent).to.exist;
-            expect(claimEvent.args[2]).to.equal(0); // IllegalSignature type
+            expect(claimEvent.args[7]).to.equal(0); // IllegalSignature type
 
             expect(await arbitratorManager.getAvailableStake(arbitrator.address)).to.equal(0);
 
@@ -276,6 +277,11 @@ describe("CompensationManager", function () {
             )).to.emit(compensationManager, "CompensationClaimed").withArgs(
                 claimId,
                 dapp.address,
+                arbitrator.address,
+                STAKE_AMOUNT,
+                [],
+                STAKE_AMOUNT,
+                compensationReceiver.address,
                 2
             );
 
@@ -413,7 +419,15 @@ describe("CompensationManager", function () {
 
             await expect(compensationManager.connect(dapp).claimTimeoutCompensation(
                 transactionId)).to.emit(compensationManager, "CompensationClaimed")
-                .withArgs(claimId, dapp.address , 1);
+                .withArgs(
+                    claimId,
+                    dapp.address,
+                    arbitrator.address,
+                    STAKE_AMOUNT,
+                    [],
+                    STAKE_AMOUNT,
+                    timeoutReceiver.address,
+                    1);
 
             expect(await arbitratorManager.getAvailableStake(arbitrator.address)).to.equal(0);
 
@@ -489,7 +503,15 @@ describe("CompensationManager", function () {
 
         it("should withdraw successfully", async function () {
             await expect(compensationManager.connect(compensationReceiver).withdrawCompensation(claimId, {value: withdrawFee}))
-                .to.emit(compensationManager, "CompensationWithdrawn").withArgs(claimId, compensationReceiver.address, withdrawFee);
+                .to.emit(compensationManager, "CompensationWithdrawn").withArgs(
+                    claimId,
+                    compensationReceiver.address,
+                    compensationReceiver.address,
+                    STAKE_AMOUNT,
+                    [],
+                    withdrawFee,
+                    0
+                );
         });
 
         it("should withdraw successfully with correct amount", async function () {
@@ -545,7 +567,7 @@ describe("CompensationManager", function () {
             await network.provider.send("evm_mine");
 
             await expect(compensationManager.connect(arbitrator).claimArbitratorFee(transactionId))
-                .to.emit(compensationManager, "CompensationClaimed").withArgs(claimId, arbitrator.address, 3);
+                .to.emit(compensationManager, "CompensationClaimed");
 
             const compensationClaim = await compensationManager.claims(claimId);
             expect(compensationClaim.claimer).to.equal(arbitrator.address);
@@ -567,13 +589,45 @@ describe("CompensationManager", function () {
             await expect(compensationManager.connect(arbitrator).claimArbitratorFee(transactionId))
                 .to.be.revertedWith("T2");
         });
-        it("should revert with frozen", async function () {
+        it("should revert because of frozen", async function () {
             await transactionManager.connect(arbitrator).submitArbitration(
                 transactionId,
                 VALID_SIGNATURE);
 
             await expect(compensationManager.connect(arbitrator).claimArbitratorFee(transactionId))
-                .to.be.revertedWith("A6");
+                .to.be.revertedWith("T2");
+        });
+        it("should revert because of arbitrated but not submitted", async function () {
+            await expect(compensationManager.connect(arbitrator).claimArbitratorFee(transactionId))
+                .to.be.revertedWith("T2");
+        });
+    });
+    describe("claimArbitratorFee Active transaction", function () {
+        it("should revert because of active tx not expired", async function () {
+            await expect(compensationManager.connect(arbitrator).claimArbitratorFee(transactionId))
+                .to.be.revertedWith("T2");
+        });
+        it("should claim successfully", async function () {
+            await network.provider.send("evm_increaseTime", [duration]);
+            await network.provider.send("evm_mine");
+
+            await expect(compensationManager.connect(arbitrator).claimArbitratorFee(transactionId))
+                .to.emit(compensationManager, "CompensationClaimed");
+
+            let claimId = ethers.utils.solidityKeccak256(
+                ["bytes32", "address", "address", "uint8"],
+                [transactionId, arbitrator.address, arbitrator.address, 3]);
+            const compensationClaim = await compensationManager.claims(claimId);
+            expect(compensationClaim.claimer).to.equal(arbitrator.address);
+            expect(compensationClaim.arbitrator).to.equal(arbitrator.address);
+            expect(compensationClaim.claimType).to.equal(3);
+            expect(compensationClaim.withdrawn).to.equal(true);
+            expect(compensationClaim.receivedCompensationAddress).to.equal(arbitrator.address);
+
+            const transaction = await transactionManager.getTransactionById(transactionId);
+            expect(transaction.status).to.equal(1);
+
+            expect(await arbitratorManager.isActiveArbitrator(arbitrator.address)).to.equal(true);
         });
     });
 });
