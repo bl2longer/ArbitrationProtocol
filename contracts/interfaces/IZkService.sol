@@ -16,4 +16,21 @@ interface IZkService {
     function getZkVerification(bytes32 id) external view returns (DataTypes.ZKVerification memory );
 
     function submitArbitration(bytes calldata pubKey, bytes calldata rawData, bytes[] calldata utxos, uint256 inputIndex, uint256 signatureIndex) external;
+
+    function fee() external view returns (uint256);
+
+    event TransactionStored(
+        bytes32 indexed id,
+        bytes pubKey,
+        bool verified
+    );
+
+    event ArbitrationReqStored(
+        bytes32 indexed id,
+        bytes pubKey,
+        bytes rawData,
+        bytes[] utxos,
+        uint256 inputIndex,
+        uint256 signatureIndex
+    );
 }

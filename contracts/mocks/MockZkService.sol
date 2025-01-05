@@ -106,4 +106,8 @@ contract MockZkService is IZkService {
         console.log("inputIndex", inputIndex);
         console.log("signatureIndex", signatureIndex);
     }
+
+    function fee() external pure override returns (uint256) {
+        return 0;
+    }
 }
