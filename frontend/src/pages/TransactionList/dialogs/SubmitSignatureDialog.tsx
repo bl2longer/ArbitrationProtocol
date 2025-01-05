@@ -53,7 +53,7 @@ export const SubmitSignatureDialog: FC<{
   }, [onHandleClose, signature, submitArbitration, transaction]);
 
   return <Dialog open={isOpen} onOpenChange={onHandleClose}  >
-    <DialogContent aria-description="Submit signature">
+    <DialogContent aria-description="Submit Arbitration">
       <DialogHeader>
         <DialogTitle>Submit Arbitration</DialogTitle>
       </DialogHeader>

@@ -8,7 +8,7 @@ import { ContractTransaction, UTXO } from "../dto/contract-transaction";
 
 export type TransactionStatus = "Unknown" | "Active" | "Completed" | "Arbitrated" | "Expired" | "Disputed" | "Submitted";
 
-export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline" | "depositedFee"> {
+export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline" | "depositedFee" | "requestArbitrationTime"> {
   @Expose() public id: string;
   @Expose() public txId: string;
   @Expose() public dapp: string;
@@ -24,6 +24,7 @@ export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline
   @Expose() public timeoutCompensationReceiver: string;
   @Expose() public utxos: UTXO[];
   @Expose() public script: string;
+  @Expose() @Transform(({ value }) => value && moment.unix(value)) public requestArbitrationTime: Moment;
 
   public static fromContractTransaction(contractTransaction: ContractTransaction): Transaction {
     if (contractTransaction?.dapp === zeroAddress)

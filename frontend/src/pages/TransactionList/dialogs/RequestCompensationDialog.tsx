@@ -112,7 +112,7 @@ export const RequestCompensationDialog: FC<{
   }, 5000);
 
   return <Dialog open={!isNullOrUndefined(compensationType)} onOpenChange={onHandleClose}  >
-    <DialogContent aria-description="Submit signature">
+    <DialogContent aria-description="Request compensation">
       <DialogHeader>
         <DialogTitle>Request compensation</DialogTitle>
       </DialogHeader>

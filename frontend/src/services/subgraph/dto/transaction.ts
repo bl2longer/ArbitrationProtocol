@@ -13,4 +13,5 @@ export interface Transaction {
   compensationReceiver: string;
   timeoutCompensationReceiver: string;
   script: string; // Bitcoin transaction script
+  requestArbitrationTime: number;
 }

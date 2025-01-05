@@ -611,6 +611,19 @@ export class Transaction extends Entity {
       this.set("script", Value.fromString(<string>value));
     }
   }
+
+  get requestArbitrationTime(): i32 {
+    let value = this.get("requestArbitrationTime");
+    if (!value || value.kind == ValueKind.NULL) {
+      return 0;
+    } else {
+      return value.toI32();
+    }
+  }
+
+  set requestArbitrationTime(value: i32) {
+    this.set("requestArbitrationTime", Value.fromI32(value));
+  }
 }
 
 export class ArbitrationRequest extends Entity {

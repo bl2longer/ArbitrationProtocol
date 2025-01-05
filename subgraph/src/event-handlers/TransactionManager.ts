@@ -20,6 +20,7 @@ export function handleArbitrationRequested(event: ArbitrationRequested): void {
   transaction.status = "Arbitrated";
   transaction.script = event.params.script.toHexString();
   transaction.timeoutCompensationReceiver = event.params.timeoutCompensationReceiver.toHexString();
+  transaction.requestArbitrationTime = event.block.timestamp.toI32();
 
   // BTC tx
   if (event.params.btcTx)

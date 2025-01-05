@@ -1,11 +1,6 @@
 ===> Target release date: dec 30
 
-- Submit arbitration requests by contract
-  - (illegal signature + failed arbitration)
-  - zkService doc：https://github.com/BeL2Labs/cairo-suite/blob/alex/feat_check_sig/doc/IZkService%20Interface%20Documentation.md
-  - contract code: https://github.com/BeL2Labs/cairo-suite/blob/alex/feat_check_sig/solidity-stark-verifier-cairo-os/src/apps/TxSigProof.sol
-  - contract address: 0x8B1755c8cEA289025f8f0669028095c4F81021f7
-  - Call submitArbitration to submit data to zk for verification
+- submit arbitration button should not show according to logic of transactionmanager.isSubmitArbitrationOutTime()
 
 ------- AFTER DEC 30 RELEASE ------
 

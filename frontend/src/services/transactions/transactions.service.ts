@@ -28,7 +28,7 @@ export const fetchTransactions = async (chain: ChainConfig, start: number, limit
           orderBy: createdAt,
           orderDirection: desc
         ) { 
-          id txId dapp arbiter startTime deadline btcTx btcTxHash 
+          id txId dapp arbiter startTime deadline btcTx btcTxHash requestArbitrationTime
           status depositedFee signature compensationReceiver timeoutCompensationReceiver
         }
       }`;

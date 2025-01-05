@@ -7,6 +7,7 @@ import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 import { useArbiterFrozen } from '@/services/arbiters/hooks/contract/useArbiterFrozen';
 import { useActiveEVMChainConfig } from '@/services/chains/hooks/useActiveEVMChainConfig';
 import { CompensationType } from '@/services/compensations/model/compensation-claim';
+import { useConfigManager } from '@/services/config-manager/hooks/useConfigManager';
 import { isSameEVMAddress } from '@/services/evm/evm';
 import { Transaction } from '@/services/transactions/model/transaction';
 import { transactionStatusLabelColor, transactionStatusLabelTitle } from '@/services/transactions/transactions.service';
@@ -25,6 +26,7 @@ export const TransactionRow: FC<{
   const activeChain = useActiveEVMChainConfig();
   const { fetchArbiterFrozen } = useArbiterFrozen();
   const [isArbiterFrozen, setIsArbiterFrozen] = useState(undefined);
+  const { configSettings } = useConfigManager();
 
   const formatValue = (key: keyof typeof transactionFieldLabels, value: any) => {
     if (key === 'id')
@@ -65,7 +67,10 @@ export const TransactionRow: FC<{
     return (
       transaction.status === "Arbitrated" &&
       transaction.timeoutCompensationReceiver === evmAccount &&
-      moment().isAfter(transaction.deadline)
+      // Follow the logic of transactionManager.isSubmitArbitrationOutTime()
+      moment().isAfter(transaction.deadline) &&
+      !!configSettings &&
+      moment().isAfter(transaction.requestArbitrationTime.add(Number(configSettings.arbitrationTimeout), "seconds"))
     );
   }, [transaction, evmAccount]);
 
