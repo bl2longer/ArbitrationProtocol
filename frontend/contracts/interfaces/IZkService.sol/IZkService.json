@@ -75,6 +75,39 @@
       ],
       "stateMutability": "view",
       "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "pubKey",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "rawData",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes[]",
+          "name": "utxos",
+          "type": "bytes[]"
+        },
+        {
+          "internalType": "uint256",
+          "name": "inputIndex",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "signatureIndex",
+          "type": "uint256"
+        }
+      ],
+      "name": "submitArbitration",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     }
   ],
   "bytecode": "0x",
