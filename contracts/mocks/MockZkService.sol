@@ -93,7 +93,13 @@ contract MockZkService is IZkService {
         verification.status = 0;
     }
 
-    function submitArbitration(bytes calldata pubKey, bytes calldata rawData, bytes[] calldata utxos, uint256 inputIndex, uint256 signatureIndex) external {
+    function submitArbitration(
+        bytes calldata  pubKey,
+        bytes calldata rawData,
+        bytes[] calldata utxos,
+        uint256 inputIndex,
+        uint256 signatureIndex
+    ) external payable returns (bytes32) {
         bytes32 evidence = sha256(rawData);
         DataTypes.ZKVerification storage verification = _verifications[evidence];
         verification.pubKey = pubKey;
@@ -105,6 +111,8 @@ contract MockZkService is IZkService {
         }
         console.log("inputIndex", inputIndex);
         console.log("signatureIndex", signatureIndex);
+
+        return evidence;
     }
 
     function fee() external pure override returns (uint256) {

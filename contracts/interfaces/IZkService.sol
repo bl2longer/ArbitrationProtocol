@@ -15,16 +15,26 @@ interface IZkService {
      */
     function getZkVerification(bytes32 id) external view returns (DataTypes.ZKVerification memory );
 
-    function submitArbitration(bytes calldata pubKey, bytes calldata rawData, bytes[] calldata utxos, uint256 inputIndex, uint256 signatureIndex) external;
+    // Submits arbitration-related data for verification to the ZK service.
+    function submitArbitration(
+        bytes calldata  pubKey,
+        bytes calldata rawData,
+        bytes[] calldata utxos,
+        uint256 inputIndex,
+        uint256 signatureIndex
+    ) external payable returns (bytes32);
 
+    // get the fee in wei for the verification
     function fee() external view returns (uint256);
 
+    // emit after the zkp service completed, save the result in the contract
     event TransactionStored(
         bytes32 indexed id,
         bytes pubKey,
         bool verified
     );
 
+    // emit after the data stored in submitArbitration
     event ArbitrationReqStored(
         bytes32 indexed id,
         bytes pubKey,
