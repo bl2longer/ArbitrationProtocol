@@ -1,10 +1,5 @@
 ===> Target release date: dec 30
 
-P1:
-- arbiter website needs to add a button to close the transaction for arbiters
-  - if the transaction is time to end , arbiter can click it to close it. If dapp didn't call complete method 
-  - if arbiters submitted signatures, after frozen time, he can click it
-
 - Submit arbitration requests by contract
   - (illegal signature + failed arbitration)
   - zkService doc：https://github.com/BeL2Labs/cairo-suite/blob/alex/feat_check_sig/doc/IZkService%20Interface%20Documentation.md

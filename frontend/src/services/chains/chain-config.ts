@@ -19,6 +19,7 @@ export type ChainConfig = {
     transactionManager: string;
     nftInfo: string;
     bPoSNFT: string;
+    zkpService: string;
   },
   // List of supported tokens for deposits
   tokens: TokenOrNative[];

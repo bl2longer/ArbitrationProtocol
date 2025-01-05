@@ -21,7 +21,8 @@ export const escTestnet: ChainConfig = {
     dappRegistry: "0xC9B498e769e1A7670f747beBB3A3b5172DD122D1",
     transactionManager: "0xD206be45b53Fa5C2065049c7a70B1aa1755a9475",
     nftInfo: "0x3fB20197AD095724662bF0AD499F3994bfD222D3",
-    bPoSNFT: "0x6C91352F89b169843D8B50E1A34B60a46e363841"
+    bPoSNFT: "0x6C91352F89b169843D8B50E1A34B60a46e363841",
+    zkpService: null
   },
   tokens: [
     escTestnetBtcToken,

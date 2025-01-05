@@ -86,13 +86,13 @@ export const transactionStatusLabelTitle = (transaction: Transaction): string =>
 
 export const transactionStatusLabelColor = (transaction: Transaction): StatusLabelColor => {
   switch (transaction.status) {
-    case "Active":
-    case "Arbitrated":
     case "Completed":
       return "green";
     case "Submitted":
-    case "Disputed":
+    case "Arbitrated":
+    case "Active":
       return "yellow";
+    case "Disputed":
     case "Expired":
       return "red";
     default:

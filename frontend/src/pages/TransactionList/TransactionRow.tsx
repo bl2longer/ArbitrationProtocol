@@ -52,7 +52,8 @@ export const TransactionRow: FC<{
   const canSubmitArbitration = useMemo(() => {
     return (
       transaction.status === "Arbitrated" &&
-      isSameEVMAddress(transaction.arbiter, evmAccount)
+      isSameEVMAddress(transaction.arbiter, evmAccount) &&
+      moment().isBefore(transaction.deadline)
     );
   }, [transaction, evmAccount]);
 
