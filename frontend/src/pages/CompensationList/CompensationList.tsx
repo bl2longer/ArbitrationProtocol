@@ -9,7 +9,7 @@ import { tooltips } from '@/config/tooltips';
 import { useCompensations } from '@/services/compensations/hooks/useCompensations';
 import { CompensationClaim } from '@/services/compensations/model/compensation-claim';
 import { RefreshCwIcon } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CompensationDetailsDialog } from './CompensationDetailsDialog';
 
 // TODO
@@ -24,6 +24,11 @@ export default function CompensationList() {
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
 
   const loading = useMemo(() => !compensations, [compensations]);
+
+  // Refresh list when page loads
+  useEffect(() => {
+    void refreshCompensations();
+  }, [refreshCompensations]);
 
   return (
     <PageContainer>
@@ -71,7 +76,7 @@ export default function CompensationList() {
                   {/* {compensation.receiver.slice(0, 10)}... */}
                 </TableCell>
                 <TableCell>
-                  {`${compensation.amount}`} ETH
+                  {`${compensation.ethAmount}`} ETH
                 </TableCell>
                 <TableCell>
                   {/* {compensationTypeMap[compensation.compensationType as keyof typeof compensationTypeMap]} */}

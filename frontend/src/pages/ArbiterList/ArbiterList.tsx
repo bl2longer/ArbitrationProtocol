@@ -12,7 +12,7 @@ import {
   Squares2X2Icon,
 } from '@heroicons/react/24/outline';
 import { RefreshCwIcon } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GridView } from './GridView';
 import { ListView } from './ListView';
@@ -61,6 +61,11 @@ export default function ArbiterList() {
   }, [rawArbiters, searchTerm, sortConfig]);
 
   const loading = useMemo(() => !rawArbiters, [rawArbiters]);
+
+  // Refresh list when page loads
+  useEffect(() => {
+    void refreshArbiters();
+  }, [refreshArbiters]);
 
   return (
     <PageContainer>

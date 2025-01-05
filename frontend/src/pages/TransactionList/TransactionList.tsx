@@ -12,7 +12,7 @@ import { useTransactions } from '@/services/transactions/hooks/useTransactions';
 import { Transaction } from '@/services/transactions/model/transaction';
 import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
 import { RefreshCwIcon } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { RequestCompensationDialog } from './dialogs/RequestCompensationDialog';
 import { SubmitSignatureDialog } from './dialogs/SubmitSignatureDialog';
 import { TransactionRow } from './TransactionRow';
@@ -47,6 +47,11 @@ export default function TransactionList() {
   }, [rawTransactions, searchTerm]);
 
   const loading = useMemo(() => isNullOrUndefined(transactions), [transactions]);
+
+  // Refresh list when page loads
+  useEffect(() => {
+    void refreshTransactions();
+  }, [refreshTransactions]);
 
   return (
     <PageContainer>

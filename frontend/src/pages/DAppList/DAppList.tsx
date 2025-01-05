@@ -10,7 +10,7 @@ import { tooltips } from '@/config/tooltips';
 import { useDApps } from '@/services/dapp-registry/hooks/useDApps';
 import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
 import { RefreshCwIcon } from 'lucide-react';
-import { FC, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DAppRow } from './DAppRow';
 
@@ -36,6 +36,11 @@ const DAppList: FC = () => {
   }, [rawDApps, searchTerm]);
 
   const loading = useMemo(() => isNullOrUndefined(dApps), [dApps]);
+
+  // Refresh list when page loads
+  useEffect(() => {
+    void refreshDapps();
+  }, [refreshDapps]);
 
   return (
     <PageContainer>

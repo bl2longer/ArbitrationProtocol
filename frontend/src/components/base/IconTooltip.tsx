@@ -10,8 +10,8 @@ export const IconTooltip: FC<{
   tooltip: string;
 }> = ({ iconClassName, iconSize = 12, title, tooltip }) => {
   return (
-    <HoverCard>
-      <HoverCardTrigger>
+    <HoverCard openDelay={200} closeDelay={100}>
+      <HoverCardTrigger >
         <InfoIcon size={iconSize} className={cn("cursor-help", iconClassName)} />
       </HoverCardTrigger>
       <HoverCardContent className="w-96">

@@ -35,7 +35,7 @@ export const CompensationDetailsDialog: FC<{
             <div>
               <h3 className="text-sm font-medium text-gray-700">Total Amount</h3>
               <p className="mt-1 text-lg font-semibold">
-                {`${compensation.amount}`} ETH
+                {`${compensation.ethAmount}`} ETH
               </p>
             </div>
 
