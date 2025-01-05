@@ -10,6 +10,7 @@ import { ChevronDownIcon, ChevronUpDownIcon, ChevronUpIcon } from '@heroicons/re
 import { ChevronsUpDown } from "lucide-react";
 import { FC } from "react";
 import { SortConfig } from "./ArbiterList";
+import { TokenWithValue } from "@/components/base/TokenWithValue";
 
 export const ListView: FC<{
   arbiters: ArbiterInfo[];
@@ -63,7 +64,9 @@ export const ListView: FC<{
               <div className="text-sm">{Number(arbiter.currentFeeRate) / 100}%</div>
             </TableCell>
             <TableCell className="whitespace-nowrap">
-              <div className="text-sm">{Number(arbiter.getTotalValue())} {activeChain?.nativeCurrency.symbol}</div>
+              <div className="text-sm">
+                <TokenWithValue amount={arbiter.getTotalValue()} token={activeChain?.nativeCurrency} />
+              </div>
             </TableCell>
             <TableCell className="whitespace-nowrap gap-1 flex">
               <StatusLabel

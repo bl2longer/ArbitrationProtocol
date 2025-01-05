@@ -1,5 +1,6 @@
 import { CopyField } from "@/components/base/CopyField";
 import { StatusLabel } from "@/components/base/StatusLabel";
+import { TokenWithValue } from "@/components/base/TokenWithValue";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { arbiterStatusLabelColor, arbiterStatusLabelTitle } from "@/services/arbiters/arbiters.service";
 import { ArbiterInfo } from "@/services/arbiters/model/arbiter-info";
@@ -45,7 +46,7 @@ const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
       </div>
       <div className="flex justify-between">
         <span className="text-gray-600">Stake</span>
-        <span>{arbiter.getTotalValue().toNumber()} {activeChain?.nativeCurrency.symbol}</span>
+        <TokenWithValue amount={arbiter.getTotalValue()} token={activeChain?.nativeCurrency} />
       </div>
       <div className="flex justify-between items-center">
         <span className="text-gray-600">Active transaction</span>

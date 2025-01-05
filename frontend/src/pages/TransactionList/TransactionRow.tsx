@@ -1,5 +1,6 @@
 import { CopyField } from '@/components/base/CopyField';
 import { StatusLabel } from '@/components/base/StatusLabel';
+import { TokenWithValue } from '@/components/base/TokenWithValue';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
@@ -10,7 +11,6 @@ import { Transaction } from '@/services/transactions/model/transaction';
 import { transactionStatusLabelColor, transactionStatusLabelTitle } from '@/services/transactions/transactions.service';
 import { formatDate } from '@/utils/dates';
 import { formatAddress } from '@/utils/formatAddress';
-import { formatBigNumber } from '@/utils/formatBigNumber';
 import moment from 'moment';
 import { FC, useMemo } from 'react';
 import { transactionFieldLabels } from './TransactionList';
@@ -37,7 +37,7 @@ export const TransactionRow: FC<{
       return value ? <div className='flex flex-row items-center'>{formatAddress(value)} <CopyField value={value} /></div> : "-";
 
     if (key === 'depositedFee')
-      return value ? <span>{formatBigNumber(transaction.depositedFee, 5)} {activeChain?.nativeCurrency.symbol}</span> : "-";
+      return value ? <TokenWithValue amount={value} token={activeChain?.nativeCurrency} decimals={5} /> : "-";
 
     return value;
   };

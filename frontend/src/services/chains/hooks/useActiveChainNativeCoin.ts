@@ -6,5 +6,5 @@ import { useActiveEVMChainConfig } from "./useActiveEVMChainConfig";
  */
 export const useActiveChainNativeCoin = (): TokenOrNative => {
   const activeChain = useActiveEVMChainConfig();
-  return activeChain?.tokens.find(t => t.isNative);
+  return activeChain?.nativeCurrency;
 }

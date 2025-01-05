@@ -10,12 +10,7 @@ export type ChainConfig = {
   subgraph: {
     endpoint: string;
   }
-  nativeCurrency: {
-    name: string; // eg: "Elastos"
-    symbol: string; // eg: "ELA"
-    decimals: number; // eg: 18
-    wrappedAddress: string; // eg: Address of Wrapped ELA on ESC
-  },
+  nativeCurrency: TokenOrNative;
   contracts: {
     arbitratorManager: string;
     compensationManager: string;

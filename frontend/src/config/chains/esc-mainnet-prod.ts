@@ -1,5 +1,5 @@
 import { ChainConfig } from "@/services/chains/chain-config";
-import { escBtcToken, escUSDCToken, escUSDTToken } from "@/services/tokens/tokens";
+import { escBtcToken, escELAToken, escUSDCToken, escUSDTToken } from "@/services/tokens/tokens";
 
 const hasCustomLocalSubgraphEndpoint = import.meta.env.VITE_APP_LOCAL_SUBGRAPH_ENDPOINT!.length > 0;
 const subgraphEndpoint = hasCustomLocalSubgraphEndpoint ? import.meta.env.VITE_APP_LOCAL_SUBGRAPH_ENDPOINT! : "https://graph.bel2.org/subgraphs/name/arbitrators-prod";
@@ -13,12 +13,7 @@ export const escMainnetProd: ChainConfig = {
   subgraph: {
     endpoint: subgraphEndpoint
   },
-  nativeCurrency: {
-    name: "ELA",
-    symbol: "ELA",
-    decimals: 18,
-    wrappedAddress: "0x517E9e5d46C1EA8aB6f78677d6114Ef47F71f6c4"
-  },
+  nativeCurrency: escELAToken,
   contracts: {
     arbitratorManager: "0x5EF9bd1506d64754FA864708A743Ab952159d5B8",
     compensationManager: "0x5a8b4adeE292095B329326Ac13b9b331611A486B",

@@ -1,12 +1,11 @@
 import BTCIcon from "@/assets/tokens/btc.svg";
+import ELAIcon from "@/assets/tokens/ela.svg";
 import USDCIcon from "@/assets/tokens/usdc.svg";
 import USDTIcon from "@/assets/tokens/usdt.svg";
 import { isDevelopmentEnv } from "@/config/env";
 import { ChainConfig } from "@/services/chains/chain-config";
 import BigNumber from "bignumber.js";
 import { TokenOrNative } from "./token-or-native";
-
-console.log("BTCIcon", BTCIcon)
 
 export const nativeCoin = (symbol: string, wrappedAddress: string, icon: string, displayDecimals: number, canPlaceOrders = true): TokenOrNative => {
   return { symbol, isNative: true, icon, displayDecimals, wrappedAddress, canPlaceOrders };
@@ -17,11 +16,13 @@ export const erc20Token = (symbol: string, contractAddress: string, icon: string
 }
 
 // ESC mainnet
+export const escELAToken = nativeCoin("ELA", "0x517E9e5d46C1EA8aB6f78677d6114Ef47F71f6c4", ELAIcon, 18, false);
 export const escBtcToken = nativeCoin("BTC", "0xDF4191Bfe8FAE019fD6aF9433E8ED6bfC4B90CA1", BTCIcon, 6, false);
 export const escUSDTToken = erc20Token("USDT", "0x0daddd286487f3a03Ea9A1b693585fD46cdCcF9F", USDTIcon, 18, 2, isDevelopmentEnv() ? 1 : 10, 100);
 export const escUSDCToken = erc20Token("USDC", "0xA06be0F5950781cE28D965E5EFc6996e88a8C141", USDCIcon, 6, 2, isDevelopmentEnv() ? 1 : 10, 100);
 
 // ESC testnet - tokens deployed by zhang xiaobin
+export const escTestnetELAToken = nativeCoin("tELA", "0x517E9e5d46C1EA8aB6f78677d6114Ef47F71f6c4", ELAIcon, 18, false);
 export const escTestnetBtcToken = nativeCoin("BTC", "0x2aD066FBFeCaD8D06Af389A36cE1A4cFa4711443", BTCIcon, 8, false);
 export const escTestnetUSDTToken = erc20Token("USDT", "0x892A0c0951091A8a072A4b652926D4A8875F9bcB", USDTIcon, 18, 2, isDevelopmentEnv() ? 1 : 10, 100);
 

@@ -1,5 +1,5 @@
 import { ChainConfig } from "@/services/chains/chain-config";
-import { escTestnetBtcToken, escTestnetUSDTToken } from "@/services/tokens/tokens";
+import { escTestnetBtcToken, escTestnetELAToken, escTestnetUSDTToken } from "@/services/tokens/tokens";
 
 const hasCustomLocalSubgraphEndpoint = import.meta.env.VITE_APP_LOCAL_SUBGRAPH_ENDPOINT!.length > 0;
 const escTestnetSubgraph = hasCustomLocalSubgraphEndpoint ? import.meta.env.VITE_APP_LOCAL_SUBGRAPH_ENDPOINT! : "https://graph.bel2.org/subgraphs/name/bel2-loan-esc-testnet";
@@ -13,12 +13,7 @@ export const escTestnet: ChainConfig = {
   subgraph: {
     endpoint: escTestnetSubgraph
   },
-  nativeCurrency: {
-    name: "ELA",
-    symbol: "ELA",
-    decimals: 18,
-    wrappedAddress: null
-  },
+  nativeCurrency: escTestnetELAToken,
   contracts: {
     configManager: "0x941796c51443493d2F5C03D3c40d3ff0F0B0BD30",
     arbitratorManager: "0x54eE4fc8951A936b6AA02079B76c497c0471c52A",

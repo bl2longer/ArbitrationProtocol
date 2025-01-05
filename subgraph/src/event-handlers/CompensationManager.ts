@@ -8,6 +8,7 @@ export function handleCompensationClaimed(event: CompensationClaimed): void {
   compensationClaim.claimType = contractClaimTypeToString(event.params.claimType);
   compensationClaim.ethAmount = event.params.ethAmount;
   compensationClaim.totalAmount = event.params.totalAmount;
+  compensationClaim.arbiter = event.params.arbitrator.toHexString();
   compensationClaim.receivedCompensationAddress = event.params.receivedCompensationAddress.toHexString();
   compensationClaim.withdrawn = false;
   compensationClaim.save();

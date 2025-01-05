@@ -2,15 +2,15 @@ import { IconTooltip } from '@/components/base/IconTooltip';
 import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitle } from '@/components/base/PageTitle';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
-import { StatusLabel } from '@/components/base/StatusLabel';
 import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { tooltips } from '@/config/tooltips';
 import { useCompensations } from '@/services/compensations/hooks/useCompensations';
 import { CompensationClaim } from '@/services/compensations/model/compensation-claim';
 import { RefreshCwIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { CompensationDetailsDialog } from './CompensationDetailsDialog';
+import { CompensationRow } from './CompensationRow';
 
 // TODO
 const compensationTypeMap = {
@@ -50,13 +50,16 @@ export default function CompensationList() {
                 ID
               </TableHead>
               <TableHead>
-                Receiver
+                Arbiter
               </TableHead>
               <TableHead>
-                Amount
+                Claimer
               </TableHead>
               <TableHead>
-                Type
+                Claim amount
+              </TableHead>
+              <TableHead>
+                Total amount
               </TableHead>
               <TableHead>
                 Status
@@ -68,34 +71,12 @@ export default function CompensationList() {
           </TableHeader>
           <TableBody>
             {compensations?.map((compensation, index) => (
-              <TableRow key={compensation.id} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                <TableCell>
-                  {compensation.id.slice(0, 10)}...
-                </TableCell>
-                <TableCell>
-                  {/* {compensation.receiver.slice(0, 10)}... */}
-                </TableCell>
-                <TableCell>
-                  {`${compensation.ethAmount}`} ETH
-                </TableCell>
-                <TableCell>
-                  {/* {compensationTypeMap[compensation.compensationType as keyof typeof compensationTypeMap]} */}
-                </TableCell>
-                <TableCell>
-                  <StatusLabel title={compensation.withdrawn ? 'Withdrawn' : 'Unclaimed'} color={compensation.withdrawn ? 'green' : 'yellow'} />
-                </TableCell>
-                <TableCell className="px-6 py-4 text-sm">
-                  {!compensation.withdrawn && (
-                    <Button
-                      onClick={() => {
-                        setSelectedCompensation(compensation);
-                        setIsDetailsDialogOpen(true);
-                      }}>
-                      Claim Compensation
-                    </Button>
-                  )}
-                </TableCell>
-              </TableRow>
+              <CompensationRow
+                key={compensation.id}
+                compensation={compensation}
+                index={index}
+                setSelectedCompensation={setSelectedCompensation}
+              />
             ))}
           </TableBody>
         </Table>

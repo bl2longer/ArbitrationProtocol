@@ -108,14 +108,14 @@ export const fetchArbiters = async (chain: ChainConfig, start = 0, limit = 100, 
 }
 
 export const arbiterStatusLabelTitle = (arbiter: ArbiterInfo): string => {
-  if (!arbiter.isActive)
+  if (!arbiter.getIsActive())
     return "Unavailable";
   else
     return "Available";
 }
 
 export const arbiterStatusLabelColor = (arbiter: ArbiterInfo): StatusLabelColor => {
-  if (!arbiter.isActive)
+  if (!arbiter.getIsActive())
     return "yellow";
   else
     return "green";

@@ -6,7 +6,7 @@ import moment, { Moment } from "moment";
 import { zeroAddress } from "viem";
 import { ContractArbiterInfo } from "../dto/contract-arbiter-info";
 
-export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdAt" | "currentFeeRate" | "pendingFeeRate"> {
+export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdAt" | "currentFeeRate" | "pendingFeeRate" | "isActive"> {
   @Expose() public id: string;
   @Expose() public address: string;
   @Expose() @Transform(({ value }) => tokenToReadableValue(value, 18)) public ethAmount: BigNumber; // Number of native coins not including NFT values
@@ -23,10 +23,25 @@ export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdA
   @Expose() public revenueEvmAddress: string;
   @Expose() public revenueBtcAddress: string;
   @Expose() public revenueBtcPubKey: string;
-  @Expose() public isActive: boolean;
+  @Expose() private isActive: boolean;
 
   public isPaused(): boolean {
     return this.paused;
+  }
+
+  /**
+   * Layer on top of the raw isActive field because subgraph isActive value is wrong when the arbiter
+   * status is not changed in the contract but time passed, so the current time < deadline condition is unchecked.
+   */
+  public getIsActive(): boolean {
+    if (this.isActive && moment().isSameOrAfter(this.getDeadlineDate()))
+      return false;
+
+    return this.isActive;
+  }
+
+  public setRawIsActive(rawIsActive: boolean) {
+    this.isActive = rawIsActive;
   }
 
   public getDeadlineDate(): Moment {
