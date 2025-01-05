@@ -11,7 +11,8 @@ import { Transaction } from "bitcoinjs-lib";
 
 export const satsPerBTC = new BigNumber("100000000");
 
-export const BTC_ZERO_TX_ID = "0000000000000000000000000000000000000000000000000000000000000000";
+export const BTC_ZERO_64 = "0000000000000000000000000000000000000000000000000000000000000000";
+export const BTC_ZERO_64_WITH_PREFIX = `0x${BTC_ZERO_64}`;
 
 export const btcToSats = (btc: BigNumber | string | number): BigNumber => {
   return satsPerBTC.multipliedBy(btc);
@@ -45,7 +46,7 @@ export const btcToEVMHexBytes = (btcHexBytes: string): string => {
 }
 
 export const isNullBitcoinTxId = (txId: string): boolean => {
-  return !txId || txId === BTC_ZERO_TX_ID;
+  return !txId || txId === BTC_ZERO_64;
 }
 
 export const isValidBtcTransactionHash = (hash: string): boolean => {

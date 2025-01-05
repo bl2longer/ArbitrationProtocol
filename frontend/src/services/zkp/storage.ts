@@ -2,7 +2,7 @@ import { BehaviorSubject } from "rxjs";
 
 export type ZKPRequestTarget = "borrower-borrow" | "lender-unlock" | "lender-time-unlock";
 
-type ZKPRequest = {
+export type ZKPRequest = {
   transactionId: string // Transaction for which we sent the ZKP request
   requestId: string; // Request ID sent to the ZKP service
 }

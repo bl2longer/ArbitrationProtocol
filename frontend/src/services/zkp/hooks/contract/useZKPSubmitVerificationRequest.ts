@@ -14,7 +14,7 @@ export const useZKPSubmitVerificationRequest = () => {
    * away after calling this method, compensation request must be sutmitted only after making
    * sure the verification process ha s completed, otherwise it will fail.
    */
-  const submitVerificationRequest = useCallback(async (): Promise<boolean> => {
+  const submitVerificationRequest = useCallback(async (): Promise<string> => {
     const { hash, receipt } = await writeContract({
       contractAddress: activeChain?.contracts.zkpService,
       abi,
@@ -23,7 +23,7 @@ export const useZKPSubmitVerificationRequest = () => {
     });
 
     console.log("Submit verification request result:", hash, receipt)
-    return !!receipt;
+    return "TODO RETURNED ID FROM CONTRACT";
   }, [activeChain, writeContract]);
 
   return { submitVerificationRequest, isPending, isSuccess, error };
