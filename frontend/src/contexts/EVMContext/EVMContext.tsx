@@ -20,7 +20,7 @@ const wagmiChains: Chain[] = chainList.map(c => ({
     }
   },
   nativeCurrency: {
-    name: c.nativeCurrency.name,
+    name: c.nativeCurrency.symbol,
     symbol: c.nativeCurrency.symbol,
     decimals: c.nativeCurrency.decimals,
   },
