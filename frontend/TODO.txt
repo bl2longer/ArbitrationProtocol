@@ -1,9 +1,29 @@
 ===> Target release date: dec 30
 
-- illegal signature request: user must provide btc tx hash -> we get raw tx (don't submit the btctx from Transaction!)
+- Submit compensation request  when transaction is completed = M8 error (no active).
+  - button should not have been shown (See "How to show compensation request buttons" below)
+
 - failed zkp verification (illegal signature):  
   - (aria) it seems the rawData not contain the witness
   - transaction.btcTx lacks signatures. This is the unsigned tx. The signed tx must be retrieved from the loan app somehow...
+
+- How to show compensation request buttons:
+  Conditions:
+  - claimIllegalSignatureCompensation：the dapp don't request arbitration, but the utxo is spent by alice and arbitrator.
+  - claimFailedArbitrationCompensation: the dapp requested arbitration, and arbitrator submitted signature, but the transaction can not spend
+  Details:
+  - how to know if "dapp requested arbitration"? transaction status == "Arbitrated" ?
+  - how to know a signature was submitted?
+  - how to know the utxo is spent by alice? By the way, who is alice on the arbiter portal, i don't know alice?
+  - how to know the transaction cannot spend?
+    "only the dapp knows whether the transaction can spend or not. I think dapp should choose"
+      => so the arbiter portal cannot decide to show buttons or not
+  Answers (Aria):
+  - status == active --> not request arbitration
+  - status == arbitrated --> requested arbitration but signature not submitted
+  - status == submitted --> signature submitted
+  Answer (sjun):
+  - always show the buttons, after arbitration
 
 - (zehua) We just had a voice conversation, and there were some issues with how to obtain the InputIndex. 
     In cases of evil, there may be multiple inputs. 

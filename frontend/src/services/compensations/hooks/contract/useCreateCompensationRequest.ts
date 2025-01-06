@@ -12,7 +12,11 @@ export const useCreateCompensationRequest = () => {
       contractAddress: activeChain?.contracts.compensationManager,
       abi,
       functionName: 'claimIllegalSignatureCompensation',
-      args: [arbiter, btcTx, evidence]
+      args: [
+        arbiter,
+        `0x${btcTx}`,
+        evidence
+      ]
     });
 
     console.log("Claim illegal signature compensation result:", hash, receipt)
@@ -36,7 +40,10 @@ export const useCreateCompensationRequest = () => {
       contractAddress: activeChain?.contracts.compensationManager,
       abi,
       functionName: 'claimFailedArbitrationCompensation',
-      args: [btcTx, evidence]
+      args: [
+        `0x${btcTx}`,
+        evidence
+      ]
     });
 
     console.log("Claim failed arbitration compensation result:", hash, receipt)
