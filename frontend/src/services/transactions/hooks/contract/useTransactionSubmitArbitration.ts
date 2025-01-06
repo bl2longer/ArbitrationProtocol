@@ -15,7 +15,7 @@ export const useTransactionSubmitArbitration = () => {
       functionName: 'submitArbitration',
       args: [
         txId,
-        `${signature}`
+        `0x${signature}`
       ]
     });
 

@@ -1,6 +1,9 @@
 ===> Target release date: dec 30
 
-- submit arbitration button should not show according to logic of transactionmanager.isSubmitArbitrationOutTime()
+- illegal signature request: user must provide btc tx hash -> we get raw tx (don't submit the btctx from Transaction!)
+- failed zkp verification (illegal signature):  
+  - (aria) it seems the rawData not contain the witness
+  - transaction.btcTx lacks signatures. This is the unsigned tx. The signed tx must be retrieved from the loan app somehow...
 
 - (zehua) We just had a voice conversation, and there were some issues with how to obtain the InputIndex. 
     In cases of evil, there may be multiple inputs. 
@@ -76,3 +79,6 @@ ERC721 NFT:
 Claim contract : 
 - 0x95c87f9c2381d43fc7019A2F7A2EA1dd8CA47230
 - Solidity: https://github.com/elastos/Elastos.ELA.StakeTicket.Solidity/blob/master/contracts/StakeTicket.sol
+
+ZPService:
+- Contract code: https://github.com/BeL2Labs/cairo-suite/blob/alex/feat_check_sig/solidity-stark-verifier-cairo-os/src/apps/TxSigProof.sol

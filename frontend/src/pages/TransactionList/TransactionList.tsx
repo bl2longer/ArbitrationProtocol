@@ -13,7 +13,10 @@ import { Transaction } from '@/services/transactions/model/transaction';
 import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
 import { RefreshCwIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { RequestCompensationDialog } from './dialogs/RequestCompensationDialog';
+import { RequestArbiterFeeCompensationDialog } from './dialogs/RequestArbiterFeeCompensationDialog';
+import { RequestFailedArbitrationCompensationDialog } from './dialogs/RequestFailedArbitrationCompensationDialog';
+import { RequestIllegalSignatureCompensationDialog } from './dialogs/RequestIllegalSignatureCompensationDialog';
+import { RequestTimeoutCompensationDialog } from './dialogs/RequestTimeoutCompensationDialog';
 import { SubmitSignatureDialog } from './dialogs/SubmitSignatureDialog';
 import { TransactionRow } from './TransactionRow';
 
@@ -32,9 +35,8 @@ export default function TransactionList() {
   const { transactions: rawTransactions, refreshTransactions } = useTransactions();
   const [searchTerm, setSearchTerm] = useState('');
   const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
-  const [isCloseTransactionOpen, setIsCloseTransactionOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-  const [requestedCompensationType, setRequestedCompensationType] = useState<CompensationType>(null);
+  const [openDialog, setOpenDialog] = useState<undefined | CompensationType>(undefined);
 
   const transactions = useMemo(() => {
     return rawTransactions?.filter(tx => {
@@ -90,7 +92,7 @@ export default function TransactionList() {
               }}
               onRequestCompensation={(compensationType) => {
                 setSelectedTransaction(tx);
-                setRequestedCompensationType(compensationType);
+                setOpenDialog(compensationType);
               }}
             />)}
           </TableBody>
@@ -100,8 +102,10 @@ export default function TransactionList() {
       {loading && <Loading />}
 
       <SubmitSignatureDialog transaction={selectedTransaction} isOpen={isSignDialogOpen} onHandleClose={() => setIsSignDialogOpen(false)} />
-      <RequestCompensationDialog transaction={selectedTransaction} compensationType={requestedCompensationType} onHandleClose={() => setRequestedCompensationType(null)} />
-
+      <RequestFailedArbitrationCompensationDialog isOpen={openDialog === "FailedArbitration"} transaction={selectedTransaction} onHandleClose={() => setOpenDialog(undefined)} />
+      <RequestIllegalSignatureCompensationDialog isOpen={openDialog === "IllegalSignature"} transaction={selectedTransaction} onHandleClose={() => setOpenDialog(undefined)} />
+      <RequestTimeoutCompensationDialog isOpen={openDialog === "Timeout"} transaction={selectedTransaction} onHandleClose={() => setOpenDialog(undefined)} />
+      <RequestArbiterFeeCompensationDialog isOpen={openDialog === "ArbitratorFee"} transaction={selectedTransaction} onHandleClose={() => setOpenDialog(undefined)} />
     </PageContainer>
   );
 }

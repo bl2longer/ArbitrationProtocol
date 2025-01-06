@@ -14,6 +14,9 @@ export type ParamsForZKPRequest = {
 export const getParamsForZKPRequest = async (rawBtcTx: string): Promise<ParamsForZKPRequest> => {
   console.log("Building ZKP fill order proof parameters");
 
+  if (!rawBtcTx)
+    throw new Error("getParamsForZKPRequest(): rawBtcTx cannot be empty");
+
   const bitcoinTransaction = Transaction.fromHex(rawBtcTx);
 
   // TBD: Apparently, the utxos array is composed of the raw transaction data (not byte reversed) of every parent transaction in "vin"
