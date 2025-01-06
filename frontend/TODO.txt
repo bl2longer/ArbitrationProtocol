@@ -2,6 +2,14 @@
 
 - submit arbitration button should not show according to logic of transactionmanager.isSubmitArbitrationOutTime()
 
+- (zehua) We just had a voice conversation, and there were some issues with how to obtain the InputIndex. 
+    In cases of evil, there may be multiple inputs. 
+
+    The correct way to determine the InputIndex is as follows:
+    1. get the UTXO from the contract, which is a transaction hash (tx hash)
+    2. check Utxo hash's position in the TxIn of the current BTC transaction which you want to call zkp verify
+    3. If it’s the first input, the index is 0; if it’s the second input, the index is 1, and so on. 
+
 ------- AFTER DEC 30 RELEASE ------
 
 - transactions list submit signature: should check if the current btc address is the same as the arbiter operator or transaction one?

@@ -1,34 +1,36 @@
-const zkpServiceUrl = "http://103.1.65.125:8018";
+import { Transaction } from "bitcoinjs-lib";
+import { getTransactionDetails } from "../nownodes-api/nownodes-api";
+
+export type ParamsForZKPRequest = {
+  utxos: string[];
+}
 
 /**
- * Requests the ZKP service to generate a proof for a given bitcoin transaction.
- * This is used for example when a user considers an arbiter has submitted a malicious bitcoin transaction. In 
- * this case, user submits the wrong transaction hash and this transaction gets verified.
- * 
- * This operation takes time on the zkp service side, so an id is first returned and later used to check the on going status.
+ * Retrieves and returns all info needed to be able to submit a proof to tke ZKP service.
+ * The required information is mostly found on bitcoin chain block/transaction/utxos.
+ *
+ * NOTE: the merkle proof is an array, one entry for each node of the tree that must be traversed between a leaf and the root (the path).
  */
-export const requestZKPVerification = (btcTxHash: string) => {
-  const endpoint = `${zkpServiceUrl}/prove`;
+export const getParamsForZKPRequest = async (rawBtcTx: string): Promise<ParamsForZKPRequest> => {
+  console.log("Building ZKP fill order proof parameters");
 
-  // TBD: apparently this is going to be replaced by a contract call. Don't implement this for now.
+  const bitcoinTransaction = Transaction.fromHex(rawBtcTx);
 
-  // The return value is the id for the signature verification of this transaction, which can be used to submit to the contract
-  //     POST 请求 Json：
-  //     {
-  //         "app": "tx_signature_proof",
-  //         "rawtx": "str...",
-  //         "utxos": ["str..."],
-  //         "input_index": 0,
-  //         "signature_index": 0,
-  //         "pubkey": "str..."
-  //     }
+  // TBD: Apparently, the utxos array is composed of the raw transaction data (not byte reversed) of every parent transaction in "vin"
+  const utxos: string[] = [];
+  for (const vin of bitcoinTransaction.ins) {
+    const txId = Buffer.from(vin.hash).reverse().toString('hex');
+    const txData = await getTransactionDetails(txId);
+    if (!txData || !txData.hex) {
+      console.error("getTransactionDetails error:", txData);
+      return null;
+    }
 
-  //     返回 Json：
-  //     {
-  //         "id": "0x..."
-  //     }
-  // used for dapp to apply for compensation
-  // For example, the arbitrator gave the wrong signature or signed a transaction that should not have been signed.
+    console.log("txData", txData)
+    utxos.push(txData.hex);
+  }
 
-
+  return {
+    utxos
+  };
 }

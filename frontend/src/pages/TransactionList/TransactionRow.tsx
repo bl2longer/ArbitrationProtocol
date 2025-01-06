@@ -118,7 +118,7 @@ export const TransactionRow: FC<{
           {formatValue(field, transaction[field as keyof Transaction])}
         </TableCell>
       ))}
-      <TableCell>
+      <TableCell className='flex flex-row gap-1'>
         {/* Transaction has an arbitration requested, so the arbiter can sign. */}
         {
           canSubmitArbitration &&

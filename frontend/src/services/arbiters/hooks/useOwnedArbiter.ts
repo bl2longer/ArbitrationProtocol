@@ -2,7 +2,7 @@
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
 import { useActiveEVMChainConfig } from '@/services/chains/hooks/useActiveEVMChainConfig';
 import { useBehaviorSubject } from '@/utils/useBehaviorSubject';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { BehaviorSubject } from 'rxjs';
 import { ArbiterInfo } from '../model/arbiter-info';
 import { useArbiterInfo } from './contract/useArbiterInfo';
@@ -29,11 +29,11 @@ export const useOwnedArbiter = () => {
   }, [activeChain, evmAccount, fetchArbiterInfo]);
 
   // Initial lazy fetch (first access)
-  useEffect(() => {
-    if (!state.wasFetched && !state.isPending) {
-      void fetchOwnedArbiter();
-    }
-  }, [fetchOwnedArbiter, state]);
+  // useEffect(() => {
+  //   if (!state.wasFetched && !state.isPending) {
+  //     void fetchOwnedArbiter();
+  //   }
+  // }, [fetchOwnedArbiter, state]);
 
   return { fetchOwnedArbiter, ...state };
 };

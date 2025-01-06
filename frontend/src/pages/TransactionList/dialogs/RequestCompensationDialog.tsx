@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useArbiterInfo } from '@/services/arbiters/hooks/contract/useArbiterInfo';
 import { BTC_ZERO_64_WITH_PREFIX } from '@/services/btc/btc';
 import { useCreateCompensationRequest } from '@/services/compensations/hooks/contract/useCreateCompensationRequest';
 import { CompensationType } from '@/services/compensations/model/compensation-claim';
@@ -7,6 +8,7 @@ import { Transaction } from '@/services/transactions/model/transaction';
 import { useZKPSubmitVerificationRequest } from '@/services/zkp/hooks/contract/useZKPSubmitVerificationRequest';
 import { useZKPVerificationStatus } from '@/services/zkp/hooks/contract/useZKPVerificationStatus';
 import { getZKPRequest, saveZKPRequest, ZKPRequest } from '@/services/zkp/storage';
+import { getParamsForZKPRequest } from '@/services/zkp/zkp.service';
 import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useInterval } from 'usehooks-ts';
@@ -16,19 +18,38 @@ export const RequestCompensationDialog: FC<{
   transaction?: Transaction;
   onHandleClose: () => void;
 }> = ({ transaction, compensationType, onHandleClose }) => {
-  const { claimIllegalSignatureCompensation, claimTimeoutCompensation, claimFailedArbitrationCompensation, claimArbitratorFee, isPending } = useCreateCompensationRequest();
+  const { claimIllegalSignatureCompensation, claimTimeoutCompensation, claimFailedArbitrationCompensation, claimArbitratorFee, isPending: isSubmittingCompensationRequest } = useCreateCompensationRequest();
   const [zkpRequest, setZkpRequest] = useState<ZKPRequest>(undefined); // Locally stored request we possibly already sent to the ZKP service for this transaction.
   const { fetchZKPVerificationStatus } = useZKPVerificationStatus();
-  const { submitVerificationRequest } = useZKPSubmitVerificationRequest();
+  const { submitVerificationRequest, isPending: isSubmittingZKPVerificationRequest } = useZKPSubmitVerificationRequest();
   const [isZKPVerificationReady, setIsZKPVerificationReady] = useState<boolean>(undefined);
+  const { fetchArbiterInfo } = useArbiterInfo(transaction?.arbiter);
 
   const handleRequestZKPVerification = async () => {
-    const requestId = await submitVerificationRequest();
+    const zkpRequestParams = await getParamsForZKPRequest(transaction.btcTx);
+    console.log("zkpRequestParams", zkpRequestParams);
+
+    const arbiter = await fetchArbiterInfo();
+    console.log("arbiter", arbiter);
+
+    const pubKey = arbiter.operatorBtcPubKey; // Always the ARBITER operator pubkey
+    const rawData = transaction.btcTx;
+    const utxos = zkpRequestParams.utxos;
+    const inputIndex = 0; // TODO?
+    const signatureIndex = 0; // TODO?
+
+    console.log("pubKey", pubKey);
+    console.log("rawData", transaction.btcTx);
+    console.log("utxos", utxos);
+
+    const requestId = await submitVerificationRequest(pubKey, rawData, utxos, inputIndex, signatureIndex);
     console.log("ZKP verification request submitted with ID:", requestId);
 
-    const submittedRequest: ZKPRequest = { transactionId: transaction.id, requestId };
-    saveZKPRequest(submittedRequest);
-    setZkpRequest(submittedRequest);
+    if (requestId) {
+      const submittedRequest: ZKPRequest = { transactionId: transaction.id, requestId };
+      saveZKPRequest(submittedRequest);
+      setZkpRequest(submittedRequest);
+    }
   }
 
   const handleRequestCompensation = async () => {
@@ -98,9 +119,9 @@ export const RequestCompensationDialog: FC<{
     if (compensationType === "Timeout" || compensationType === "ArbitratorFee")
       return true;
 
-    // For other kind of claim types, make sure we don't already have a pending request for this transaction.
-    return !zkpRequest;
-  }, [compensationType, zkpRequest]);
+    // For other kind of claim types, make sure we have a zk verification completed
+    return isZKPVerificationReady;
+  }, [compensationType, isZKPVerificationReady]);
 
   useEffect(() => {
     setZkpRequest(getZKPRequest(transaction?.id));
@@ -147,18 +168,18 @@ export const RequestCompensationDialog: FC<{
       }
 
       <div className="flex justify-end space-x-4">
-        <Button variant="ghost" disabled={isPending} onClick={onHandleClose}>
+        <Button variant="ghost" disabled={isSubmittingCompensationRequest || isSubmittingZKPVerificationRequest} onClick={onHandleClose}>
           Cancel
         </Button>
         {
           canSubmitZKVerificationRequest &&
-          <Button onClick={handleRequestZKPVerification} disabled={isPending || !canSubmitZKVerificationRequest}>
+          <Button onClick={handleRequestZKPVerification} disabled={isSubmittingZKPVerificationRequest || !canSubmitZKVerificationRequest}>
             Request verification
           </Button>
         }
         {
           canSubmitCompensationRequest &&
-          <Button onClick={handleRequestCompensation} disabled={isPending || !canSubmitCompensationRequest}>
+          <Button onClick={handleRequestCompensation} disabled={isSubmittingCompensationRequest || !canSubmitCompensationRequest}>
             Submit
           </Button>
         }

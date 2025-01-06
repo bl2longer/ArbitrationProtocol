@@ -6,7 +6,7 @@ export interface Transaction {
   startTime: number;
   deadline: number;
   btcTx: string;
-  btcTxHash: string;
+  // btcTxHash: string;
   status: string;
   depositedFee: string;
   signature: string;

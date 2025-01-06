@@ -14,15 +14,25 @@ export const useZKPSubmitVerificationRequest = () => {
    * away after calling this method, compensation request must be sutmitted only after making
    * sure the verification process ha s completed, otherwise it will fail.
    */
-  const submitVerificationRequest = useCallback(async (): Promise<string> => {
+  const submitVerificationRequest = useCallback(async (pubKey: string, rawData: string, utxos: string[], inputIndex: number, signatureIndex: number): Promise<string> => {
     const { hash, receipt } = await writeContract({
       contractAddress: activeChain?.contracts.zkpService,
       abi,
       functionName: 'submitArbitration',
-      args: [/* todo */],
+      args: [
+        `0x${pubKey}`,
+        `0x${rawData}`,
+        utxos.map(u => `0x${u}`),
+        inputIndex,
+        signatureIndex
+      ],
     });
 
-    console.log("Submit verification request result:", hash, receipt)
+    if (!hash)
+      return null;
+
+    console.log("Submit verification request result:", hash, receipt);
+
     return "TODO RETURNED ID FROM CONTRACT";
   }, [activeChain, writeContract]);
 

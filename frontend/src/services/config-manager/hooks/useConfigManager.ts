@@ -1,6 +1,6 @@
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
 import { useBehaviorSubject } from "@/utils/useBehaviorSubject";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { BehaviorSubject } from "rxjs";
 import { ConfigManagerSettings, useConfigManagerSettings } from "./contract/useConfigManagerSettings";
 
@@ -24,10 +24,10 @@ export const useConfigManager = () => {
   }, [activeChain, fetchAllSettings]);
 
   // Initial lazy fetch (first access)
-  useEffect(() => {
-    if (!state.wasFetched && !state.isPending)
-      void fetchConfigManagerSettings();
-  }, [fetchConfigManagerSettings, state]);
+  // useEffect(() => {
+  //   if (!state.wasFetched && !state.isPending)
+  //     void fetchConfigManagerSettings();
+  // }, [fetchConfigManagerSettings, state]);
 
   return { fetchConfigManagerSettings, ...state }
 }
