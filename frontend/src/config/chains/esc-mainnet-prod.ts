@@ -15,14 +15,14 @@ export const escMainnetProd: ChainConfig = {
   },
   nativeCurrency: escELAToken,
   contracts: {
-    arbitratorManager: "0x5EF9bd1506d64754FA864708A743Ab952159d5B8",
-    compensationManager: "0x5a8b4adeE292095B329326Ac13b9b331611A486B",
-    configManager: "0xF176E5aB219452E436E521213b6f7282E1D83C02",
-    dappRegistry: "0x88cA774F787399135BAbCbE395691cec36Abc72D",
-    transactionManager: "0x8161b6b21A71F412804F3BfdC09eF9C9f4E8085b",
+    arbitratorManager: "0x935729143Ba2a19eBd7dA4a5bC8502d1e247aC8A",
+    compensationManager: "0xB9c32892b38c64698673Ab69e445ee6C4e8A5267",
+    configManager: "0x6Ae8A5C3290AD85D87ba6E7fC3938c0A45Bc622A",
+    dappRegistry: "0x4Ad5DA5e8030cc29D931D756D2e88CD61E58a614",
+    transactionManager: "0xa5EEFBcc8b4a1fb55dd7F8d5422B688557641a56",
     nftInfo: "0x0a218CC87C48BA26D60f438860710f6c0D4AA050",
     bPoSNFT: "0x8e286664c6B8811015F936592Dd654e94Af3F494",
-    zkpService: null
+    zkpService: "0x8B1755c8cEA289025f8f0669028095c4F81021f7"
   },
   tokens: [
     escBtcToken,

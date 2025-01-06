@@ -1,28 +1,28 @@
 {
   "esc-prod": {
     "ArbitratorManager": {
-      "address": "0x5EF9bd1506d64754FA864708A743Ab952159d5B8",
-      "startBlock": 28454104
+      "address": "0x935729143Ba2a19eBd7dA4a5bC8502d1e247aC8A",
+      "startBlock": 28531750
     },
     "TransactionManager": {
-      "address": "0x8161b6b21A71F412804F3BfdC09eF9C9f4E8085b",
-      "startBlock": 28454120
+      "address": "0xa5EEFBcc8b4a1fb55dd7F8d5422B688557641a56",
+      "startBlock": 28531774
     },
     "CompensationManager": {
-      "address": "0x5a8b4adeE292095B329326Ac13b9b331611A486B",
-      "startBlock": 28454132
+      "address": "0xB9c32892b38c64698673Ab69e445ee6C4e8A5267",
+      "startBlock": 28531764
     },
     "DAppRegistry": {
-      "address": "0x88cA774F787399135BAbCbE395691cec36Abc72D",
-      "startBlock": 28454073
+      "address": "0x4Ad5DA5e8030cc29D931D756D2e88CD61E58a614",
+      "startBlock": 28531741
     },
     "BPosNFT": {
       "address": "0x8e286664c6B8811015F936592Dd654e94Af3F494",
       "startBlock": 18033297
     },
     "ConfigManager": {
-      "address": "0xF176E5aB219452E436E521213b6f7282E1D83C02",
-      "startBlock": 28454047
+      "address": "0x6Ae8A5C3290AD85D87ba6E7fC3938c0A45Bc622A",
+      "startBlock": 28531728
     }
   },
   "esc-staging": {
