@@ -8,25 +8,28 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { tooltips } from '@/config/tooltips';
 import { CompensationType } from '@/services/compensations/model/compensation-claim';
+import { useTransaction } from '@/services/transactions/hooks/contract/useTransaction';
 import { useTransactions } from '@/services/transactions/hooks/useTransactions';
 import { Transaction } from '@/services/transactions/model/transaction';
 import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
 import { RefreshCwIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { RequestArbiterFeeCompensationDialog } from './dialogs/RequestArbiterFeeCompensationDialog';
 import { RequestFailedArbitrationCompensationDialog } from './dialogs/RequestFailedArbitrationCompensationDialog';
 import { RequestIllegalSignatureCompensationDialog } from './dialogs/RequestIllegalSignatureCompensationDialog';
 import { RequestTimeoutCompensationDialog } from './dialogs/RequestTimeoutCompensationDialog';
 import { SubmitSignatureDialog } from './dialogs/SubmitSignatureDialog';
+import { TransactionDetailsDialog } from './dialogs/TransactionDetailsDialog';
 import { TransactionRow } from './TransactionRow';
 
 export const transactionFieldLabels: Partial<Record<keyof Transaction, string>> = {
   id: 'ID',
   dapp: 'DApp',
   arbiter: 'Arbiter',
-  startTime: 'Start Time',
+  //startTime: 'Start Time',
   deadline: 'Deadline',
-  depositedFee: 'Deposited Fee',
+  //depositedFee: 'Deposited Fee',
   status: 'Status',
   // signature: 'Signature'
 };
@@ -36,7 +39,9 @@ export default function TransactionList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-  const [openDialog, setOpenDialog] = useState<undefined | CompensationType>(undefined);
+  const [openDialog, setOpenDialog] = useState<undefined | CompensationType | "details">(undefined);
+  const { transactionId: urlTransactionId } = useParams();
+  const { fetchTransaction } = useTransaction(urlTransactionId);
 
   const transactions = useMemo(() => {
     return rawTransactions?.filter(tx => {
@@ -55,6 +60,17 @@ export default function TransactionList() {
   useEffect(() => {
     void refreshTransactions();
   }, [refreshTransactions]);
+
+  // If a transaction id is provided in the url, fetch it and open the dialog
+  useEffect(() => {
+    if (urlTransactionId) {
+      void fetchTransaction().then(tx => {
+        setSelectedTransaction(tx);
+        if (tx)
+          setOpenDialog("details");
+      });
+    }
+  }, [urlTransactionId, fetchTransaction]);
 
   return (
     <PageContainer>
@@ -86,13 +102,10 @@ export default function TransactionList() {
             {transactions?.map((tx, index) => <TransactionRow
               transaction={tx}
               key={index}
-              onSubmitArbitration={() => {
+              onShowTransactionDetails={() => {
                 setSelectedTransaction(tx);
-                setIsSignDialogOpen(true);
-              }}
-              onRequestCompensation={(compensationType) => {
-                setSelectedTransaction(tx);
-                setOpenDialog(compensationType);
+                window.history.replaceState({}, '', `${window.location.pathname}/${tx.id}`);
+                setOpenDialog("details");
               }}
             />)}
           </TableBody>
@@ -100,6 +113,21 @@ export default function TransactionList() {
       </div>
 
       {loading && <Loading />}
+
+      <TransactionDetailsDialog
+        transaction={selectedTransaction}
+        isOpen={openDialog === "details"}
+        onHandleClose={() => {
+          window.history.replaceState({}, '', `/transactions`);
+          setOpenDialog(undefined);
+        }}
+        onSubmitArbitration={() => {
+          setIsSignDialogOpen(true);
+        }}
+        onRequestCompensation={(compensationType) => {
+          setOpenDialog(compensationType);
+        }}
+      />
 
       <SubmitSignatureDialog transaction={selectedTransaction} isOpen={isSignDialogOpen} onHandleClose={() => setIsSignDialogOpen(false)} />
       <RequestFailedArbitrationCompensationDialog isOpen={openDialog === "FailedArbitration"} transaction={selectedTransaction} onHandleClose={() => setOpenDialog(undefined)} />

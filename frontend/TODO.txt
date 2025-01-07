@@ -1,11 +1,8 @@
-===> Target release date: dec 30
+- arbiter signature is wrong
+- all witness missing 01
 
-- Submit compensation request  when transaction is completed = M8 error (no active).
-  - button should not have been shown (See "How to show compensation request buttons" below)
-
-- failed zkp verification (illegal signature):  
-  - (aria) it seems the rawData not contain the witness
-  - transaction.btcTx lacks signatures. This is the unsigned tx. The signed tx must be retrieved from the loan app somehow...
+- Submit compensation request when transaction is completed = M8 error (no active).
+- button should not have been shown (See "How to show compensation request buttons" below)
 
 - How to show compensation request buttons:
   Conditions:
@@ -34,6 +31,10 @@
     3. If it’s the first input, the index is 0; if it’s the second input, the index is 1, and so on. 
 
 ------- AFTER DEC 30 RELEASE ------
+
+- Community requests:
+  - (luca) Wouldn't it be possible to trigger EE connection from mobile simply by clicking on the button?
+  - (nenchy) Also, once wallet connected via built in browser, no way to disconnect it from Arbiter app UI
 
 - transactions list submit signature: should check if the current btc address is the same as the arbiter operator or transaction one?
 
@@ -73,8 +74,6 @@ P2:
   - We should consider using subgraph only to LIST items (arbiters, transactions) but with minimal information,
     for example information we need for search queries (pagination, search tx id...)
   - Everything else should be handled by multicalls from the client app.
-
-
 
 ------ HELPER INFO ------
 

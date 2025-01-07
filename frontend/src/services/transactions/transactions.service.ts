@@ -78,7 +78,7 @@ export const fetchTransactions = async (chain: ChainConfig, start: number, limit
 export const transactionStatusLabelTitle = (transaction: Transaction): string => {
   switch (transaction.status) {
     case "Arbitrated":
-      return "Arbitration requested";
+      return "Arbitration req.";
     default:
       return transaction.status;
   }
