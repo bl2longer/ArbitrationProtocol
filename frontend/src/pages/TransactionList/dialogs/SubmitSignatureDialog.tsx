@@ -1,6 +1,9 @@
 import { EnsureWalletNetwork } from '@/components/base/EnsureWalletNetwork/EnsureWalletNetwork';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
+import { useArbiterInfo } from '@/services/arbiters/hooks/contract/useArbiterInfo';
+import { useArbiter } from '@/services/arbiters/hooks/useArbiter';
 import { parseTransactionHex, rsSignatureToDer } from '@/services/btc/btc';
 import { useBitcoinWalletAction } from '@/services/btc/hooks/useBitcoinWalletAction';
 import { useTransaction } from '@/services/transactions/hooks/contract/useTransaction';
@@ -14,11 +17,15 @@ export const SubmitSignatureDialog: FC<{
   isOpen: boolean;
   onHandleClose: () => void;
 }> = ({ transaction, isOpen, onHandleClose }) => {
+  const { bitcoinAccount } = useWalletContext();
   const [isSigning, setIsSigning] = useState(false);
   const [signature, setSignature] = useState<string>(null);
   const { submitArbitration, isPending } = useTransactionSubmitArbitration();
   const { signScriptData } = useBitcoinWalletAction();
   const { fetchTransaction } = useTransaction(transaction?.id);
+  const { fetchArbiterInfo } = useArbiterInfo(transaction?.arbiter);
+  const arbiter = useArbiter(transaction?.arbiter);
+  const isRightOperatorBtcWallet = bitcoinAccount === arbiter?.operatorBtcAddress;
 
   const handleSignData = useCallback(async () => {
     setIsSigning(true);
@@ -88,8 +95,8 @@ export const SubmitSignatureDialog: FC<{
         {
           !signature &&
           <EnsureWalletNetwork continuesTo='Sign' btcAccountNeeded bitcoinSignDataNeeded>
-            <Button onClick={handleSignData} disabled={isSigning}>
-              Bitcoin sign
+            <Button onClick={handleSignData} disabled={isSigning || !isRightOperatorBtcWallet}>
+              {isRightOperatorBtcWallet ? "Bitcoin sign" : "Wrong BTC wallet"}
             </Button>
           </EnsureWalletNetwork>
         }

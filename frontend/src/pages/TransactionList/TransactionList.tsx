@@ -37,9 +37,8 @@ export const transactionFieldLabels: Partial<Record<keyof Transaction, string>> 
 export default function TransactionList() {
   const { transactions: rawTransactions, refreshTransactions } = useTransactions();
   const [searchTerm, setSearchTerm] = useState('');
-  const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-  const [openDialog, setOpenDialog] = useState<undefined | CompensationType | "details">(undefined);
+  const [openDialog, setOpenDialog] = useState<undefined | CompensationType | "sign-arbitration" | "details">(undefined);
   const { transactionId: urlTransactionId } = useParams();
   const { fetchTransaction } = useTransaction(urlTransactionId);
 
@@ -122,14 +121,14 @@ export default function TransactionList() {
           setOpenDialog(undefined);
         }}
         onSubmitArbitration={() => {
-          setIsSignDialogOpen(true);
+          setOpenDialog("sign-arbitration");
         }}
         onRequestCompensation={(compensationType) => {
           setOpenDialog(compensationType);
         }}
       />
 
-      <SubmitSignatureDialog transaction={selectedTransaction} isOpen={isSignDialogOpen} onHandleClose={() => setIsSignDialogOpen(false)} />
+      <SubmitSignatureDialog transaction={selectedTransaction} isOpen={openDialog === "sign-arbitration"} onHandleClose={() => setOpenDialog(undefined)} />
       <RequestFailedArbitrationCompensationDialog isOpen={openDialog === "FailedArbitration"} transaction={selectedTransaction} onHandleClose={() => setOpenDialog(undefined)} />
       <RequestIllegalSignatureCompensationDialog isOpen={openDialog === "IllegalSignature"} transaction={selectedTransaction} onHandleClose={() => setOpenDialog(undefined)} />
       <RequestTimeoutCompensationDialog isOpen={openDialog === "Timeout"} transaction={selectedTransaction} onHandleClose={() => setOpenDialog(undefined)} />

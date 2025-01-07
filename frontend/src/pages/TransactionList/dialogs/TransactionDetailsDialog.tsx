@@ -67,7 +67,7 @@ export const TransactionDetailsDialog: FC<{
 
       {/* Actions */}
       {hasAvailableAction &&
-        <div className="flex pt-2 justify-end">
+        <div className="flex pt-2 justify-end gap-2">
           {/* Transaction has an arbitration requested, so the arbiter can sign. */}
           {
             canSubmitArbitration &&
