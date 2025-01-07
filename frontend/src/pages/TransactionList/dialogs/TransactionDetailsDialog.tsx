@@ -37,18 +37,21 @@ export const TransactionDetailsDialog: FC<{
           Transaction details
           <StatusLabel title={transactionStatusLabelTitle(transaction)} color={transactionStatusLabelColor(transaction)} />
         </DialogTitle>
-        <DialogDescription className="">{formatAddress(transaction.id, [14, 12])}</DialogDescription>
+        <DialogDescription className="flex gap-1 items-center">
+          {formatAddress(transaction.id, [14, 12])}
+          <CopyField value={transaction.id} />
+        </DialogDescription>
       </DialogHeader>
 
       <Table>
         <TableBody>
           <DetailsTableRow>
-            <DetailsTableCellWithLabel>dApp</DetailsTableCellWithLabel>
-            <DetailsTableCellWithValue>{formatAddress(transaction.dapp)} <CopyField value={transaction.dapp} /></DetailsTableCellWithValue>
+            <DetailsTableCellWithLabel>DApp</DetailsTableCellWithLabel>
+            <DetailsTableCellWithValue>{formatAddress(transaction.dapp, [10, 8])} <CopyField value={transaction.dapp} /></DetailsTableCellWithValue>
           </DetailsTableRow>
           <DetailsTableRow>
             <DetailsTableCellWithLabel>Arbiter</DetailsTableCellWithLabel>
-            <DetailsTableCellWithValue>{formatAddress(transaction.arbiter)} <CopyField value={transaction.arbiter} /></DetailsTableCellWithValue>
+            <DetailsTableCellWithValue>{formatAddress(transaction.arbiter, [10, 8])} <CopyField value={transaction.arbiter} /></DetailsTableCellWithValue>
           </DetailsTableRow>
           <DetailsTableRow>
             <DetailsTableCellWithLabel>Start time</DetailsTableCellWithLabel>

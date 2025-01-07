@@ -37,16 +37,16 @@ const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
     </div>
     <div className="space-y-3 text-sm">
       <div className="flex justify-between">
+        <span className="text-gray-600">Stake</span>
+        <TokenWithValue amount={arbiter.getTotalValue()} token={activeChain?.nativeCurrency} />
+      </div>
+      <div className="flex justify-between">
         <span className="text-gray-600">Fee Rate</span>
-        <span>{Number(arbiter.currentFeeRate) / 100}%</span>
+        <span>{Number(arbiter.currentFeeRate) / 100} %</span>
       </div>
       <div className="flex justify-between">
         <span className="text-gray-600">Deadline</span>
-        <span>{deadline ? formatDate(deadline) : '-'}</span>
-      </div>
-      <div className="flex justify-between">
-        <span className="text-gray-600">Stake</span>
-        <TokenWithValue amount={arbiter.getTotalValue()} token={activeChain?.nativeCurrency} />
+        <span>{deadline ? formatDate(deadline, "YYYY/MM/DD") : '-'}</span>
       </div>
       <div className="flex justify-between items-center">
         <span className="text-gray-600">Active transaction</span>
