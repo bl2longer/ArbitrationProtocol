@@ -99,7 +99,7 @@ export const RequestIllegalSignatureCompensationDialog: FC<{
       </DialogHeader>
 
       <div>
-        No arbitration has been requested, but the arbiter has submitted a bitcoin transaction when it shouldnt have. Please confirm you want to request compensation.
+        No arbitration has been requested, but if you think <b>the arbiter has submitted a bitcoin transaction when it shouldn't have</b>, you can provide the faulty bitcoin transaction ID and the ZKP service will check it.
       </div>
 
       {

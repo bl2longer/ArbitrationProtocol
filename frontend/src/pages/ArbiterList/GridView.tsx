@@ -66,21 +66,21 @@ const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
             <div className="flex justify-between items-center w-full">
               <span className="text-gray-600">EVM Address</span>
               <div>
-                <span className="font-mono">{formatAddress(arbiter.operatorEvmAddress)}</span>
+                <span>{formatAddress(arbiter.operatorEvmAddress)}</span>
                 <CopyField value={arbiter.operatorEvmAddress} />
               </div>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600">BTC Address</span>
               <div>
-                <span className="font-mono">{formatAddress(arbiter.operatorBtcAddress)}</span>
+                <span>{formatAddress(arbiter.operatorBtcAddress)}</span>
                 <CopyField value={arbiter.operatorBtcAddress} />
               </div>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600">BTC Pub Key</span>
               <div>
-                <span className="font-mono">{formatAddress(arbiter.operatorBtcPubKey)}</span>
+                <span>{formatAddress(arbiter.operatorBtcPubKey)}</span>
                 <CopyField value={arbiter.operatorBtcPubKey} />
               </div>
             </div>
