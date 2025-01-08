@@ -23,7 +23,8 @@ interface ITransactionManager {
     // Request arbitration
     function requestArbitration(
         bytes32 id,
-        bytes calldata btcTx,
+        bytes calldata signData,
+        DataTypes.SignDataType signDataType,
         bytes calldata script,
         address timeoutCompensationReceiver
     ) external;
@@ -67,7 +68,7 @@ interface ITransactionManager {
         bytes32 indexed txId,
         address indexed dapp,
         address arbitrator,
-        bytes btcTx,
+        bytes signData,
         bytes script,
         address timeoutCompensationReceiver);
     event ArbitrationSubmitted(
