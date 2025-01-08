@@ -271,8 +271,8 @@ describe("TransactionManager", function () {
             const transaction = await transactionManager.getTransactionById(transactionId);
             expect(transaction.status).to.equal(2);
             expect(transaction.arbitrator).to.equal(arbitrator.address);
-            expect(transaction.signData).to.equal(signData);
-            expect(transaction.signHash).to.equal(signHash);
+            expect(transaction.btcTx).to.equal(signData);
+            expect(transaction.btcTxHash).to.equal(signHash);
             expect(transaction.timeoutCompensationReceiver).to.equal(dapp.address);
 
             expect(await transactionManager.txHashToId(signHash)).to.equal(transactionId);

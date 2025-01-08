@@ -135,7 +135,7 @@ describe("CompensationManager", function () {
 
             let verification = await zkService.getZkVerification(VALID_EVIDENCE);
             expect(verification.pubKey).to.equal(VALID_PUB_KEY);
-            expect(verification.signHash).to.equal(VALID_TX_HASH);
+            expect(verification.txHash).to.equal(VALID_TX_HASH);
             expect(verification.signature).to.equal(VALID_SIGNATURE);
             expect(verification.verified).to.be.true;
 

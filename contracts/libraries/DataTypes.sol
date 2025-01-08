@@ -65,8 +65,8 @@ library DataTypes {
         address arbitrator;
         uint256 startTime;
         uint256 deadline;
-        bytes signData;               // Unsigned Bitcoin transaction
-        bytes32 signHash;         // double sha256 of the signData
+        bytes btcTx;               // Unsigned Bitcoin transaction
+        bytes32 btcTxHash;         // double sha256 of the signData
         TransactionStatus status;
         uint256 depositedFee;
         bytes signature;           // Arbitrator's signature
@@ -80,7 +80,7 @@ library DataTypes {
     struct ZKVerification {
         uint256 status;
         bytes pubKey;
-        bytes32 signHash;
+        bytes32 txHash; // sign hash of the raw data
         bytes signature;
         bool verified;
         UTXO[] utxos;

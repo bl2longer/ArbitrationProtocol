@@ -24,7 +24,7 @@ contract MockZkService is IZkService {
         verification.status = 0;
         verification.verified = true;
         verification.pubKey = pubKey;
-        verification.signHash = signHash;
+        verification.txHash = signHash;
         verification.signature = signature;
         delete verification.utxos;
         for (uint256 i = 0; i < utxos.length; i++) {
@@ -46,7 +46,7 @@ contract MockZkService is IZkService {
         DataTypes.ZKVerification storage verification = _verifications[evidence];
         verification.verified = false;
         verification.pubKey = pubKey;
-        verification.signHash = signHash;
+        verification.txHash = signHash;
         verification.signature = signature;
         verification.status = status;
         delete verification.utxos;
@@ -69,7 +69,7 @@ contract MockZkService is IZkService {
     function setEmptyRawData(bytes32 evidence) external {
         DataTypes.ZKVerification storage verification = _verifications[evidence];
         verification.pubKey = "0x1234";
-        verification.signHash = keccak256("test");
+        verification.txHash = keccak256("test");
         verification.signature = "0x5678";
         verification.verified = true;
         verification.status = 0;
@@ -78,7 +78,7 @@ contract MockZkService is IZkService {
     function setEmptyPubKey(bytes32 evidence) external {
         DataTypes.ZKVerification storage verification = _verifications[evidence];
         verification.pubKey = "";
-        verification.signHash = keccak256("test");
+        verification.txHash = keccak256("test");
         verification.signature = "0x5678";
         verification.verified = true;
         verification.status = 0;
@@ -87,7 +87,7 @@ contract MockZkService is IZkService {
     function setEmptyTxHash(bytes32 evidence) external {
         DataTypes.ZKVerification storage verification = _verifications[evidence];
         verification.pubKey = "0x5678";
-        verification.signHash = bytes32(0);
+        verification.txHash = bytes32(0);
         verification.signature = "0x9012";
         verification.verified = true;
         verification.status = 0;
@@ -103,7 +103,7 @@ contract MockZkService is IZkService {
         bytes32 evidence = sha256(rawData);
         DataTypes.ZKVerification storage verification = _verifications[evidence];
         verification.pubKey = pubKey;
-        verification.signHash = evidence;
+        verification.txHash = evidence;
         verification.signature = "0x5678";
         verification.verified = true;
         verification.status = 0;

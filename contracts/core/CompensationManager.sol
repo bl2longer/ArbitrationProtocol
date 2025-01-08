@@ -134,7 +134,7 @@ contract CompensationManager is
         }
 
         // Basic data validation
-        if(verification.pubKey.length == 0 || verification.signHash == bytes32(0)) {
+        if(verification.pubKey.length == 0 || verification.txHash == bytes32(0)) {
             revert (Errors.INVALID_VERIFICATION_DATA);
         }
         if (!verification.verified) {

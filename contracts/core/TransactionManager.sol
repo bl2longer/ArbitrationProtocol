@@ -348,8 +348,8 @@ contract TransactionManager is
         bytes32 signHash = sha256(abi.encodePacked(sha256(signData)));
 
         transaction.status = DataTypes.TransactionStatus.Arbitrated;
-        transaction.signData = signData;
-        transaction.signHash = signHash;
+        transaction.btcTx = signData;
+        transaction.btcTxHash = signHash;
         transaction.timeoutCompensationReceiver = timeoutCompensationReceiver;
         transaction.script = script;
         transaction.requestArbitrationTime = block.timestamp;
