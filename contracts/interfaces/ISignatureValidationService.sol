@@ -20,6 +20,8 @@ interface ISignatureValidationService {
     event submitted(
         bytes32 indexed id,
         bytes32 msghash,
+        uint8 signType, // 0 is ECDSA, 1 is Schnorr
         bytes signature, // if ECDSA it's DER encoded signature
         bytes pubkey);
+
 }
