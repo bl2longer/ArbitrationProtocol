@@ -9,19 +9,11 @@ import { useCompensations } from '@/services/compensations/hooks/useCompensation
 import { CompensationClaim } from '@/services/compensations/model/compensation-claim';
 import { RefreshCwIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { CompensationDetailsDialog } from './CompensationDetailsDialog';
 import { CompensationRow } from './CompensationRow';
-
-// TODO
-const compensationTypeMap = {
-  0: 'Illegal Signature',
-  1: 'Timeout Penalty'
-};
 
 export default function CompensationList() {
   const { refreshCompensations, compensations } = useCompensations();
   const [selectedCompensation, setSelectedCompensation] = useState<CompensationClaim | null>(null);
-  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
 
   const loading = useMemo(() => !compensations, [compensations]);
 
@@ -81,11 +73,6 @@ export default function CompensationList() {
           </TableBody>
         </Table>
       </div>
-
-      <CompensationDetailsDialog
-        compensation={selectedCompensation}
-        isOpen={isDetailsDialogOpen}
-        onClose={() => setIsDetailsDialogOpen(false)} />
     </PageContainer>
   );
 }
