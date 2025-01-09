@@ -139,6 +139,19 @@
         {
           "indexed": true,
           "internalType": "address",
+          "name": "newSignatureValidationService",
+          "type": "address"
+        }
+      ],
+      "name": "SignatureValidationServiceUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
           "name": "newTransactionManager",
           "type": "address"
         }
@@ -181,11 +194,6 @@
     {
       "inputs": [
         {
-          "internalType": "bytes",
-          "name": "btcTx",
-          "type": "bytes"
-        },
-        {
           "internalType": "bytes32",
           "name": "evidence",
           "type": "bytes32"
@@ -208,11 +216,6 @@
           "internalType": "address",
           "name": "arbitrator",
           "type": "address"
-        },
-        {
-          "internalType": "bytes",
-          "name": "btcTx",
-          "type": "bytes"
         },
         {
           "internalType": "bytes32",
@@ -285,6 +288,11 @@
           "internalType": "address",
           "name": "_arbitratorManager",
           "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_signatureValidationService",
+          "type": "address"
         }
       ],
       "name": "initialize",
@@ -314,6 +322,19 @@
         }
       ],
       "name": "setConfigManager",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_signatureValidationService",
+          "type": "address"
+        }
+      ],
+      "name": "setSignatureValidationService",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

@@ -21,7 +21,7 @@ export const SubmitSignatureDialog: FC<{
   const [isSigning, setIsSigning] = useState(false);
   const [signature, setSignature] = useState<string>(null);
   const { submitArbitration, isPending } = useTransactionSubmitArbitration();
-  const { signScriptData } = useBitcoinWalletAction();
+  const { unsafeSignData } = useBitcoinWalletAction();
   const { fetchTransaction } = useTransaction(transaction?.id);
   const { fetchArbiterInfo } = useArbiterInfo(transaction?.arbiter);
   const arbiter = useArbiter(transaction?.arbiter);
@@ -44,11 +44,11 @@ export const SubmitSignatureDialog: FC<{
 
     console.log("Hash for witness:", hashForWitness)
 
-    const _signature = await signScriptData(hashForWitness);
+    const _signature = await unsafeSignData(hashForWitness);
     setSignature(_signature);
 
     setIsSigning(false);
-  }, [signScriptData, transaction, fetchTransaction]);
+  }, [unsafeSignData, transaction, fetchTransaction]);
 
   const handleSubmitSignature = useCallback(async () => {
     const derSignature = rsSignatureToDer(signature);

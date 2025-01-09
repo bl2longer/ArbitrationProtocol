@@ -36,7 +36,7 @@ export const Navbar: FC = () => {
               <span className="text-xl font-bold text-gray-800">
                 Arbiter Portal
               </span>
-              <div className='absolute -bottom-1 text-sm text-primary cursor-help font-bold -right-3' style={{ bottom: "0rem" }}>
+              <div className='absolute -bottom-1 text-sm text-primary cursor-help font-bold left-0' style={{ bottom: "0rem" }}>
                 <ChildTooltip title="Beta version" tooltip="This is a beta version. Most functions are limited and usable coin amounts are capped.">
                   BETA
                 </ChildTooltip>
@@ -52,7 +52,7 @@ export const Navbar: FC = () => {
                     item.href === location.pathname
                       ? 'border-primary text-gray-900'
                       : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
-                    'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium'
+                    'inline-flex items-center border-b-2 px-1 pt-1 font-normal'
                   )}
                 >
                   {item.name}

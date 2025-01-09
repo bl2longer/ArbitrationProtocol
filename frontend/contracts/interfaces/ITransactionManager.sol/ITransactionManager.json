@@ -27,7 +27,7 @@
         {
           "indexed": false,
           "internalType": "bytes",
-          "name": "btcTx",
+          "name": "signData",
           "type": "bytes"
         },
         {
@@ -537,8 +537,13 @@
         },
         {
           "internalType": "bytes",
-          "name": "btcTx",
+          "name": "signData",
           "type": "bytes"
+        },
+        {
+          "internalType": "enum DataTypes.SignDataType",
+          "name": "signDataType",
+          "type": "uint8"
         },
         {
           "internalType": "bytes",

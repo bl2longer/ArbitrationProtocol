@@ -17,7 +17,7 @@ export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline
   @Expose() @Transform(({ value }) => value && moment.unix(value)) public startTime: Moment;
   @Expose() @Transform(({ value }) => value && moment.unix(value)) public deadline: Moment;
   @Expose() public btcTx: string;
-  // @Expose() public btcTxHash: string;
+  public btcTxHash?: string; // Only when fetched from contract
   @Expose() @Transform(({ value }) => value && tokenToReadableValue(value, 18)) public depositedFee: BigNumber;
   @Expose() public signature: string;
   @Expose() public compensationReceiver: string;
@@ -34,7 +34,7 @@ export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline
 
     transaction.id = contractTransaction.arbitrator;
     transaction.btcTx = contractTransaction.btcTx;
-    //transaction.btcTxHash = contractTransaction.btcTxHash;
+    transaction.btcTxHash = contractTransaction.btcTxHash;
     transaction.compensationReceiver = contractTransaction.compensationReceiver;
     transaction.timeoutCompensationReceiver = contractTransaction.timeoutCompensationReceiver;
     transaction.utxos = contractTransaction.utxos;

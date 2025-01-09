@@ -75,7 +75,7 @@ export const RequestIllegalSignatureCompensationDialog: FC<{
 
   const handleRequestCompensation = async () => {
     try {
-      await claimIllegalSignatureCompensation(transaction.arbiter, transaction.btcTx, zkpRequest.requestId);
+      await claimIllegalSignatureCompensation(transaction.arbiter, zkpRequest.requestId);
       onHandleClose();
     } catch (error) {
       console.error('Error requesting compensation:', error);

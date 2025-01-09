@@ -1,5 +1,4 @@
-- arbiter signature is wrong
-- all witness missing 01
+- Pausing arbiter when the arbiter is unavailable should not be allowed. Pause button should be disabled.
 
 - Submit compensation request when transaction is completed = M8 error (no active).
 - button should not have been shown (See "How to show compensation request buttons" below)
@@ -21,29 +20,28 @@
   - status == submitted --> signature submitted
   Answer (sjun):
   - always show the buttons, after arbitration
-
-- (zehua) We just had a voice conversation, and there were some issues with how to obtain the InputIndex. 
-    In cases of evil, there may be multiple inputs. 
-
-    The correct way to determine the InputIndex is as follows:
-    1. get the UTXO from the contract, which is a transaction hash (tx hash)
-    2. check Utxo hash's position in the TxIn of the current BTC transaction which you want to call zkp verify
-    3. If it’s the first input, the index is 0; if it’s the second input, the index is 1, and so on. 
-
-------- AFTER DEC 30 RELEASE ------
+  BEN:
+  - Unclear, we cannot jsut show all the buttons... need refinement after the releaase
 
 - Community requests:
   - (luca) Wouldn't it be possible to trigger EE connection from mobile simply by clicking on the button?
   - (nenchy) Also, once wallet connected via built in browser, no way to disconnect it from Arbiter app UI
 
+- (zehua) There are some issues with how to obtain the InputIndex. 
+    - In cases of evil, there may be multiple inputs. 
+    - The correct way to determine the InputIndex is as follows:
+        1. get the UTXO from the contract, which is a transaction hash (tx hash)
+        2. check Utxo hash's position in the TxIn of the current BTC transaction which you want to call zkp verify
+        3. If it’s the first input, the index is 0; if it’s the second input, the index is 1, and so on. 
+
+
 - transactions list submit signature: should check if the current btc address is the same as the arbiter operator or transaction one?
 
-P2:
 - Bug: edit arbiter staking: reopen the dialog after a max stake red error: the "Stake value should be lower than 50 ELA. Now 72.5 ELA" is still displayed
 - arbiter registration: hide "operator" (self by default)
 - "Install Metamask" should look like a real button
 - Transaction list still seems to reload every time the page is entered.
-- @benjaminpiette user cannot know the public key of the unisat btc wallet, maybe we should add "Import " button here?
+- user cannot know the public key of the unisat btc wallet, maybe we should add "Import " button here?
   - (in edit arbiter dialog)
 - Add a footer:
       BeL2 Website
