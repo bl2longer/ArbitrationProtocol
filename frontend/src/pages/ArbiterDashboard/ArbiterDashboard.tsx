@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArbiterPreview } from './ArbiterPreview';
 
 const ArbiterDashboard: FC = () => {
-  const { fetchOwnedArbiter, ownedArbiter, isPending } = useOwnedArbiter();
+  const { fetchOwnedArbiter, ownedArbiter, isPending: isFetchingArbiter } = useOwnedArbiter();
   const navigate = useNavigate();
   const { pauseArbiter, isPending: isPausing } = useArbiterPause();
   const { resumeArbiter, isPending: isResuming } = useArbiterResume();
@@ -37,28 +37,28 @@ const ArbiterDashboard: FC = () => {
             <RefreshCwIcon />
           </Button>
           {
-            !isPending && !ownedArbiter &&
+            !isFetchingArbiter && !ownedArbiter &&
             <EnsureWalletNetwork continuesTo='Register Arbiter'>
               <Button onClick={() => navigate("/register-arbiter")}>Register arbiter</Button>
             </EnsureWalletNetwork>
           }
           {
-            !isPending && ownedArbiter && !ownedArbiter.isPaused() &&
+            !isFetchingArbiter && ownedArbiter && !ownedArbiter.isPaused() &&
             <EnsureWalletNetwork continuesTo='Pause'>
-              <Button onClick={handlePauseArbiter} disabled={isPausing}>Pause</Button>
+              <Button onClick={handlePauseArbiter} disabled={isPausing || !ownedArbiter.getIsActive()}>Pause</Button>
             </EnsureWalletNetwork>
           }
           {
-            !isPending && ownedArbiter && ownedArbiter.isPaused() &&
+            !isFetchingArbiter && ownedArbiter && ownedArbiter.getIsActive() && ownedArbiter.isPaused() &&
             <EnsureWalletNetwork continuesTo='Resume'>
-              <Button onClick={handleResumeArbiter} disabled={isResuming}>Resume</Button>
+              <Button onClick={handleResumeArbiter} disabled={isResuming || !ownedArbiter.getIsActive()}>Resume</Button>
             </EnsureWalletNetwork>
           }
         </div>
       </PageTitleRow>
-      {isPending && <Loading />}
+      {isFetchingArbiter && <Loading />}
       {
-        !isPending && <>
+        !isFetchingArbiter && <>
           {ownedArbiter && <ArbiterPreview arbiter={ownedArbiter} />}
           {!ownedArbiter && <div>No arbiter owned yet</div>}
         </>

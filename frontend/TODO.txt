@@ -44,11 +44,6 @@
       Elastos website (Elastos.info) 
       Need help? Join TG (direct to Elastos Telegram) 
 
-- Transaction list:
-  - Submit arbitration:
-    - There is a data that need to be signed, you should call the wallet to sign it
-    - Pending feature completion by xiaobin
-
 - Email service for arbiters:
   - "Arbiter can register an email for the arbitration notification, we need a background script to check the events"
   - "new arbitration request" event. poll subgraph (better?) or listen to evm events.
