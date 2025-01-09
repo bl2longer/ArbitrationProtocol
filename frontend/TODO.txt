@@ -1,5 +1,3 @@
-- arbiter registration: hide "operator" (self by default)
-- Transaction list still seems to reload every time the page is entered.
 
 ------------------------------------------
 
@@ -20,14 +18,6 @@ TO BE CLARIFIED FIRST:
 P2:
 
 - Edit arbiter operator and revenue dialogs: add a import button for btc public key
-
-- Add a footer:
-      BeL2 Website
-      BeL2 github
-      BeL2 twitter
-      BeL2 lending app
-      Elastos website (Elastos.info) 
-      Need help? Join TG (direct to Elastos Telegram) 
 
 - Bug: edit arbiter staking: reopen the dialog after a max stake red error: the "Stake value should be lower than 50 ELA. Now 72.5 ELA" is still displayed
 
@@ -61,6 +51,8 @@ P2 (blocked):
 ------------------------------------------
 
 P3:
+
+- arbiter registration: hide "operator" (self by default)
 
 - Ability to unregister dapp: 
   - TBD: from dapps list of from my dashboard?
