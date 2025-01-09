@@ -26,13 +26,13 @@ export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline
   @Expose() public script: string;
   @Expose() @Transform(({ value }) => value && moment.unix(value)) public requestArbitrationTime: Moment;
 
-  public static fromContractTransaction(contractTransaction: ContractTransaction): Transaction {
+  public static fromContractTransaction(contractTransaction: ContractTransaction, txId: string): Transaction {
     if (contractTransaction?.dapp === zeroAddress)
       return undefined;
 
     const transaction = new Transaction();
 
-    transaction.id = contractTransaction.arbitrator;
+    transaction.id = txId;
     transaction.btcTx = contractTransaction.btcTx;
     transaction.btcTxHash = contractTransaction.btcTxHash;
     transaction.compensationReceiver = contractTransaction.compensationReceiver;
@@ -41,6 +41,7 @@ export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline
     transaction.script = contractTransaction.script;
     transaction.signature = contractTransaction.signature;
     transaction.dapp = contractTransaction.dapp;
+    transaction.status = this.fromContractStatus(contractTransaction.status);
     transaction.arbiter = contractTransaction.arbitrator;
     transaction.startTime = moment.unix(parseInt(contractTransaction.startTime));
     transaction.deadline = moment.unix(parseInt(contractTransaction.deadline));
@@ -48,5 +49,17 @@ export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline
     // TODO transaction.status = contractTransaction.status;
 
     return transaction;
+  }
+
+  public static fromContractStatus(contractStatus: number): TransactionStatus {
+    switch (contractStatus) {
+      case 0: return "Active";
+      case 1: return "Completed";
+      case 2: return "Arbitrated";
+      case 3: return "Expired";
+      case 4: return "Disputed";
+      case 5: return "Submitted";
+      default: return "Unknown";
+    }
   }
 }

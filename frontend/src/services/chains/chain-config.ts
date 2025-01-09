@@ -21,6 +21,7 @@ export type ChainConfig = {
     bPoSNFT: string;
     zkpService: string;
     signatureValidation: string;
+    multicall3: string;
   },
   // List of supported tokens for deposits
   tokens: TokenOrNative[];

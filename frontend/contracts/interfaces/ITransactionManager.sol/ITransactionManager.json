@@ -455,6 +455,25 @@
     {
       "inputs": [
         {
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getTransactionStatus",
+      "outputs": [
+        {
+          "internalType": "enum DataTypes.TransactionStatus",
+          "name": "status",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "address",
           "name": "_arbitratorManager",
           "type": "address"

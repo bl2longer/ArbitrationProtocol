@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "contracts:build": "rm -rf ./contracts && yarn --cwd .. compile && cp -r ../artifacts/contracts ./contracts"
+    "contracts:build": "yarn --cwd .. compile && cp -r ../artifacts/contracts ./"
   },
   "dependencies": {
     "@bitcoinerlab/secp256k1": "^1.2.0",

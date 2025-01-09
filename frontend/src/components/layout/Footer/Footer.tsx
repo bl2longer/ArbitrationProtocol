@@ -26,8 +26,8 @@ export const Footer: FC = () => {
       <div className="h-full">
         <div className="font-bold text-lg mb-2">Socials</div>
         <div className="flex items-center justify-center content-center gap-0 w-full">
-          {socials.map(({ icon, link }) => (
-            <Button asChild variant="ghost" size="icon">
+          {socials.map(({ icon, link }, i) => (
+            <Button key={i} asChild variant="ghost" size="icon">
               <Link to={link} target="_blank" className="p-0 px-1">
                 <img src={icon} height={50} />
               </Link>

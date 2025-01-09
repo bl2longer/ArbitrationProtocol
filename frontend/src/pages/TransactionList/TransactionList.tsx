@@ -46,6 +46,7 @@ export default function TransactionList() {
     return rawTransactions?.filter(tx => {
       const searchLower = searchTerm.toLowerCase();
       return (
+        tx.id?.toLowerCase().includes(searchLower) ||
         tx.dapp?.toLowerCase().includes(searchLower) ||
         tx.arbiter?.toLowerCase().includes(searchLower) ||
         tx.btcTx?.toLowerCase().includes(searchLower)

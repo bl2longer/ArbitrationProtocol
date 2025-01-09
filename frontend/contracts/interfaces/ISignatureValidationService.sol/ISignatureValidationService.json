@@ -20,6 +20,12 @@
         },
         {
           "indexed": false,
+          "internalType": "uint8",
+          "name": "signType",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
           "internalType": "bytes",
           "name": "signature",
           "type": "bytes"
