@@ -1,7 +1,42 @@
-- Pausing arbiter when the arbiter is unavailable should not be allowed. Pause button should be disabled.
+- arbiter registration: hide "operator" (self by default)
+- Transaction list still seems to reload every time the page is entered.
+
+------------------------------------------
+
+TO BE CLARIFIED FIRST:
+
+- Community requests:
+  - (luca) Wouldn't it be possible to trigger EE connection from mobile simply by clicking on the button?
+  - (nenchy) Also, once wallet connected via built in browser, no way to disconnect it from Arbiter app UI
+
+- Email service for arbiters:
+  - "Arbiter can register an email for the arbitration notification, we need a background script to check the events"
+  - "new arbitration request" event. poll subgraph (better?) or listen to evm events.
+  - need to create a backend
+  - we already have bel2.org belayer2.org in zoho mail
+
+------------------------------------------
+
+P2:
+
+- Edit arbiter operator and revenue dialogs: add a import button for btc public key
+
+- Add a footer:
+      BeL2 Website
+      BeL2 github
+      BeL2 twitter
+      BeL2 lending app
+      Elastos website (Elastos.info) 
+      Need help? Join TG (direct to Elastos Telegram) 
+
+- Bug: edit arbiter staking: reopen the dialog after a max stake red error: the "Stake value should be lower than 50 ELA. Now 72.5 ELA" is still displayed
+
+------------------------------------------
+
+P2 (blocked):
 
 - Submit compensation request when transaction is completed = M8 error (no active).
-- button should not have been shown (See "How to show compensation request buttons" below)
+    - button should not have been shown (See "How to show compensation request buttons" below)
 
 - How to show compensation request buttons:
   Conditions:
@@ -23,32 +58,7 @@
   BEN:
   - Unclear, we cannot just show all the buttons... need refinement after the releaase
 
-- Community requests:
-  - (luca) Wouldn't it be possible to trigger EE connection from mobile simply by clicking on the button?
-  - (nenchy) Also, once wallet connected via built in browser, no way to disconnect it from Arbiter app UI
-
-
-- transactions list submit signature: should check if the current btc address is the same as the arbiter operator or transaction one?
-
-- Bug: edit arbiter staking: reopen the dialog after a max stake red error: the "Stake value should be lower than 50 ELA. Now 72.5 ELA" is still displayed
-- arbiter registration: hide "operator" (self by default)
-- "Install Metamask" should look like a real button
-- Transaction list still seems to reload every time the page is entered.
-- user cannot know the public key of the unisat btc wallet, maybe we should add "Import " button here?
-  - (in edit arbiter dialog)
-- Add a footer:
-      BeL2 Website
-      BeL2 github
-      BeL2 twitter
-      BeL2 lending app
-      Elastos website (Elastos.info) 
-      Need help? Join TG (direct to Elastos Telegram) 
-
-- Email service for arbiters:
-  - "Arbiter can register an email for the arbitration notification, we need a background script to check the events"
-  - "new arbitration request" event. poll subgraph (better?) or listen to evm events.
-  - need to create a backend
-  - we already have bel2.org belayer2.org in zoho mail
+------------------------------------------
 
 P3:
 
@@ -67,7 +77,7 @@ P3:
         2. check Utxo hash's position in the TxIn of the current BTC transaction which you want to call zkp verify
         3. If it’s the first input, the index is 0; if it’s the second input, the index is 1, and so on. 
 
------- HELPER INFO ------
+------------------------------------------ HELPER INFO ------------------------------------------
 
 staging contract is deployed : {
     "ERC721_ADDRESS": "0x8e286664c6B8811015F936592Dd654e94Af3F494",
@@ -93,5 +103,3 @@ Claim contract :
 
 ZPService:
 - Contract code: https://github.com/BeL2Labs/cairo-suite/blob/alex/feat_check_sig/solidity-stark-verifier-cairo-os/src/apps/TxSigProof.sol
-
-
