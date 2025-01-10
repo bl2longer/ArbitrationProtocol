@@ -1,3 +1,10 @@
+- If transaction is completed, cannot request illegal signature or failed arbtiration, it's all over.
+
+- Ability to claim arbiter fee:
+  - Display button conditions:
+    transaction.status == DataTypes.TransactionStatus.Active && block.timestamp > transaction.deadline)
+    || (transaction.status == DataTypes.TransactionStatus.Submitted && !arbitratorManager.isFrozenStatus(transaction.arbitrator
+  - tranasction.status == completed is claimed
 
 ------------------------------------------
 

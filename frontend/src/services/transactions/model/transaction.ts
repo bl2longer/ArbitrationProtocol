@@ -33,11 +33,11 @@ export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline
     const transaction = new Transaction();
 
     transaction.id = txId;
-    transaction.btcTx = contractTransaction.btcTx;
-    transaction.btcTxHash = contractTransaction.btcTxHash;
+    transaction.btcTx = contractTransaction.btcTx?.slice(2);
+    transaction.btcTxHash = contractTransaction.btcTxHash?.slice(2);
     transaction.compensationReceiver = contractTransaction.compensationReceiver;
     transaction.timeoutCompensationReceiver = contractTransaction.timeoutCompensationReceiver;
-    transaction.utxos = contractTransaction.utxos;
+    transaction.utxos = contractTransaction.utxos; // TODO: remove 0x prefix for each UTXO?
     transaction.script = contractTransaction.script;
     transaction.signature = contractTransaction.signature;
     transaction.dapp = contractTransaction.dapp;

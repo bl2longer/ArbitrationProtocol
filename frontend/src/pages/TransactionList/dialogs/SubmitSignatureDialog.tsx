@@ -2,14 +2,12 @@ import { EnsureWalletNetwork } from '@/components/base/EnsureWalletNetwork/Ensur
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
-import { useArbiterInfo } from '@/services/arbiters/hooks/contract/useArbiterInfo';
 import { useArbiter } from '@/services/arbiters/hooks/useArbiter';
-import { parseTransactionHex, rsSignatureToDer } from '@/services/btc/btc';
+import { rsSignatureToDer } from '@/services/btc/btc';
 import { useBitcoinWalletAction } from '@/services/btc/hooks/useBitcoinWalletAction';
 import { useTransaction } from '@/services/transactions/hooks/contract/useTransaction';
 import { useTransactionSubmitArbitration } from '@/services/transactions/hooks/contract/useTransactionSubmitArbitration';
 import { Transaction } from '@/services/transactions/model/transaction';
-import { Transaction as BitcoinJSTransaction } from 'bitcoinjs-lib';
 import { FC, useCallback, useState } from 'react';
 
 export const SubmitSignatureDialog: FC<{
@@ -23,32 +21,19 @@ export const SubmitSignatureDialog: FC<{
   const { submitArbitration, isPending } = useTransactionSubmitArbitration();
   const { unsafeSignData } = useBitcoinWalletAction();
   const { fetchTransaction } = useTransaction(transaction?.id);
-  const { fetchArbiterInfo } = useArbiterInfo(transaction?.arbiter);
   const arbiter = useArbiter(transaction?.arbiter);
   const isRightOperatorBtcWallet = bitcoinAccount === arbiter?.operatorBtcAddress;
 
   const handleSignData = useCallback(async () => {
     setIsSigning(true);
-    const bitcoinTransaction = parseTransactionHex(transaction.btcTx);
-
     const contractTransaction = await fetchTransaction();
     console.log("Contract transaction:", contractTransaction)
 
-    const satValue = parseInt(contractTransaction.utxos[0].amount);
-    const hashForWitness = bitcoinTransaction.hashForWitnessV0(
-      0,
-      Buffer.from(contractTransaction.script, "hex"),
-      satValue,
-      BitcoinJSTransaction.SIGHASH_ALL
-    ).toString("hex");
-
-    console.log("Hash for witness:", hashForWitness)
-
-    const _signature = await unsafeSignData(hashForWitness);
+    const _signature = await unsafeSignData(contractTransaction.btcTxHash);
     setSignature(_signature);
 
     setIsSigning(false);
-  }, [unsafeSignData, transaction, fetchTransaction]);
+  }, [unsafeSignData, fetchTransaction]);
 
   const handleSubmitSignature = useCallback(async () => {
     const derSignature = rsSignatureToDer(signature);
