@@ -13,8 +13,10 @@ TO BE CLARIFIED FIRST:
 
 P2:
 
-- Edit arbiter operator and revenue dialogs: add a import button for btc public key
-
+- Show frozen arbiter status (arbiter list, dashboard):
+    uint256 freeze_period = configManager.getArbitrationFrozenPeriod();
+    arbitrator.lastSubmittedWorkTime + freeze_period = activeTime
+if (arbitrator.lastSubmittedWorkTime == 0) no frozen
 - Bug: edit arbiter staking: reopen the dialog after a max stake red error: the "Stake value should be lower than 50 ELA. Now 72.5 ELA" is still displayed
 
 ------------------------------------------
