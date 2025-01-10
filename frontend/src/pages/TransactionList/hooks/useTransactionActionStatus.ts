@@ -17,7 +17,6 @@ export const useTransactionActionStatus = (transaction: Transaction) => {
   }, [transaction, fetchArbiterFrozen]);
 
   const canSubmitArbitration = useMemo(() => {
-    return true;
     return transaction && (
       transaction.status === "Arbitrated" &&
       isSameEVMAddress(transaction.arbiter, evmAccount) &&
