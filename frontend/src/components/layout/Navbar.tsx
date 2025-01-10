@@ -103,7 +103,6 @@ export const Navbar: FC = () => {
         </div>
       </div>
     </>
-
   )
 }
 
@@ -111,7 +110,7 @@ const Wallet: FC = () => {
   const { evmAccount } = useWalletContext();
   const activeChain = useActiveEVMChainConfig();
   const { connect } = useEVMContext();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const { disconnect } = useEVMContext();
 
   const handleDisconnect = useCallback(() => {

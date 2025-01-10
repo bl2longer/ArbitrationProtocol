@@ -23,25 +23,15 @@ export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdA
   @Expose() public revenueEvmAddress: string;
   @Expose() public revenueBtcAddress: string;
   @Expose() public revenueBtcPubKey: string;
-  @Expose() private isActive: boolean;
+  @Expose() public isActive: boolean;
+  @Expose() @Transform(({ value }) => new Date(value * 1000)) public lastSubmittedWorkTime: Date;
 
   public isPaused(): boolean {
     return this.paused;
   }
 
-  /**
-   * Layer on top of the raw isActive field because subgraph isActive value is wrong when the arbiter
-   * status is not changed in the contract but time passed, so the current time < deadline condition is unchecked.
-   */
   public getIsActive(): boolean {
-    if (this.isActive && moment().isSameOrAfter(this.getDeadlineDate()))
-      return false;
-
     return this.isActive;
-  }
-
-  public setRawIsActive(rawIsActive: boolean) {
-    this.isActive = rawIsActive;
   }
 
   public getDeadlineDate(): Moment {
@@ -83,6 +73,7 @@ export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdA
     arbiter.revenueEvmAddress = contractInfo.revenueETHAddress;
     arbiter.revenueBtcAddress = contractInfo.revenueBtcAddress;
     arbiter.revenueBtcPubKey = contractInfo.revenueBtcPubKey?.slice(2);
+    arbiter.lastSubmittedWorkTime = new Date(Number(contractInfo.lastSubmittedWorkTime * 1000n));
 
     return arbiter;
   }
