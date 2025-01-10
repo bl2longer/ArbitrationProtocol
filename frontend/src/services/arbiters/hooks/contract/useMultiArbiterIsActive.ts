@@ -11,17 +11,17 @@ export const useMultiArbiterIsActive = () => {
   const { singleContractMulticall } = useMulticall();
 
   const fetchMultiArbiterIsActive = useCallback(async (arbiterIds: string[]): Promise<{ id: string, isActive: boolean }[]> => {
-    const statuses = await singleContractMulticall<boolean>(
+    const isActives = await singleContractMulticall<boolean>(
       abi,
       activeChain!.contracts.arbitratorManager,
       "isActiveArbitrator",
       arbiterIds.map(arbiterId => [arbiterId])
     );
 
-    if (!statuses)
+    if (!isActives)
       return undefined;
 
-    return statuses.map((isActive, i) => ({
+    return isActives.map((isActive, i) => ({
       id: arbiterIds[i],
       isActive
     }));

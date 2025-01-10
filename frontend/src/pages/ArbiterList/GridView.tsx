@@ -9,6 +9,7 @@ import { formatDate } from "@/utils/dates";
 import { formatAddress } from "@/utils/formatAddress";
 import { ChevronsUpDown } from "lucide-react";
 import { FC } from "react";
+import { SecondaryArbiterStatusLabel } from "./components/SecondaryArbiterStatusLabel";
 
 export const GridView: FC<{
   arbiters: ArbiterInfo[],
@@ -32,7 +33,7 @@ const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
       </h3>
       <div className="flex gap-1">
         <StatusLabel title={arbiterStatusLabelTitle(arbiter)} color={arbiterStatusLabelColor(arbiter)} />
-        {arbiter.activeTransactionId && <StatusLabel title="Working" color="yellow" />}
+        <SecondaryArbiterStatusLabel arbiter={arbiter} />
       </div>
     </div>
     <div className="space-y-3 text-sm">

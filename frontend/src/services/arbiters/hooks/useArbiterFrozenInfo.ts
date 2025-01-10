@@ -17,7 +17,7 @@ export const useArbiterFrozenInfo = (arbiter: ArbiterInfo): { isFrozen: boolean,
       return { isFrozen: undefined, unfrozenTime: undefined };
 
     const unfrozenTime = arbiter.lastSubmittedWorkTime && moment(arbiter.lastSubmittedWorkTime).add(Number(configSettings.arbitrationFrozenPeriod), "seconds");
-    const isFrozen = unfrozenTime ? moment().isAfter(unfrozenTime) : false;
+    const isFrozen = unfrozenTime ? moment().isBefore(unfrozenTime) : false;
 
     return { isFrozen, unfrozenTime };
   }, [configSettings, arbiter]);

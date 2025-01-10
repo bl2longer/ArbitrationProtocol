@@ -1,3 +1,4 @@
+import { isEVMNullAddress } from "@/services/evm/evm";
 import { ArbiterInfo as ArbiterInfoDTO } from "@/services/subgraph/dto/arbiter-info";
 import { tokenToReadableValue } from "@/services/tokens/tokens";
 import BigNumber from "bignumber.js";
@@ -6,6 +7,9 @@ import moment, { Moment } from "moment";
 import { zeroAddress } from "viem";
 import { ContractArbiterInfo } from "../dto/contract-arbiter-info";
 
+/**
+ * class-transformer is used for SUBGRAPH dtos, not contract ones.
+ */
 export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdAt" | "currentFeeRate" | "pendingFeeRate" | "isActive"> {
   @Expose() public id: string;
   @Expose() public address: string;
@@ -24,7 +28,7 @@ export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdA
   @Expose() public revenueBtcAddress: string;
   @Expose() public revenueBtcPubKey: string;
   @Expose() public isActive: boolean;
-  @Expose() @Transform(({ value }) => new Date(value * 1000)) public lastSubmittedWorkTime: Date;
+  @Expose() @Transform(({ value }) => value && new Date(value * 1000)) public lastSubmittedWorkTime: Date;
 
   public isPaused(): boolean {
     return this.paused;
@@ -66,14 +70,14 @@ export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdA
     arbiter.paused = contractInfo.paused;
     arbiter.deadline = Number(contractInfo.deadLine);
     arbiter.currentFeeRate = Number(contractInfo.currentFeeRate);
-    arbiter.activeTransactionId = contractInfo.activeTransactionId;
+    arbiter.activeTransactionId = !isEVMNullAddress(contractInfo.activeTransactionId) ? contractInfo.activeTransactionId : null;
     arbiter.operatorEvmAddress = contractInfo.operator;
     arbiter.operatorBtcAddress = contractInfo.operatorBtcAddress;
     arbiter.operatorBtcPubKey = contractInfo.operatorBtcPubKey?.slice(2);
     arbiter.revenueEvmAddress = contractInfo.revenueETHAddress;
     arbiter.revenueBtcAddress = contractInfo.revenueBtcAddress;
     arbiter.revenueBtcPubKey = contractInfo.revenueBtcPubKey?.slice(2);
-    arbiter.lastSubmittedWorkTime = new Date(Number(contractInfo.lastSubmittedWorkTime * 1000n));
+    arbiter.lastSubmittedWorkTime = contractInfo.lastSubmittedWorkTime ? new Date(Number(contractInfo.lastSubmittedWorkTime * 1000n)) : null;
 
     return arbiter;
   }

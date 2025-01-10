@@ -11,6 +11,7 @@ import { ChevronDownIcon, ChevronUpDownIcon, ChevronUpIcon } from '@heroicons/re
 import { ChevronsUpDown } from "lucide-react";
 import { FC } from "react";
 import { SortConfig } from "./ArbiterList";
+import { SecondaryArbiterStatusLabel } from "./components/SecondaryArbiterStatusLabel";
 
 export const ListView: FC<{
   arbiters: ArbiterInfo[];
@@ -73,7 +74,7 @@ export const ListView: FC<{
                 title={arbiterStatusLabelTitle(arbiter)}
                 color={arbiterStatusLabelColor(arbiter)}
               />
-              {arbiter.activeTransactionId && <StatusLabel title="Working" color="yellow" />}
+              <SecondaryArbiterStatusLabel arbiter={arbiter} />
             </TableCell>
           </TableRow>
         ))}
