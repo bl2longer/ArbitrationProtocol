@@ -1,13 +1,13 @@
 import { useEVMContext } from '@/contexts/EVMContext/EVMContext';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
+import { useActiveEVMChainConfig } from '@/services/chains/hooks/useActiveEVMChainConfig';
 import { cn } from '@/utils/shadcn';
 import { Bars3Icon, WalletIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
-import { FC, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChildTooltip } from '../base/ChildTooltip';
 import { Button } from '../ui/button';
-import { Popover } from '../ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 
 export const Navbar: FC = () => {
   const location = useLocation();
@@ -109,14 +109,30 @@ export const Navbar: FC = () => {
 
 const Wallet: FC = () => {
   const { evmAccount } = useWalletContext();
+  const activeChain = useActiveEVMChainConfig();
   const { connect } = useEVMContext();
+  const [open, setOpen] = useState(true);
+  const { disconnect } = useEVMContext();
+
+  const handleDisconnect = useCallback(() => {
+    setOpen(false);
+    disconnect();
+  }, [disconnect]);
 
   return (<>
     {
       evmAccount &&
-      <span className="text-sm text-gray-500 bg-gray-100 px-4 py-2 rounded-lg">
-        {evmAccount.slice(0, 6)}...{evmAccount.slice(-4)}
-      </span>
+      <Popover onOpenChange={setOpen} open={open}>
+        <PopoverTrigger className='flex flex-row gap-2 items-center'>
+          <span className="text-sm text-gray-500 bg-gray-100 px-4 py-2 rounded-lg cursor-pointer">
+            {evmAccount.slice(0, 6)}...{evmAccount.slice(-4)}
+          </span>
+          <Button onClick={handleDisconnect} className='sm:hidden'>Disconnect</Button>
+        </PopoverTrigger>
+        <PopoverContent className='w-auto hidden sm:block'>
+          <Button onClick={handleDisconnect}>Disconnect from: {activeChain?.name}</Button>
+        </PopoverContent>
+      </Popover>
     }
     {
       !evmAccount &&

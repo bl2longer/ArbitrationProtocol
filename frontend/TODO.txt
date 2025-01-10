@@ -1,18 +1,7 @@
-- If transaction is completed, cannot request illegal signature or failed arbtiration, it's all over.
-
-- Ability to claim arbiter fee:
-  - Display button conditions:
-    transaction.status == DataTypes.TransactionStatus.Active && block.timestamp > transaction.deadline)
-    || (transaction.status == DataTypes.TransactionStatus.Submitted && !arbitratorManager.isFrozenStatus(transaction.arbitrator
-  - tranasction.status == completed is claimed
 
 ------------------------------------------
 
 TO BE CLARIFIED FIRST:
-
-- Community requests:
-  - (luca) Wouldn't it be possible to trigger EE connection from mobile simply by clicking on the button?
-  - (nenchy) Also, once wallet connected via built in browser, no way to disconnect it from Arbiter app UI
 
 - Email service for arbiters:
   - "Arbiter can register an email for the arbitration notification, we need a background script to check the events"

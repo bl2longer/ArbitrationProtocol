@@ -77,7 +77,9 @@ export const useTransactionActionStatus = (transaction: Transaction) => {
       return false;
 
     const condition1 = isSameEVMAddress(transaction.arbiter, evmAccount) && transaction.status === "Active" && moment().isAfter(transaction.deadline);
+
     const condition2 = isSameEVMAddress(transaction.arbiter, evmAccount) && transaction.status === "Submitted" && isArbiterFrozen === false;
+
     return condition1 || condition2;
   }, [transaction, evmAccount, isArbiterFrozen]);
 
