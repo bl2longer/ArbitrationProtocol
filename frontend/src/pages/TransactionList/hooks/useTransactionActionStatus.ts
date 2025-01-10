@@ -58,7 +58,7 @@ export const useTransactionActionStatus = (transaction: Transaction) => {
    */
   const canRequestIllegalSignatureCompensation = useMemo(() => {
     return transaction && (
-      transaction.status !== "Arbitrated" &&
+      transaction.status !== "Arbitrated" && transaction.status !== "Completed" &&
       isSameEVMAddress(transaction.compensationReceiver, evmAccount)
     );
   }, [transaction, evmAccount]);
