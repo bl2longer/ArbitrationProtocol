@@ -11,9 +11,9 @@ export class CompensationClaim implements Omit<CompensationClaimDTO, "ethAmount"
   @Expose() public arbiter: string;
   @Expose() public claimType: CompensationType;
   @Expose() public withdrawn: boolean;
-  @Expose() @Transform(({ value }) => tokenToReadableValue(value, 18)) public ethAmount: BigNumber;
-  @Expose() @Transform(({ value }) => tokenToReadableValue(value, 18)) public systemFee: BigNumber;
-  @Expose() @Transform(({ value }) => tokenToReadableValue(value, 18)) public totalAmount: BigNumber;
+  @Expose() @Transform(({ value }) => value && tokenToReadableValue(value, 18)) public ethAmount: BigNumber;
+  @Expose() @Transform(({ value }) => value && tokenToReadableValue(value, 18)) public systemFee: BigNumber;
+  @Expose() @Transform(({ value }) => value && tokenToReadableValue(value, 18)) public totalAmount: BigNumber;
   @Expose() public excessPaymentToClaimer: string;
   @Expose() public receivedCompensationAddress: string;
 }

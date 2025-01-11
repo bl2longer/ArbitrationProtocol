@@ -13,11 +13,6 @@ TO BE CLARIFIED FIRST:
 
 P2:
 
-- Show frozen arbiter status (arbiter list, dashboard):
-    uint256 freeze_period = configManager.getArbitrationFrozenPeriod();
-    arbitrator.lastSubmittedWorkTime + freeze_period = activeTime
-if (arbitrator.lastSubmittedWorkTime == 0) no frozen
-- Bug: edit arbiter staking: reopen the dialog after a max stake red error: the "Stake value should be lower than 50 ELA. Now 72.5 ELA" is still displayed
 
 ------------------------------------------
 
@@ -50,15 +45,12 @@ P2 (blocked):
 
 P3:
 
+- Bug: edit arbiter staking: reopen the dialog after a max stake red error: the "Stake value should be lower than 50 ELA. Now 72.5 ELA" is still displayed
+
 - arbiter registration: hide "operator" (self by default)
 
 - Ability to unregister dapp: 
   - TBD: from dapps list of from my dashboard?
-
-- Subgraph sucks! (backward compatibility in case of event change, missing params in events, inability to call methods...).
-  - We should consider using subgraph only to LIST items (arbiters, transactions) but with minimal information,
-    for example information we need for search queries (pagination, search tx id...)
-  - Everything else should be handled by multicalls from the client app.
 
 - (zehua) There are some issues with how to obtain the InputIndex (for illegal signature compensation). 
     - In cases of evil, there may be multiple inputs. 
