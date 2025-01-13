@@ -1,3 +1,5 @@
+- withdrawCompensation needs to pay systemfee
+  - function getWithdrawCompensationFee(bytes32 claimId) external view returns (uint256); added and pushed
 
 ------------------------------------------
 

@@ -9,9 +9,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Table, TableBody } from '@/components/ui/table';
 import { useActiveEVMChainConfig } from '@/services/chains/hooks/useActiveEVMChainConfig';
 import { useWithdrawCompensation } from '@/services/compensations/hooks/contract/useWithdrawCompensation';
+import { useWithdrawCompensationFee } from '@/services/compensations/hooks/contract/useWithdrawCompensationFee';
 import { CompensationClaim } from '@/services/compensations/model/compensation-claim';
 import { formatAddress } from '@/utils/formatAddress';
-import { FC, useCallback } from 'react';
+import BigNumber from 'bignumber.js';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { useCompensationActionStatus } from '../hooks/useCompensationActionStatus';
 
 export const CompensationDetailsDialog: FC<{
@@ -20,17 +22,27 @@ export const CompensationDetailsDialog: FC<{
   onHandleClose: () => void;
 }> = ({ compensation, isOpen, onHandleClose }) => {
   const activeChain = useActiveEVMChainConfig();
-  const { withdrawCompensation, isPending } = useWithdrawCompensation();
+  const { withdrawCompensation, isPending: isFetchingCompensation } = useWithdrawCompensation();
+  const { getWithdrawCompensationFee, isPending: isFetchingCompensationFee } = useWithdrawCompensationFee();
   const { hasAvailableAction, canWithdrawCompensation } = useCompensationActionStatus(compensation);
+  const [compensationFee, setCompensationFee] = useState<BigNumber>(undefined);
 
   const handleWithdrawCompensation = useCallback(async () => {
     try {
-      await withdrawCompensation(compensation.id);
+      await getWithdrawCompensationFee(compensation.id);
+      await withdrawCompensation(compensation.id, compensationFee);
       onHandleClose();
     } catch (error) {
       console.error('Error withdrawing compensation:', error);
     }
-  }, [compensation, onHandleClose, withdrawCompensation]);
+  }, [compensation, compensationFee, getWithdrawCompensationFee, onHandleClose, withdrawCompensation]);
+
+  useEffect(() => {
+    if (compensation)
+      void getWithdrawCompensationFee(compensation.id).then(setCompensationFee);
+    else
+      setCompensationFee(undefined);
+  }, [compensation, getWithdrawCompensationFee]);
 
   if (!compensation)
     return null;
@@ -71,6 +83,12 @@ export const CompensationDetailsDialog: FC<{
             <DetailsTableCellWithLabel>Total amount</DetailsTableCellWithLabel>
             <DetailsTableCellWithValue>{compensation.totalAmount ? <TokenWithValue amount={compensation.totalAmount} token={activeChain?.nativeCurrency} decimals={5} /> : "-"}</DetailsTableCellWithValue>
           </DetailsTableRow>
+          {canWithdrawCompensation && !isFetchingCompensationFee &&
+            <DetailsTableRow>
+              <DetailsTableCellWithLabel>Withdraw Fee</DetailsTableCellWithLabel>
+              <DetailsTableCellWithValue><TokenWithValue amount={compensationFee} token={activeChain?.nativeCurrency} decimals={5} /></DetailsTableCellWithValue>
+            </DetailsTableRow>
+          }
         </TableBody>
       </Table>
 
@@ -79,7 +97,7 @@ export const CompensationDetailsDialog: FC<{
         <div className="flex pt-2 justify-end gap-2">
           {
             canWithdrawCompensation &&
-            <Button onClick={handleWithdrawCompensation} disabled={isPending}>Withdraw compensation</Button>
+            <Button onClick={handleWithdrawCompensation} disabled={isFetchingCompensation || isFetchingCompensationFee}>Withdraw compensation</Button>
           }
         </div>
       }
