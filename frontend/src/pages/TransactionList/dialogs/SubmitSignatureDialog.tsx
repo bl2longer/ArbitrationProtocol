@@ -54,7 +54,7 @@ export const SubmitSignatureDialog: FC<{
           Please sign the following BTC transaction using your BTC wallet:
         </p>
         <div className="bg-gray-100 p-3 rounded break-all overflow-y-auto max-h-[200px]">
-          {transaction?.btcTx}
+          {transaction?.btcTxHash}
         </div>
       </div>
 

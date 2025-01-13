@@ -48,8 +48,7 @@ export default function TransactionList() {
       return (
         tx.id?.toLowerCase().includes(searchLower) ||
         tx.dapp?.toLowerCase().includes(searchLower) ||
-        tx.arbiter?.toLowerCase().includes(searchLower) ||
-        tx.btcTx?.toLowerCase().includes(searchLower)
+        tx.arbiter?.toLowerCase().includes(searchLower)
       );
     });
   }, [rawTransactions, searchTerm]);
