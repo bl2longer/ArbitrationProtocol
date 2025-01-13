@@ -3,7 +3,7 @@ import { tokenToReadableValue } from "@/services/tokens/tokens";
 import BigNumber from "bignumber.js";
 import { Expose, Transform } from "class-transformer";
 
-export type CompensationType = "IllegalSignature" | "Timeout" | "FailedArbitration" | "ArbitratorFee";
+export type CompensationType = "IllegalSignature" | "Timeout" | "FailedArbitration" | "ArbiterFee";
 
 export class CompensationClaim implements Omit<CompensationClaimDTO, "ethAmount" | "createdAt" | "systemFee" | "totalAmount"> {
   @Expose() public id: string;

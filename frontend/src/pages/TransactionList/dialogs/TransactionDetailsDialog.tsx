@@ -98,7 +98,7 @@ export const TransactionDetailsDialog: FC<{
           {/* Close transaction */}
           {
             canCloseTransaction &&
-            <Button onClick={() => onRequestCompensation("ArbitratorFee")}>Claim Arbiter Fee</Button>
+            <Button onClick={() => onRequestCompensation("ArbiterFee")}>Claim Arbiter Fee</Button>
           }
         </div>
       }

@@ -133,7 +133,7 @@ export default function TransactionList() {
       <RequestFailedArbitrationCompensationDialog isOpen={openDialog === "FailedArbitration"} transaction={selectedTransaction} onHandleClose={() => setOpenDialog(undefined)} />
       <RequestIllegalSignatureCompensationDialog isOpen={openDialog === "IllegalSignature"} transaction={selectedTransaction} onHandleClose={() => setOpenDialog(undefined)} />
       <RequestTimeoutCompensationDialog isOpen={openDialog === "Timeout"} transaction={selectedTransaction} onHandleClose={() => setOpenDialog(undefined)} />
-      <RequestArbiterFeeCompensationDialog isOpen={openDialog === "ArbitratorFee"} transaction={selectedTransaction} onHandleClose={() => setOpenDialog(undefined)} />
+      <RequestArbiterFeeCompensationDialog isOpen={openDialog === "ArbiterFee"} transaction={selectedTransaction} onHandleClose={() => setOpenDialog(undefined)} />
     </PageContainer>
   );
 }
