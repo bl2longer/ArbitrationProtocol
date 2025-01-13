@@ -108,7 +108,7 @@ export const fetchArbiters = async (chain: ChainConfig, start = 0, limit = 100, 
 
 export const arbiterStatusLabelTitle = (arbiter: ArbiterInfo): string => {
   if (!arbiter.getIsActive())
-    return "Unavailable";
+    return "Busy";
   else
     return "Available";
 }
