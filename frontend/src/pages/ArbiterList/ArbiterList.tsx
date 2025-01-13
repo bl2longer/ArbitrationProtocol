@@ -32,6 +32,7 @@ export default function ArbiterList() {
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'stake', direction: 'desc' });
   const navigate = useNavigate();
   const { isSmallDevice } = useScreenSize();
+  const [showOperatorInfo, setShowOperatorInfo] = useState(false);
 
   const handleSort = (key: SortConfig['key']) => {
     setSortConfig(prev => ({
@@ -101,7 +102,7 @@ export default function ArbiterList() {
       {loading && <Loading />}
       {!loading && <>
         {viewMode === 'list' && <ListView arbiters={arbiters} sortConfig={sortConfig} handleSort={handleSort} />}
-        {viewMode === 'grid' && <GridView arbiters={arbiters} />}
+        {viewMode === 'grid' && <GridView arbiters={arbiters} showOperatorInfo={showOperatorInfo} onOperatorVisibilityChange={setShowOperatorInfo} />}
       </>}
     </PageContainer>
   );

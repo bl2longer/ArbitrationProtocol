@@ -12,16 +12,26 @@ import { FC } from "react";
 import { SecondaryArbiterStatusLabel } from "./components/SecondaryArbiterStatusLabel";
 
 export const GridView: FC<{
-  arbiters: ArbiterInfo[],
-}> = ({ arbiters }) => {
+  arbiters: ArbiterInfo[];
+  showOperatorInfo: boolean;
+  onOperatorVisibilityChange: (visible: boolean) => void;
+}> = ({ arbiters, showOperatorInfo, onOperatorVisibilityChange }) => {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {arbiters.map(arbiter => <ArbiterGridItem key={arbiter.address} arbiter={arbiter} />)}
+      {arbiters.map(arbiter => <ArbiterGridItem
+        key={arbiter.address}
+        arbiter={arbiter}
+        showOperatorInfo={showOperatorInfo}
+        onOperatorVisibilityChange={onOperatorVisibilityChange} />)}
     </div>
   )
 }
 
-const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
+const ArbiterGridItem: FC<{
+  arbiter: ArbiterInfo;
+  showOperatorInfo: boolean;
+  onOperatorVisibilityChange: (visible: boolean) => void;
+}> = ({ arbiter, showOperatorInfo, onOperatorVisibilityChange }) => {
   const activeChain = useActiveEVMChainConfig();
   const deadline = arbiter.getDeadlineDate();
 
@@ -54,7 +64,7 @@ const ArbiterGridItem: FC<{ arbiter: ArbiterInfo }> = ({ arbiter }) => {
         {arbiter.activeTransactionId ? <div className="flex items-center gap-2">{formatAddress(arbiter.activeTransactionId)} <CopyField value={arbiter.activeTransactionId} padding={false} /></div> : "-"}
       </div>
       <div className="mt-4 pt-4 border-t">
-        <Collapsible>
+        <Collapsible open={showOperatorInfo} onOpenChange={onOperatorVisibilityChange}>
           <CollapsibleTrigger className="w-full">
             <div className="flex justify-between items-center w-full">
               <span className="text-gray-600">Operator</span>
