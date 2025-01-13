@@ -1,4 +1,6 @@
-
+- Arbiter dashboard: ability to visualize on going busy transactions, and history or transactions, dates and profits made.
+  - use tabs
+  - find TransactionCompleted transactions for this arbiter (subgraph), and get dates and amounts there.
 
 ------------------------------------------
 
