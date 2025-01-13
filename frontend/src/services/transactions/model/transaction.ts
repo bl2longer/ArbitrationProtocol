@@ -1,3 +1,4 @@
+import { isNullBitcoinTxId } from "@/services/btc/btc";
 import { Transaction as TransactionDTO } from "@/services/subgraph/dto/transaction";
 import { tokenToReadableValue } from "@/services/tokens/tokens";
 import BigNumber from "bignumber.js";
@@ -16,7 +17,6 @@ export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline
   @Expose() public status: TransactionStatus;
   @Expose() @Transform(({ value }) => value && moment.unix(value)) public startTime: Moment;
   @Expose() @Transform(({ value }) => value && moment.unix(value)) public deadline: Moment;
-  public btcTxHash?: string; // Only when fetched from contract
   @Expose() @Transform(({ value }) => value && tokenToReadableValue(value, 18)) public depositedFee: BigNumber;
   @Expose() public signature: string;
   @Expose() public compensationReceiver: string;
@@ -25,6 +25,8 @@ export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline
   @Expose() public script: string;
   @Expose() @Transform(({ value }) => value && moment.unix(value)) public requestArbitrationTime: Moment;
 
+  public btcTxHash?: string; // Only when fetched from contract
+
   public static fromContractTransaction(contractTransaction: ContractTransaction, txId: string): Transaction {
     if (contractTransaction?.dapp === zeroAddress)
       return undefined;
@@ -32,7 +34,7 @@ export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline
     const transaction = new Transaction();
 
     transaction.id = txId;
-    transaction.btcTxHash = contractTransaction.btcTxHash?.slice(2);
+    transaction.btcTxHash = isNullBitcoinTxId(contractTransaction.btcTxHash?.slice(2)) ? undefined : contractTransaction.btcTxHash?.slice(2);
     transaction.compensationReceiver = contractTransaction.compensationReceiver;
     transaction.timeoutCompensationReceiver = contractTransaction.timeoutCompensationReceiver;
     transaction.utxos = contractTransaction.utxos; // TODO: remove 0x prefix for each UTXO?

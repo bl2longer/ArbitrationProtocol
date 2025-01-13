@@ -60,8 +60,6 @@ export const fetchTransactions = async (chain: ChainConfig, start: number, limit
 
     const transactions = pageTransactions.slice(start, start + limit);
 
-    console.log("Fetched transactions:", transactions);
-
     return {
       transactions: transactions.map(a => dtoToClass(a, Transaction)),
       total

@@ -23,8 +23,6 @@ export const useMultiTransactions = () => {
     if (!contractTransactions)
       return undefined;
 
-    console.log("contractTransactions", contractTransactions)
-
     return contractTransactions.map((ct, i) => Transaction.fromContractTransaction(ct, transactionIds[i])).filter(t => !!t);
   }, [activeChain, singleContractMulticall]);
 

@@ -63,7 +63,6 @@ type Transaction @entity {
     arbiter: String
     startTime: Int
     deadline: Int
-    btcTxHash: String # Hash of the Bitcoin transaction with empty input scripts
     status: TransactionStatus!
     depositedFee: BigInt
     signature: String # Arbiter's signature
