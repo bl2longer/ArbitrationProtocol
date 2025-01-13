@@ -45,6 +45,7 @@ export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline
     transaction.arbiter = contractTransaction.arbitrator;
     transaction.startTime = moment.unix(parseInt(contractTransaction.startTime));
     transaction.deadline = moment.unix(parseInt(contractTransaction.deadline));
+    transaction.requestArbitrationTime = moment.unix(parseInt(contractTransaction.requestArbitrationTime));
     transaction.depositedFee = contractTransaction.depositedFee && tokenToReadableValue(contractTransaction.depositedFee, 18);
 
     return transaction;
