@@ -30,6 +30,11 @@ export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdA
   @Expose() public isActive: boolean;
   @Expose() @Transform(({ value }) => value && new Date(value * 1000)) public lastSubmittedWorkTime: Date;
 
+  /**
+   * From contract calls only
+   */
+  public totalValue: BigNumber; // Total stake, human readable amount, ethAmount + nftvalue.
+
   public isPaused(): boolean {
     return this.paused;
   }
@@ -51,10 +56,6 @@ export class ArbiterInfo implements Omit<ArbiterInfoDTO, "ethAmount" | "createdA
    */
   public setNFTValue(value: BigNumber) {
     this.nftValue = value;
-  }
-
-  public getTotalValue(): BigNumber {
-    return this.ethAmount.plus(this.nftValue || 0);
   }
 
   public static fromContractArbiterInfo(contractInfo: ContractArbiterInfo): ArbiterInfo {

@@ -70,7 +70,7 @@ export const ArbiterPreview: FC<{
           </EnsureWalletNetwork>
         </div>
         <InfoRow title="Stake Amount" value={`
-          ${arbiter.getTotalValue().toString()} ${activeChain?.nativeCurrency.symbol}
+          ${arbiter.totalValue.toString()} ${activeChain?.nativeCurrency.symbol}
           (${arbiter.ethAmount.toString()} ${activeChain?.nativeCurrency.symbol} in native coins, ${arbiter.nftValue.toString()} ${activeChain?.nativeCurrency.symbol} in NFTs)
           `} />
       </div>

@@ -49,7 +49,7 @@ const ArbiterGridItem: FC<{
     <div className="space-y-3 text-sm">
       <div className="flex justify-between">
         <span className="text-gray-600">Stake</span>
-        <TokenWithValue amount={arbiter.getTotalValue()} token={activeChain?.nativeCurrency} />
+        <TokenWithValue amount={arbiter.totalValue} token={activeChain?.nativeCurrency} />
       </div>
       <div className="flex justify-between">
         <span className="text-gray-600">Fee Rate</span>

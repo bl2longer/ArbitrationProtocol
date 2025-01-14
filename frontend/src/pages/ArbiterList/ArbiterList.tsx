@@ -53,7 +53,7 @@ export default function ArbiterList() {
       case "address":
         return filtered?.sort((a, b) => a.address.localeCompare(b.address) * directionFactor);
       case "stake":
-        return filtered?.sort((a, b) => Number(a.getTotalValue().minus(b.getTotalValue())) * directionFactor);
+        return filtered?.sort((a, b) => Number(a.totalValue.minus(b.totalValue)) * directionFactor);
       case "currentFeeRate":
         return filtered?.sort((a, b) => Number(a.currentFeeRate - b.currentFeeRate) * directionFactor);
       default:

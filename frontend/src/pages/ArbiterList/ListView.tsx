@@ -66,7 +66,7 @@ export const ListView: FC<{
             </TableCell>
             <TableCell className="whitespace-nowrap">
               <div className="text-sm">
-                <TokenWithValue amount={arbiter.getTotalValue()} token={activeChain?.nativeCurrency} />
+                <TokenWithValue amount={arbiter.totalValue} token={activeChain?.nativeCurrency} />
               </div>
             </TableCell>
             <TableCell className="whitespace-nowrap gap-1 flex">

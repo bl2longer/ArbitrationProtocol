@@ -14,7 +14,7 @@ export const SecondaryArbiterStatusLabel: FC<{ arbiter: ArbiterInfo }> = ({ arbi
     return <StatusLabel title="Frozen" color="yellow" />;
   else if (arbiter.activeTransactionId)
     return <StatusLabel title="Working" color="yellow" />;
-  else if (arbiter.getTotalValue().eq(0))
+  else if (arbiter.totalValue.eq(0))
     return <StatusLabel title="Stake" color="red" />;
   else if (moment.unix(arbiter.deadline).isBefore(moment()))
     return <StatusLabel title="Deadline" color="red" />;

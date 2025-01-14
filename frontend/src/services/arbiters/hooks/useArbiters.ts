@@ -1,5 +1,4 @@
 import { useActiveEVMChainConfig } from "@/services/chains/hooks/useActiveEVMChainConfig";
-import { isSameEVMAddress } from "@/services/evm/evm";
 import { useBehaviorSubject } from "@/utils/useBehaviorSubject";
 import { useCallback, useEffect } from "react";
 import { BehaviorSubject } from "rxjs";
@@ -7,6 +6,7 @@ import { fetchArbiters as fetchArbitersApi } from "../arbiters.service";
 import { ArbiterInfo } from "../model/arbiter-info";
 import { useMultiArbiterInfo } from "./contract/useMultiArbiterInfo";
 import { useMultiArbiterIsActive } from "./contract/useMultiArbiterIsActive";
+import { useMultiArbiterStakeValue } from "./contract/useMultiArbiterStakeValue";
 
 const state$ = new BehaviorSubject<{
   wasFetched: boolean; // Fetching has been tried once
@@ -18,6 +18,7 @@ export const useArbiters = () => {
   const activeChain = useActiveEVMChainConfig();
   const state = useBehaviorSubject(state$);
   const { fetchMultiArbiterIsActive } = useMultiArbiterIsActive();
+  const { fetchMultiArbiterStakeValue } = useMultiArbiterStakeValue();
   const { fetchMultiArbiterInfo } = useMultiArbiterInfo();
 
   const fetchArbiters = useCallback(async () => {
@@ -27,23 +28,29 @@ export const useArbiters = () => {
 
       if (graphArbiters) {
         // Only use the subgraph for the arbiters, but real details are fetched from contract through multicall
-        const arbiters = await fetchMultiArbiterInfo(graphArbiters.map(a => a.id));
+        const arbiterIds = graphArbiters.map(a => a.id);
+        const arbiters = await fetchMultiArbiterInfo(arbiterIds);
+        if (arbiters) {
+          const isActives = await fetchMultiArbiterIsActive(arbiterIds);
+          const stakes = await fetchMultiArbiterStakeValue(arbiterIds);
 
-        const isActives = await fetchMultiArbiterIsActive(arbiters?.map(arbiter => arbiter.id));
-        console.log("isActives", isActives)
-        for (const arbiter of arbiters) {
-          arbiter.isActive = isActives?.find(a => isSameEVMAddress(a.id, arbiter.id))?.isActive;
+          if (isActives && stakes) {
+            arbiters.forEach((arbiter, i) => {
+              console.log("stake for arbiter ", arbiter.address, stakes[i].toString())
+              arbiter.isActive = isActives[i];
+              arbiter.totalValue = stakes[i];
+            });
+
+            console.log("Reworked arbiters", arbiters);
+          }
         }
-
-        console.log("Reworked arbiters", arbiters);
-
         state$.next({ isPending: false, wasFetched: true, arbiters });
         return;
       }
 
       state$.next({ isPending: false, wasFetched: true, arbiters: undefined });
     }
-  }, [activeChain, fetchMultiArbiterInfo, fetchMultiArbiterIsActive]);
+  }, [activeChain, fetchMultiArbiterInfo, fetchMultiArbiterStakeValue, fetchMultiArbiterIsActive]);
 
   // Initial lazy fetch (first access)
   useEffect(() => {
