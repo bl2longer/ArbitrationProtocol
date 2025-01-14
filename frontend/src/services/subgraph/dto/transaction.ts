@@ -5,7 +5,6 @@ export interface Transaction {
   arbiter: string;
   startTime: number;
   deadline: number;
-  // btcTxHash: string;
   status: string;
   depositedFee: string;
   signature: string;
