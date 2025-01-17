@@ -78,6 +78,40 @@ export class ArbitrationSubmitted__Params {
   }
 }
 
+export class DepositFeeTransfer extends ethereum.Event {
+  get params(): DepositFeeTransfer__Params {
+    return new DepositFeeTransfer__Params(this);
+  }
+}
+
+export class DepositFeeTransfer__Params {
+  _event: DepositFeeTransfer;
+
+  constructor(event: DepositFeeTransfer) {
+    this._event = event;
+  }
+
+  get txId(): Bytes {
+    return this._event.parameters[0].value.toBytes();
+  }
+
+  get revenueETHAddress(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get arbitratorFee(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get systemFee(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+
+  get refundedFee(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+}
+
 export class Initialized extends ethereum.Event {
   get params(): Initialized__Params {
     return new Initialized__Params(this);
@@ -274,6 +308,10 @@ export class TransactionManager__getTransactionResultValue0Struct extends ethere
   get requestArbitrationTime(): BigInt {
     return this[13].toBigInt();
   }
+
+  get depositedFeeRefundAddress(): Address {
+    return this[14].toAddress();
+  }
 }
 
 export class TransactionManager__getTransactionResultValue0UtxosStruct extends ethereum.Tuple {
@@ -350,6 +388,10 @@ export class TransactionManager__getTransactionByIdResultValue0Struct extends et
   get requestArbitrationTime(): BigInt {
     return this[13].toBigInt();
   }
+
+  get depositedFeeRefundAddress(): Address {
+    return this[14].toAddress();
+  }
 }
 
 export class TransactionManager__getTransactionByIdResultValue0UtxosStruct extends ethereum.Tuple {
@@ -384,6 +426,7 @@ export class TransactionManager__transactionsResult {
   value10: Address;
   value11: Bytes;
   value12: BigInt;
+  value13: Address;
 
   constructor(
     value0: Address,
@@ -399,6 +442,7 @@ export class TransactionManager__transactionsResult {
     value10: Address,
     value11: Bytes,
     value12: BigInt,
+    value13: Address,
   ) {
     this.value0 = value0;
     this.value1 = value1;
@@ -413,6 +457,7 @@ export class TransactionManager__transactionsResult {
     this.value10 = value10;
     this.value11 = value11;
     this.value12 = value12;
+    this.value13 = value13;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
@@ -433,6 +478,7 @@ export class TransactionManager__transactionsResult {
     map.set("value10", ethereum.Value.fromAddress(this.value10));
     map.set("value11", ethereum.Value.fromBytes(this.value11));
     map.set("value12", ethereum.Value.fromUnsignedBigInt(this.value12));
+    map.set("value13", ethereum.Value.fromAddress(this.value13));
     return map;
   }
 
@@ -486,6 +532,10 @@ export class TransactionManager__transactionsResult {
 
   getRequestArbitrationTime(): BigInt {
     return this.value12;
+  }
+
+  getDepositedFeeRefundAddress(): Address {
+    return this.value13;
   }
 }
 
@@ -636,7 +686,7 @@ export class TransactionManager extends ethereum.SmartContract {
   ): TransactionManager__getTransactionResultValue0Struct {
     let result = super.call(
       "getTransaction",
-      "getTransaction(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[],bytes,uint256))",
+      "getTransaction(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[],bytes,uint256,address))",
       [ethereum.Value.fromFixedBytes(txHash)],
     );
 
@@ -650,7 +700,7 @@ export class TransactionManager extends ethereum.SmartContract {
   ): ethereum.CallResult<TransactionManager__getTransactionResultValue0Struct> {
     let result = super.tryCall(
       "getTransaction",
-      "getTransaction(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[],bytes,uint256))",
+      "getTransaction(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[],bytes,uint256,address))",
       [ethereum.Value.fromFixedBytes(txHash)],
     );
     if (result.reverted) {
@@ -669,7 +719,7 @@ export class TransactionManager extends ethereum.SmartContract {
   ): TransactionManager__getTransactionByIdResultValue0Struct {
     let result = super.call(
       "getTransactionById",
-      "getTransactionById(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[],bytes,uint256))",
+      "getTransactionById(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[],bytes,uint256,address))",
       [ethereum.Value.fromFixedBytes(id)],
     );
 
@@ -683,7 +733,7 @@ export class TransactionManager extends ethereum.SmartContract {
   ): ethereum.CallResult<TransactionManager__getTransactionByIdResultValue0Struct> {
     let result = super.tryCall(
       "getTransactionById",
-      "getTransactionById(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[],bytes,uint256))",
+      "getTransactionById(bytes32):((address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,(bytes32,uint32,bytes,uint256)[],bytes,uint256,address))",
       [ethereum.Value.fromFixedBytes(id)],
     );
     if (result.reverted) {
@@ -761,7 +811,7 @@ export class TransactionManager extends ethereum.SmartContract {
   transactions(param0: Bytes): TransactionManager__transactionsResult {
     let result = super.call(
       "transactions",
-      "transactions(bytes32):(address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,bytes,uint256)",
+      "transactions(bytes32):(address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,bytes,uint256,address)",
       [ethereum.Value.fromFixedBytes(param0)],
     );
 
@@ -779,6 +829,7 @@ export class TransactionManager extends ethereum.SmartContract {
       result[10].toAddress(),
       result[11].toBytes(),
       result[12].toBigInt(),
+      result[13].toAddress(),
     );
   }
 
@@ -787,7 +838,7 @@ export class TransactionManager extends ethereum.SmartContract {
   ): ethereum.CallResult<TransactionManager__transactionsResult> {
     let result = super.tryCall(
       "transactions",
-      "transactions(bytes32):(address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,bytes,uint256)",
+      "transactions(bytes32):(address,address,uint256,uint256,bytes,bytes32,uint8,uint256,bytes,address,address,bytes,uint256,address)",
       [ethereum.Value.fromFixedBytes(param0)],
     );
     if (result.reverted) {
@@ -809,6 +860,7 @@ export class TransactionManager extends ethereum.SmartContract {
         value[10].toAddress(),
         value[11].toBytes(),
         value[12].toBigInt(),
+        value[13].toAddress(),
       ),
     );
   }
@@ -1027,6 +1079,10 @@ export class RegisterTransactionCall__Inputs {
 
   get compensationReceiver(): Address {
     return this._call.inputValues[2].value.toAddress();
+  }
+
+  get refundAddress(): Address {
+    return this._call.inputValues[3].value.toAddress();
   }
 }
 

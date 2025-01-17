@@ -29,6 +29,14 @@ export const useTransactions = (currentPage: number, resultsPerPage: number, arb
         for (const tx of contractTransactions) {
           tx.dynamicStatus = statuses?.find(s => s.id === tx.id)?.status || "Unknown";
         }
+
+        // Update dynamic fees - because this is only known by the subgraph. So we update results from chain, 
+        // with subgraph data.
+        contractTransactions.forEach((tx, i) => {
+          tx.arbitratorFee = subgraphTransactions[i].arbitratorFee;
+          tx.refundedFee = subgraphTransactions[i].refundedFee;
+          tx.systemFee = subgraphTransactions[i].systemFee;
+        });
       }
 
       console.log("Using transactions:", contractTransactions);

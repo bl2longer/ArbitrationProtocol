@@ -81,6 +81,9 @@ dataSources:
         - event: TransactionRegistered(indexed bytes32,indexed address,indexed
             address,uint256,uint256,address)
           handler: handleTransactionRegistered
+        - event: DepositFeeTransfer(indexed bytes32,indexed
+            address,uint256,uint256,uint256)
+          handler: handleDepositFeeTransfer
   - name: CompensationManager
     kind: ethereum/contract
     network: esc-staging

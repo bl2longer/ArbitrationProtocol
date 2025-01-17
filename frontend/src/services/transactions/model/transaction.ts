@@ -18,6 +18,9 @@ export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline
   @Expose() @Transform(({ value }) => value && moment.unix(value)) public startTime: Moment;
   @Expose() @Transform(({ value }) => value && moment.unix(value)) public deadline: Moment;
   @Expose() @Transform(({ value }) => value && tokenToReadableValue(value, 18)) public depositedFee: BigNumber;
+  @Expose() @Transform(({ value }) => value && tokenToReadableValue(value, 18)) public arbitratorFee: BigNumber;
+  @Expose() @Transform(({ value }) => value && tokenToReadableValue(value, 18)) public refundedFee: BigNumber;
+  @Expose() @Transform(({ value }) => value && tokenToReadableValue(value, 18)) public systemFee: BigNumber;
   @Expose() public signature: string;
   @Expose() public compensationReceiver: string;
   @Expose() public timeoutCompensationReceiver: string;
@@ -28,7 +31,7 @@ export class Transaction implements Omit<TransactionDTO, "startTime" | "deadline
   public btcTxHash?: string; // Only when fetched from contract
 
   /**
-   * So it's  abit tricky here. There is a transaction.status in the contract which is static,
+   * So it's a bit tricky here. There is a transaction.status in the contract which is static,
    * and identical to what is returned by the subgraph. But, there is also getTransactionStatus(),
    * which can return a different status, in case of time based conditions such as current block time (not write
    * operation). So, UI needs to adjust the status sometimes using static, sometimes dynamic status.

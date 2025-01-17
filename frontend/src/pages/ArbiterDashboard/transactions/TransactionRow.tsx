@@ -37,7 +37,7 @@ export const TransactionRow: FC<{
       return value ? <TokenWithValue amount={value} token={activeChain?.nativeCurrency} decimals={5} /> : "-";
 
     if (key === 'reward')
-      return '-1 ELA';
+      return transaction.arbitratorFee ? <TokenWithValue amount={transaction.arbitratorFee} token={activeChain?.nativeCurrency} decimals={5} /> : "-";
 
     return value;
   };
