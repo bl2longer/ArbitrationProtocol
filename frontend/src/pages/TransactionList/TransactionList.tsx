@@ -3,6 +3,7 @@ import { Loading } from '@/components/base/Loading';
 import { PageContainer } from '@/components/base/PageContainer';
 import { PageTitle } from '@/components/base/PageTitle';
 import { PageTitleRow } from '@/components/base/PageTitleRow';
+import { Paginator } from '@/components/base/Paginator';
 import { SearchInput } from '@/components/base/SearchInput';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -11,6 +12,7 @@ import { CompensationType } from '@/services/compensations/model/compensation-cl
 import { useTransaction } from '@/services/transactions/hooks/contract/useTransaction';
 import { useTransactions } from '@/services/transactions/hooks/useTransactions';
 import { Transaction } from '@/services/transactions/model/transaction';
+import { useDebounceInput } from '@/services/ui/hooks/useDebounceInput';
 import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
 import { RefreshCwIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -31,9 +33,17 @@ export const transactionFieldLabels: Partial<Record<keyof Transaction, string>> 
   status: 'Status',
 };
 
+const ResultsPerPage = 9;
+
 export default function TransactionList() {
-  const { transactions: rawTransactions, refreshTransactions } = useTransactions();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchSubject, validatedSearch, typedSearch] = useDebounceInput();
+  const { transactions: rawTransactions, refreshTransactions, total: totalTransactionCount } = useTransactions(
+    currentPage,
+    ResultsPerPage,
+    null,
+    validatedSearch
+  );
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [openDialog, setOpenDialog] = useState<undefined | CompensationType | "sign-arbitration" | "details">(undefined);
   const { transactionId: urlTransactionId } = useParams();
@@ -41,14 +51,14 @@ export default function TransactionList() {
 
   const transactions = useMemo(() => {
     return rawTransactions?.filter(tx => {
-      const searchLower = searchTerm.toLowerCase();
+      const searchLower = validatedSearch?.toLowerCase();
       return (
         tx.id?.toLowerCase().includes(searchLower) ||
         tx.dapp?.toLowerCase().includes(searchLower) ||
         tx.arbiter?.toLowerCase().includes(searchLower)
       );
     });
-  }, [rawTransactions, searchTerm]);
+  }, [rawTransactions, validatedSearch]);
 
   const loading = useMemo(() => isNullOrUndefined(transactions), [transactions]);
 
@@ -77,8 +87,8 @@ export default function TransactionList() {
             <RefreshCwIcon />
           </Button>
           <SearchInput placeholder="Search transactions..."
-            value={searchTerm}
-            onChange={(newValue) => setSearchTerm(newValue)} />
+            value={typedSearch}
+            onChange={(newValue) => searchSubject.next(newValue)} />
         </div>
       </PageTitleRow>
 
@@ -109,6 +119,10 @@ export default function TransactionList() {
       </div>
 
       {loading && <Loading />}
+
+      {!loading && totalTransactionCount === 0 && <div className='text-center'>Nothing yet</div>}
+
+      <Paginator currentPage={currentPage} totalPages={Math.ceil((totalTransactionCount || 0) / ResultsPerPage)} onPageChange={setCurrentPage} />
 
       <TransactionDetailsDialog
         transaction={selectedTransaction}

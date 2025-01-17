@@ -8,16 +8,19 @@ import { useMultiTransactions } from "./contract/useMultiTransactions";
 /**
  * @param arbiter if passed, only transactions from this arbiters are fetched
  */
-export const useTransactions = (arbiter?: string) => {
+export const useTransactions = (currentPage: number, resultsPerPage: number, arbiter?: string, search?: string) => {
   const activeChain = useActiveEVMChainConfig();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const { fetchTransactionStatuses } = useMultiTransactionStatus();
   const { fetchTransactions } = useMultiTransactions();
+  const [total, setTotal] = useState(undefined);
 
   const refreshTransactions = useCallback(async () => {
     setTransactions(undefined);
     if (activeChain) {
-      const { transactions: subgraphTransactions } = (await fetchSubgraphTransactions(activeChain, 0, 100, { arbiter })) || {};
+      const { transactions: subgraphTransactions, total: _total } = (await fetchSubgraphTransactions(activeChain, (currentPage - 1) * resultsPerPage, resultsPerPage, { arbiter, search })) || {};
+      setTotal(_total);
+
       const contractTransactions = await fetchTransactions(subgraphTransactions?.map(t => t.id));
 
       if (contractTransactions) {
@@ -32,11 +35,11 @@ export const useTransactions = (arbiter?: string) => {
 
       setTransactions(contractTransactions);
     }
-  }, [activeChain, fetchTransactions, fetchTransactionStatuses, arbiter]);
+  }, [activeChain, currentPage, resultsPerPage, arbiter, search, fetchTransactions, fetchTransactionStatuses]);
 
   useEffect(() => {
     void refreshTransactions();
   }, [refreshTransactions]);
 
-  return { transactions, refreshTransactions }
+  return { transactions, refreshTransactions, total }
 }

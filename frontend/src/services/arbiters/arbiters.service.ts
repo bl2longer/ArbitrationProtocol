@@ -33,8 +33,6 @@ export const fetchArbiters = async (chain: ChainConfig, start = 0, limit = 100, 
 
   whereQuery += "]";
 
-  console.log(whereQuery)
-
   let whereClause: string = !whereQuery ? "" : `where: { ${whereQuery} }`;
 
   try {
