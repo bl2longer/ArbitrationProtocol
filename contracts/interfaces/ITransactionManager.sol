@@ -8,7 +8,8 @@ interface ITransactionManager {
     function registerTransaction(
         address arbitrator,
         uint256 deadline,
-        address compensationReceive
+        address compensationReceive,
+        address refundAddress
     ) external payable returns (bytes32 id);
 
     // Upload transaction utxos, only once

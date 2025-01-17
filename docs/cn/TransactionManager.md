@@ -11,13 +11,15 @@ TransactionManager 是仲裁协议中负责管理跨链交易生命周期的核�
 function registerTransaction(
     address arbitrator,
     uint256 deadline,
-    address compensationReceiver
+    address compensationReceiver,
+    address refundAddress
 ) external payable returns (bytes32 id);
 ```
 注册新的交易。
 - `arbitrator`: 选定的仲裁人地址
 - `deadline`: 交易截止时间戳
 - `compensationReceiver`: 补偿接收地址
+- `refundAddress`: 退款地址
 - `msg.value`: 必须等于所需的注册费用
 - 返回值: 唯一交易ID
 
@@ -211,6 +213,7 @@ const tx = await transactionManager.registerTransaction(
     arbitratorAddress,
     deadline,
     compensationReceiver,
+    refundAddress,
     { value: fee }
 );
 const receipt = await tx.wait();

@@ -18,7 +18,7 @@ async function main() {
     console.log("arbitratorManagerAddress", arbitratorManagerAddress);
 
     // Transaction ID to query
-    const transactionId = "0xc5692b18f5028c89ea23051f1795935e1a56ef31b3b5cd1b33b21441c05980a9";
+    const transactionId = "0x2ee768abbf8e8f43a181667530642555d025930652132919990222684e1349ad";
 
     try {
         // Log transaction details
@@ -40,6 +40,7 @@ async function main() {
         console.log("BTC Tx Hash:", transaction.btcTxHash);
         console.log("Compensation Receiver:", transaction.compensationReceiver);
         console.log("Timeout Compensation Receiver:", transaction.timeoutCompensationReceiver);
+        console.log("Refound Address:", transaction.depositedFeeRefundAddress);
         console.log("UTXOs:", transaction.utxos);
         // Additional parsing of transaction data
         if (transaction.btcTx && transaction.btcTx.length > 0) {

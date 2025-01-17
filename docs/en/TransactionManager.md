@@ -11,13 +11,15 @@ The TransactionManager is a core component in the arbitration protocol responsib
 function registerTransaction(
     address arbitrator,
     uint256 deadline,
-    address compensationReceiver
+    address compensationReceiver,
+    address refundAddress
 ) external payable returns (bytes32 id);
 ```
 Registers a new transaction.
 - `arbitrator`: Selected arbitrator address
 - `deadline`: Transaction deadline timestamp
 - `compensationReceiver`: Address to receive compensation if needed
+- `refundAddress`: Address to receive refunds
 - `msg.value`: Must equal the required registration fee
 - Returns: Unique transaction ID
 
@@ -211,6 +213,7 @@ const tx = await transactionManager.registerTransaction(
     arbitratorAddress,
     deadline,
     compensationReceiver,
+    refundAddress,
     { value: fee }
 );
 const receipt = await tx.wait();

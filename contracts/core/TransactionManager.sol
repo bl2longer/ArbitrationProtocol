@@ -81,14 +81,16 @@ contract TransactionManager is
      * @param arbitrator The arbitrator address
      * @param deadline The deadline for the transaction
      * @param compensationReceiver Address to receive compensation in case of timeout
+     * @param refundAddress Address to receive refund
      * @return id The unique transaction ID
      */
     function registerTransaction(
         address arbitrator,
         uint256 deadline,
-        address compensationReceiver
+        address compensationReceiver,
+        address refundAddress
     ) external payable nonReentrant returns (bytes32) {
-        if (arbitrator == address(0) || compensationReceiver == address(0)) {
+        if (arbitrator == address(0) || compensationReceiver == address(0) || refundAddress == address(0)) {
             revert(Errors.ZERO_ADDRESS);
         }
 
@@ -139,6 +141,7 @@ contract TransactionManager is
         transaction.status = DataTypes.TransactionStatus.Active;
         transaction.depositedFee = msg.value;
         transaction.compensationReceiver = compensationReceiver;
+        transaction.depositedFeeRefundAddress = refundAddress;
 
         emit TransactionRegistered(id, msg.sender, arbitrator, deadline, msg.value, compensationReceiver);
         return id;
@@ -286,8 +289,8 @@ contract TransactionManager is
         // Refund remaining balance to DApp
         uint256 remainingBalance = transaction.depositedFee - arbitratorFee;
         if (remainingBalance > 0) {
-            (bool success3, ) = transaction.dapp.call{value: remainingBalance}("");
-            if (!success3) revert(Errors.NO_RECEIVE_METHOD);
+            (bool success3, ) = transaction.depositedFeeRefundAddress.call{value: remainingBalance}("");
+            if (!success3) revert(Errors.TRANSFER_FAILED);
         }
         return (finalArbitratorFee, systemFee);
     }

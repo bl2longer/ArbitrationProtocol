@@ -75,6 +75,7 @@ library DataTypes {
         UTXO[] utxos;                         // Array of UTXOs associated with the transaction
         bytes script;                         // Bitcoin transaction script
         uint256 requestArbitrationTime;
+        address depositedFeeRefundAddress; // Refund address for deposited fee
     }
 
     struct ZKVerification {
