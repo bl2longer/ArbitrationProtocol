@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { tooltips } from '@/config/tooltips';
 import { useWalletContext } from '@/contexts/WalletContext/WalletContext';
+import { RequestArbiterFeeCompensationDialog } from '@/pages/TransactionList/dialogs/RequestArbiterFeeCompensationDialog';
 import { SubmitSignatureDialog } from '@/pages/TransactionList/dialogs/SubmitSignatureDialog';
 import { TransactionDetailsDialog } from '@/pages/TransactionList/dialogs/TransactionDetailsDialog';
 import { CompensationType } from '@/services/compensations/model/compensation-claim';
@@ -16,6 +17,7 @@ import { isNullOrUndefined } from '@/utils/isNullOrUndefined';
 import { RefreshCwIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { TransactionRow } from './TransactionRow';
+import { RequestIllegalSignatureCompensationDialog } from '@/pages/TransactionList/dialogs/RequestIllegalSignatureCompensationDialog';
 
 export type ArbiterTransactionColumn = keyof Transaction | "reward";
 
@@ -110,6 +112,8 @@ export default function ArbiterTransactions() {
       />
 
       <SubmitSignatureDialog transaction={selectedTransaction} isOpen={openDialog === "sign-arbitration"} onHandleClose={() => setOpenDialog(undefined)} />
+      <RequestIllegalSignatureCompensationDialog isOpen={openDialog === "IllegalSignature"} transaction={selectedTransaction} onHandleClose={() => setOpenDialog(undefined)} />
+      <RequestArbiterFeeCompensationDialog isOpen={openDialog === "ArbiterFee"} transaction={selectedTransaction} onHandleClose={() => setOpenDialog(undefined)} />
     </div>
   );
 }
