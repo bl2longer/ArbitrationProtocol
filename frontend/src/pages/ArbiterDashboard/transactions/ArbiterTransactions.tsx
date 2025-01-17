@@ -29,7 +29,7 @@ export const transactionFieldLabels: Partial<Record<ArbiterTransactionColumn, st
 
 export default function ArbiterTransactions() {
   const { evmAccount } = useWalletContext();
-  const { transactions: rawTransactions, refreshTransactions } = useTransactions(evmAccount);
+  const { transactions: rawTransactions, refreshTransactions } = useTransactions(1, 500, evmAccount);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [openDialog, setOpenDialog] = useState<undefined | CompensationType | "sign-arbitration" | "details">(undefined);

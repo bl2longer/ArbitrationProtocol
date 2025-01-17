@@ -2,8 +2,6 @@
   - use tabs
   - find TransactionCompleted transactions for this arbiter (subgraph), and get dates and amounts there.
 
-- Paginations for arbiters, transactions (remote) + remote search
-
 ------------------------------------------
 
 TO BE CLARIFIED FIRST:
