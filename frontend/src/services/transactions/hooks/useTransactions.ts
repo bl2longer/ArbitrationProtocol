@@ -5,7 +5,10 @@ import { fetchTransactions as fetchSubgraphTransactions } from "../transactions.
 import { useMultiTransactionStatus } from "./contract/useMultiTransactionStatus";
 import { useMultiTransactions } from "./contract/useMultiTransactions";
 
-export const useTransactions = () => {
+/**
+ * @param arbiter if passed, only transactions from this arbiters are fetched
+ */
+export const useTransactions = (arbiter?: string) => {
   const activeChain = useActiveEVMChainConfig();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const { fetchTransactionStatuses } = useMultiTransactionStatus();
@@ -14,7 +17,7 @@ export const useTransactions = () => {
   const refreshTransactions = useCallback(async () => {
     setTransactions(undefined);
     if (activeChain) {
-      const { transactions: subgraphTransactions } = (await fetchSubgraphTransactions(activeChain, 0, 100)) || {};
+      const { transactions: subgraphTransactions } = (await fetchSubgraphTransactions(activeChain, 0, 100, { arbiter })) || {};
       const contractTransactions = await fetchTransactions(subgraphTransactions?.map(t => t.id));
 
       if (contractTransactions) {
@@ -29,7 +32,7 @@ export const useTransactions = () => {
 
       setTransactions(contractTransactions);
     }
-  }, [activeChain, fetchTransactions, fetchTransactionStatuses]);
+  }, [activeChain, fetchTransactions, fetchTransactionStatuses, arbiter]);
 
   useEffect(() => {
     void refreshTransactions();

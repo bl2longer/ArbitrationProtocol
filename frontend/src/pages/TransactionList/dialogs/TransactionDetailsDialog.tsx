@@ -24,7 +24,7 @@ export const TransactionDetailsDialog: FC<{
   onHandleClose: () => void;
 }> = ({ transaction, isOpen, onHandleClose, onSubmitArbitration, onRequestCompensation }) => {
   const activeChain = useActiveEVMChainConfig();
-  const { hasAvailableAction, canSubmitArbitration, canRequestTimeoutCompensation, canRequestFailedArbitrationCompensation, canRequestIllegalSignatureCompensation, canCloseTransaction } = useTransactionActionStatus(transaction);
+  const { hasAvailableAction, canSubmitArbitration, canRequestTimeoutCompensation, canRequestFailedArbitrationCompensation, canRequestIllegalSignatureCompensation, canClaimArbiterFee } = useTransactionActionStatus(transaction);
 
   if (!transaction)
     return null;
@@ -97,7 +97,7 @@ export const TransactionDetailsDialog: FC<{
 
           {/* Close transaction */}
           {
-            canCloseTransaction &&
+            canClaimArbiterFee &&
             <Button onClick={() => onRequestCompensation("ArbiterFee")}>Claim Arbiter Fee</Button>
           }
         </div>

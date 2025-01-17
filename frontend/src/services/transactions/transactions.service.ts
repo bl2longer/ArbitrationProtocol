@@ -9,10 +9,21 @@ type FetchTransactionsResponse = SubgraphGQLResponse<{
   transactions: TransactionDTO[];
 }>;
 
+export type FetchTransactionsQueryParams = {
+  arbiter?: string;
+}
+
 /**
  * Fetch all transactions from the subsgraph.
  */
-export const fetchTransactions = async (chain: ChainConfig, start: number, limit: number): Promise<{ transactions: Transaction[], total: number }> => {
+export const fetchTransactions = async (chain: ChainConfig, start: number, limit: number, queryParams?: FetchTransactionsQueryParams): Promise<{ transactions: Transaction[], total: number }> => {
+  let whereQuery = "";
+
+  if (queryParams.arbiter)
+    whereQuery += ` arbiter: "${queryParams.arbiter.toLowerCase()}"`;
+
+  let whereClause: string = !whereQuery ? "" : `where: { ${whereQuery} }`;
+
   try {
     const resultsPerPage = 1000;
     let startAt = 0;
@@ -27,6 +38,7 @@ export const fetchTransactions = async (chain: ChainConfig, start: number, limit
           first:${resultsPerPage}
           orderBy: createdAt,
           orderDirection: desc
+          ${whereClause}
         ) { 
           id txId dapp arbiter startTime deadline requestArbitrationTime
           status depositedFee signature compensationReceiver timeoutCompensationReceiver

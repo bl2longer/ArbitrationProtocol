@@ -27,11 +27,8 @@ export const transactionFieldLabels: Partial<Record<keyof Transaction, string>> 
   id: 'ID',
   dapp: 'DApp',
   arbiter: 'Arbiter',
-  //startTime: 'Start Time',
   deadline: 'Deadline',
-  //depositedFee: 'Deposited Fee',
   status: 'Status',
-  // signature: 'Signature'
 };
 
 export default function TransactionList() {
