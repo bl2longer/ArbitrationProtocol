@@ -38,7 +38,7 @@ const ResultsPerPage = 9;
 export default function TransactionList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchSubject, validatedSearch, typedSearch] = useDebounceInput();
-  const { transactions: rawTransactions, refreshTransactions, total: totalTransactionCount } = useTransactions(
+  const { transactions, refreshTransactions, total: totalTransactionCount } = useTransactions(
     currentPage,
     ResultsPerPage,
     null,
@@ -48,17 +48,6 @@ export default function TransactionList() {
   const [openDialog, setOpenDialog] = useState<undefined | CompensationType | "sign-arbitration" | "details">(undefined);
   const { transactionId: urlTransactionId } = useParams();
   const { fetchTransaction } = useTransaction(urlTransactionId);
-
-  const transactions = useMemo(() => {
-    return rawTransactions?.filter(tx => {
-      const searchLower = validatedSearch?.toLowerCase();
-      return (
-        tx.id?.toLowerCase().includes(searchLower) ||
-        tx.dapp?.toLowerCase().includes(searchLower) ||
-        tx.arbiter?.toLowerCase().includes(searchLower)
-      );
-    });
-  }, [rawTransactions, validatedSearch]);
 
   const loading = useMemo(() => isNullOrUndefined(transactions), [transactions]);
 
