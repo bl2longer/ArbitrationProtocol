@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "./Errors.sol";
+import "./BytesLib.sol";
 
 /**
  * @title BTCUtils
@@ -10,18 +11,15 @@ import "./Errors.sol";
 library BTCUtils {
     // Bitcoin transaction version is 4 bytes
     uint256 constant VERSION_SIZE = 4;
-    // VarInt max value for 1 byte encoding
-    uint256 constant VARINT_SINGLE_BYTE = 0xfc;
-    // VarInt prefix for 2 byte encoding
-    uint8 constant VARINT_TWO_BYTES = 0xfd;
-    // VarInt prefix for 4 byte encoding
-    uint8 constant VARINT_FOUR_BYTES = 0xfe;
-    // VarInt prefix for 8 byte encoding
-    uint8 constant VARINT_EIGHT_BYTES = 0xff;
     // Segwit marker
     uint8 constant SEGWIT_MARKER = 0x00;
     // Segwit flag
     uint8 constant SEGWIT_FLAG = 0x01;
+
+    uint8 constant SIGHASH_ALL = 0x01;
+    uint8 constant SIGHASH_NONE = 0x02;
+    uint8 constant SIGHASH_SINGLE = 0x03;
+    uint8 constant SIGHASH_ANYONECANPAY = 0x80;
 
     struct BTCInput {
         bytes32 txid;        // Previous transaction hash
@@ -54,14 +52,13 @@ library BTCUtils {
 
         // Parse version (4 bytes)
         if (offset + VERSION_SIZE > txLength) revert (Errors.INVALID_BTC_TX);
-        transaction.version = littleEndianToUint32(txBytes, offset);
+        transaction.version = BytesLib.readUint32LE(txBytes, offset);
         offset += VERSION_SIZE;
 
         // Check for segwit marker and flag
         (bool hasWitness, uint256 newOffset) = checkWitness(txBytes, offset);
         transaction.hasWitness = hasWitness;
         offset = newOffset;
-
 
         // Parse inputs
         (BTCInput[] memory inputs, uint256 inputsOffset) = parseInputs(txBytes, offset);
@@ -114,7 +111,7 @@ library BTCUtils {
      * @return newOffset Updated offset
      */
     function parseInputs(bytes calldata txBytes, uint256 offset) internal pure returns (BTCInput[] memory inputs, uint256 newOffset) {
-        (uint256 inputCount, uint256 inputCountSize) = parseVarInt(txBytes, offset);
+        (uint256 inputCount, uint256 inputCountSize) = BytesLib.readVarInt(txBytes, offset);
         newOffset = offset + inputCountSize;
 
         inputs = new BTCInput[](inputCount);
@@ -133,7 +130,7 @@ library BTCUtils {
      * @return newOffset Updated offset
      */
     function parseOutputs(bytes calldata txBytes, uint256 offset) internal pure returns (BTCOutput[] memory outputs, uint256 newOffset) {
-        (uint256 outputCount, uint256 outputCountSize) = parseVarInt(txBytes, offset);
+        (uint256 outputCount, uint256 outputCountSize) = BytesLib.readVarInt(txBytes, offset);
         newOffset = offset + outputCountSize;
 
         outputs = new BTCOutput[](outputCount);
@@ -154,10 +151,10 @@ library BTCUtils {
     function skipWitnessData(bytes calldata txBytes, uint256 offset, uint256 inputCount) internal pure returns (uint256 newOffset) {
         newOffset = offset;
         for (uint256 i = 0; i < inputCount; i++) {
-            (uint256 witnessCount, uint256 witnessCountSize) = parseVarInt(txBytes, newOffset);
+            (uint256 witnessCount, uint256 witnessCountSize) = BytesLib.readVarInt(txBytes, newOffset);
             newOffset += witnessCountSize;
             for (uint256 j = 0; j < witnessCount; j++) {
-                (uint256 itemSize, uint256 itemSizeSize) = parseVarInt(txBytes, newOffset);
+                (uint256 itemSize, uint256 itemSizeSize) = BytesLib.readVarInt(txBytes, newOffset);
                 newOffset += itemSizeSize + itemSize;
             }
         }
@@ -171,15 +168,15 @@ library BTCUtils {
     function serializeBTCTransaction(BTCTransaction memory btcTx) internal pure returns (bytes memory) {
         // Calculate total size
         uint256 totalSize = VERSION_SIZE;  // Version
-        totalSize += getVarIntSize(btcTx.inputs.length);  // Input count
+        totalSize += BytesLib.getVarIntSize(btcTx.inputs.length);  // Input count
         for (uint256 i = 0; i < btcTx.inputs.length; i++) {
             totalSize += 40;  // txid (32) + vout (4) + sequence (4)
             totalSize += 1;   // Empty script length
         }
-        totalSize += getVarIntSize(btcTx.outputs.length);  // Output count
+        totalSize += BytesLib.getVarIntSize(btcTx.outputs.length);  // Output count
         for (uint256 i = 0; i < btcTx.outputs.length; i++) {
             totalSize += 8;  // value
-            totalSize += getVarIntSize(btcTx.outputs[i].scriptPubKey.length);
+            totalSize += BytesLib.getVarIntSize(btcTx.outputs[i].scriptPubKey.length);
             totalSize += btcTx.outputs[i].scriptPubKey.length;
         }
         totalSize += 4;  // locktime
@@ -195,7 +192,7 @@ library BTCUtils {
         offset += 4;
 
         // Input count
-        offset += writeVarInt(btcTx.inputs.length, result, offset);
+        offset += BytesLib.writeVarInt(btcTx.inputs.length, result, offset);
 
         // Inputs
         for (uint256 i = 0; i < btcTx.inputs.length; i++) {
@@ -225,7 +222,7 @@ library BTCUtils {
         }
 
         // Output count
-        offset += writeVarInt(btcTx.outputs.length, result, offset);
+        offset += BytesLib.writeVarInt(btcTx.outputs.length, result, offset);
 
         // Outputs
         for (uint256 i = 0; i < btcTx.outputs.length; i++) {
@@ -237,7 +234,7 @@ library BTCUtils {
             offset += 8;
 
             // scriptPubKey
-            offset += writeVarInt(btcTx.outputs[i].scriptPubKey.length, result, offset);
+            offset += BytesLib.writeVarInt(btcTx.outputs[i].scriptPubKey.length, result, offset);
             for (uint256 j = 0; j < btcTx.outputs[i].scriptPubKey.length; j++) {
                 result[offset + j] = btcTx.outputs[i].scriptPubKey[j];
             }
@@ -251,31 +248,6 @@ library BTCUtils {
         }
 
         return result;
-    }
-
-    /**
-     * @notice Parse variable integer
-     * @param data Raw data
-     * @param offset Current offset in data
-     * @return value Parsed value
-     * @return size Size of varint in bytes
-     */
-    function parseVarInt(bytes calldata data, uint256 offset) internal pure returns (uint256 value, uint256 size) {
-        if (offset >= data.length) revert (Errors.INVALID_BTC_TX);
-        
-        uint8 first = uint8(data[offset]);
-        if (first < VARINT_SINGLE_BYTE) {
-            return (first, 1);
-        } else if (first == VARINT_TWO_BYTES) {
-            if (offset + 3 > data.length) revert (Errors.INVALID_BTC_TX);
-            return (littleEndianToUint16(data, offset + 1), 3);
-        } else if (first == VARINT_FOUR_BYTES) {
-            if (offset + 5 > data.length) revert (Errors.INVALID_BTC_TX);
-            return (littleEndianToUint32(data, offset + 1), 5);
-        } else {
-            if (offset + 9 > data.length) revert (Errors.INVALID_BTC_TX);
-            return (littleEndianToUint64(data, offset + 1), 9);
-        }
     }
 
     /**
@@ -295,11 +267,11 @@ library BTCUtils {
 
         // Parse vout (4 bytes)
         if (offset + 4 > data.length) revert (Errors.INVALID_BTC_TX);
-        input.vout = littleEndianToUint32(data, offset);
+        input.vout = BytesLib.readUint32LE(data, offset);
         offset += 4;
 
         // Parse scriptSig
-        (uint256 scriptLength, uint256 scriptLengthSize) = parseVarInt(data, offset);
+        (uint256 scriptLength, uint256 scriptLengthSize) = BytesLib.readVarInt(data, offset);
         offset += scriptLengthSize;
         if (offset + scriptLength > data.length) revert (Errors.INVALID_BTC_TX);
         input.scriptSig = data[offset:offset + scriptLength];
@@ -307,7 +279,7 @@ library BTCUtils {
 
         // Parse sequence (4 bytes)
         if (offset + 4 > data.length) revert (Errors.INVALID_BTC_TX);
-        input.sequence = littleEndianToUint32(data, offset);
+        input.sequence = BytesLib.readUint32LE(data, offset);
         offset += 4;
 
         return (input, offset - startOffset);
@@ -325,111 +297,17 @@ library BTCUtils {
 
         // Parse value (8 bytes)
         if (offset + 8 > data.length) revert (Errors.INVALID_BTC_TX);
-        output.value = littleEndianToUint64(data, offset);
+        output.value = BytesLib.readUint64LE(data, offset);
         offset += 8;
 
         // Parse scriptPubKey
-        (uint256 scriptLength, uint256 scriptLengthSize) = parseVarInt(data, offset);
+        (uint256 scriptLength, uint256 scriptLengthSize) = BytesLib.readVarInt(data, offset);
         offset += scriptLengthSize;
         if (offset + scriptLength > data.length) revert (Errors.INVALID_BTC_TX);
         output.scriptPubKey = data[offset:offset + scriptLength];
         offset += scriptLength;
 
         return (output, offset - startOffset);
-    }
-
-    /**
-     * @notice Calculate size needed for variable integer
-     * @param value Value to encode
-     * @return Size in bytes
-     */
-    function getVarIntSize(uint256 value) internal pure returns (uint256) {
-        if (value < VARINT_SINGLE_BYTE) {
-            return 1;
-        } else if (value <= 0xffff) {
-            return 3;
-        } else if (value <= 0xffffffff) {
-            return 5;
-        } else {
-            return 9;
-        }
-    }
-
-    /**
-     * @notice Write variable integer to byte array
-     * @param value Value to write
-     * @param data Target byte array
-     * @param offset Current offset in data
-     * @return Size of written varint
-     */
-    function writeVarInt(uint256 value, bytes memory data, uint256 offset) internal pure returns (uint256) {
-        if (value < VARINT_SINGLE_BYTE) {
-            data[offset] = bytes1(uint8(value));
-            return 1;
-        } else if (value <= 0xffff) {
-            data[offset] = bytes1(VARINT_TWO_BYTES);
-            bytes2 valueBytes = bytes2(uint16(value));
-            data[offset + 1] = valueBytes[1];
-            data[offset + 2] = valueBytes[0];
-            return 3;
-        } else if (value <= 0xffffffff) {
-            data[offset] = bytes1(VARINT_FOUR_BYTES);
-            bytes4 valueBytes = bytes4(uint32(value));
-            for (uint256 i = 0; i < 4; i++) {
-                data[offset + 1 + i] = valueBytes[3 - i];
-            }
-            return 5;
-        } else {
-            data[offset] = bytes1(VARINT_EIGHT_BYTES);
-            bytes8 valueBytes = bytes8(uint64(value));
-            for (uint256 i = 0; i < 8; i++) {
-                data[offset + 1 + i] = valueBytes[7 - i];
-            }
-            return 9;
-        }
-    }
-
-    /**
-     * @notice Convert little endian bytes to uint16 (big endian)
-     * @param data The input bytes in little endian
-     * @param offset The starting position in the bytes array
-     * @return The converted uint16 value
-     */
-    function littleEndianToUint16(bytes memory data, uint256 offset) internal pure returns (uint16) {
-        require(offset + 2 <= data.length, Errors.UINT16_INSUFFICIENT_LENGHT);
-        return uint16(uint8(data[offset + 1])) << 8 | uint16(uint8(data[offset]));
-    }
-
-    /**
-     * @notice Convert little endian bytes to uint32 (big endian)
-     * @param data The input bytes in little endian
-     * @param offset The starting position in the bytes array
-     * @return The converted uint32 value
-     */
-    function littleEndianToUint32(bytes memory data, uint256 offset) internal pure returns (uint32) {
-        require(offset + 4 <= data.length, Errors.UINT32_INSUFFICIENT_LENGHT);
-        return uint32(uint8(data[offset + 3])) << 24 |
-               uint32(uint8(data[offset + 2])) << 16 |
-               uint32(uint8(data[offset + 1])) << 8 |
-               uint32(uint8(data[offset]));
-    }
-
-    /**
-     * @notice Convert little endian bytes to uint64 (big endian)
-     * @param data The input bytes in little endian
-     * @param offset The starting position in the bytes array
-     * @return The converted uint64 value
-     */
-    function littleEndianToUint64(bytes memory data, uint256 offset) internal pure returns (uint64) {
-        require(offset + 8 <= data.length, Errors.UINT64_INSUFFICIENT_LENGHT);
-        return uint64(uint8(data[offset + 7])) << 56 |
-               uint64(uint8(data[offset + 6])) << 48 |
-               uint64(uint8(data[offset + 5])) << 40 |
-               uint64(uint8(data[offset + 4])) << 32 |
-               uint64(uint8(data[offset + 3])) << 24 |
-               uint64(uint8(data[offset + 2])) << 16 |
-               uint64(uint8(data[offset + 1])) << 8 |
-               uint64(uint8(data[offset]));
     }
 
     /**
@@ -457,7 +335,7 @@ library BTCUtils {
 
         // Parse version (4 bytes)
         if (offset + VERSION_SIZE > txLength) revert (Errors.INVALID_BTC_TX);
-        transaction.version = littleEndianToUint32(signData, offset);
+        transaction.version = BytesLib.readUint32LE(signData, offset);
         offset += VERSION_SIZE;
 
         // skip hashPrevouts
@@ -476,11 +354,11 @@ library BTCUtils {
 
         // Parse vout (4 bytes)
         if (offset + 4 > txLength) revert (Errors.INVALID_BTC_TX);
-        transaction.inputs[0].vout = littleEndianToUint32(signData, offset);
+        transaction.inputs[0].vout = BytesLib.readUint32LE(signData, offset);
         offset += 4;
 
         // Parse scriptSig
-        (uint256 scriptLength, uint256 scriptLengthSize) = parseVarInt(signData, offset);
+        (uint256 scriptLength, uint256 scriptLengthSize) = BytesLib.readVarInt(signData, offset);
         offset += scriptLengthSize;
         if (offset + scriptLength > txLength) revert (Errors.INVALID_BTC_TX);
         transaction.inputs[0].scriptSig = signData[offset:offset + scriptLength];
@@ -492,7 +370,7 @@ library BTCUtils {
 
         // Parse sequence (4 bytes)
         if (offset + 4 > txLength) revert (Errors.INVALID_BTC_TX);
-        transaction.inputs[0].sequence = littleEndianToUint32(signData, offset);
+        transaction.inputs[0].sequence = BytesLib.readUint32LE(signData, offset);
         offset += 4;
 
         // skip hashOutputs
@@ -553,4 +431,135 @@ library BTCUtils {
 
         return true;
     }
+
+    function getOutputSerializeLength(BTCOutput memory output) internal pure returns (uint256) {
+        return 8 + BytesLib.getVarIntSize(output.scriptPubKey.length) + output.scriptPubKey.length;
+    }
+
+    function serializeOutput(BTCOutput memory output, bytes memory data, uint256 offset) internal pure returns (uint256) {
+        offset = BytesLib.writeUint64LE(output.value, data, offset);
+        offset += BytesLib.writeVarInt(output.scriptPubKey.length, data, offset);
+        for (uint256 i = 0; i < output.scriptPubKey.length; i++) {
+            data[offset + i] = output.scriptPubKey[i];
+        }
+        return offset + output.scriptPubKey.length;
+    }
+
+    /**
+     * @notice Generate witness sign data for Bitcoin transaction
+     * @param btcTx Bitcoin transaction data
+     * @param inputIndex Index of the input to generate sign data for
+     * @param amount Amount of the input
+     * @param sighashFlag Signature hash flag (SIGHASH_ALL = 0x01, SIGHASH_NONE = 0x02, SIGHASH_SINGLE = 0x03, SIGHASH_ANYONECANPAY = 0x80)
+     * @return bytes The generated sign data
+     */
+    function generateWitnessSignData(
+        BTCTransaction memory btcTx,
+        uint256 inputIndex,
+        bytes memory script,
+        uint64 amount,
+        uint32 sighashFlag
+    ) internal pure returns (bytes memory) {
+        if (inputIndex >= btcTx.inputs.length) revert(Errors.INVALID_INPUT_INDEX);
+
+        // Handle different sighash flags
+        bool anyoneCanPay = (sighashFlag & SIGHASH_ANYONECANPAY) == SIGHASH_ANYONECANPAY;
+        uint32 baseSighashType = sighashFlag & 0x1f;
+
+        // Calculate total size
+        uint256 totalSize = 4; // version
+        totalSize += 32; // hashPrevouts
+        totalSize += 32; // hashSequence
+        totalSize += 32; // outpoint (txid)
+        totalSize += 4;  // outpoint (vout)
+        totalSize += BytesLib.getVarIntSize(script.length);
+        totalSize += script.length; // scriptSig
+        totalSize += 8;  // amount
+        totalSize += 4;  // sequence
+        totalSize += 32; // hashOutputs
+        totalSize += 4;  // locktime
+        totalSize += 4;  // sighashType
+
+        // Allocate memory
+        bytes memory signData = new bytes(totalSize);
+        uint256 offset = 0;
+
+        // Write version
+        offset = BytesLib.writeUint32LE(btcTx.version, signData, offset);
+
+        // Calculate and write hashPrevouts
+        if (!anyoneCanPay) {
+            bytes memory prevouts = new bytes(36 * btcTx.inputs.length);
+            uint256 prevOutOffset = 0;
+            for (uint256 i = 0; i < btcTx.inputs.length; i++) {
+                bytes32 txid = BytesLib.reverseBitcoinHash(btcTx.inputs[i].txid);
+                prevOutOffset = BytesLib.writeBitcoinHash(txid, prevouts, prevOutOffset);
+                prevOutOffset = BytesLib.writeUint32LE(btcTx.inputs[i].vout, prevouts, prevOutOffset);
+            }
+            bytes32 hashPrevouts = sha256(abi.encodePacked(sha256(prevouts)));
+            BytesLib.writeBitcoinHash(hashPrevouts, signData, offset);
+        }
+        offset += 32;
+
+        // Calculate and write hashSequence
+        if (!anyoneCanPay && baseSighashType != SIGHASH_NONE && baseSighashType != SIGHASH_SINGLE) {
+            bytes memory sequences = new bytes(4 * btcTx.inputs.length);
+            uint256 sequnceOffset = 0;
+            for (uint256 i = 0; i < btcTx.inputs.length; i++) {
+                sequnceOffset = BytesLib.writeUint32LE(btcTx.inputs[i].sequence, sequences, sequnceOffset);
+            }
+            bytes32 hashSequence = sha256(abi.encodePacked(sha256(sequences)));
+            BytesLib.writeBitcoinHash(hashSequence, signData, offset);
+        }
+        offset += 32;
+
+        // Write outpoint (txid and vout)
+        offset = BytesLib.writeBitcoinHash(BytesLib.reverseBitcoinHash(btcTx.inputs[inputIndex].txid), signData, offset);
+        offset = BytesLib.writeUint32LE(btcTx.inputs[inputIndex].vout, signData, offset);
+
+        // Write script
+        offset += BytesLib.writeVarInt(script.length, signData, offset);
+        for (uint256 i = 0; i < script.length; i++) {
+            signData[offset + i] = script[i];
+        }
+        offset += script.length;
+
+        // Write amount
+        offset = BytesLib.writeUint64LE(amount, signData, offset);
+
+        // Write sequence
+        offset = BytesLib.writeUint32LE(btcTx.inputs[inputIndex].sequence, signData, offset);
+
+        // Calculate and write hashOutputs
+        if (baseSighashType != SIGHASH_NONE && baseSighashType != SIGHASH_SINGLE) {
+            uint256 outputsSize = 0;
+            for (uint256 i = 0; i < btcTx.outputs.length; i++) {
+                outputsSize += getOutputSerializeLength(btcTx.outputs[i]);
+            }
+            bytes memory outputs = new bytes(outputsSize);
+            uint256 outputsOffset = 0;
+            for (uint256 i = 0; i < btcTx.outputs.length; i++) {
+                outputsOffset = serializeOutput(btcTx.outputs[i], outputs, outputsOffset);
+            }
+            bytes32 hashOutputs = sha256(abi.encodePacked(sha256(outputs)));
+            BytesLib.writeBitcoinHash(hashOutputs, signData, offset);
+        } else if (baseSighashType == SIGHASH_SINGLE && inputIndex < btcTx.outputs.length) {
+            bytes memory output = new bytes(getOutputSerializeLength(btcTx.outputs[inputIndex]) );
+            serializeOutput(btcTx.outputs[inputIndex], output, 0);
+            bytes32 hashOutput = sha256(abi.encodePacked(sha256(output)));
+            BytesLib.writeBitcoinHash(hashOutput, signData, offset);
+        }
+        offset += 32;
+
+        // Write locktime
+        offset = BytesLib.writeUint32LE(btcTx.locktime, signData, offset);
+
+        // Write sighash type
+        offset = BytesLib.writeUint32LE(sighashFlag, signData, offset);
+
+        require(offset == signData.length, "Invalid sign data length");
+
+        return signData;
+    }
+
 }

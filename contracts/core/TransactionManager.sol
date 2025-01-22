@@ -7,10 +7,12 @@ import "../interfaces/ITransactionManager.sol";
 import "../interfaces/IArbitratorManager.sol";
 import "../interfaces/IDAppRegistry.sol";
 import "../interfaces/IConfigManager.sol";
+import "../interfaces/IBtcAddress.sol";
 import "../core/ConfigManager.sol";
 import "../libraries/DataTypes.sol";
 import "../libraries/Errors.sol";
 import "../libraries/BTCUtils.sol";
+import "../libraries/BytesLib.sol";
 import "hardhat/console.sol";
 
 /**
@@ -38,6 +40,9 @@ contract TransactionManager is
 
     // State variables
     address public compensationManager;
+    IBtcAddress public btcAddressParser;
+    // key is the transaction signhash
+    mapping(bytes32 => bytes) public transactionSignData;
 
     modifier onlyCompensationManager() {
         if (msg.sender != compensationManager) revert(Errors.NOT_COMPENSATION_MANAGER);
@@ -299,15 +304,17 @@ contract TransactionManager is
     /**
      * @notice Request arbitration for a transaction
      * @param id Transaction ID
-     * @param signData Bitcoin transaction sign data
-     * @param signDataType the signData type
+     * @param rawData Bitcoin transaction raw data
+     * @param signDataType Bitcoin transaction sign data type, only support witness
+     * @param signHashFlag the signhash flag
      * @param script Bitcoin transaction script
      * @param timeoutCompensationReceiver Address to receive timeout compensation
      */
     function requestArbitration(
         bytes32 id,
-        bytes calldata signData,
+        bytes calldata rawData,
         DataTypes.SignDataType signDataType,
+        uint8 signHashFlag,
         bytes calldata script,
         address timeoutCompensationReceiver
     ) external override nonReentrant {
@@ -338,7 +345,7 @@ contract TransactionManager is
         }
 
         // Parse and validate Bitcoin transaction
-        BTCUtils.BTCTransaction memory parsedTx = BTCUtils.parseWitnessSignData(signData);
+        BTCUtils.BTCTransaction memory parsedTx = BTCUtils.parseBTCTransaction(rawData);
         if(parsedTx.inputs.length != transaction.utxos.length) {
             revert(Errors.INVALID_TRANSACTION);
         }
@@ -349,16 +356,41 @@ contract TransactionManager is
             }
         }
 
+        // Generate sign data and sign hash
+        uint256 amount = transaction.utxos[0].amount;
+        bytes memory signData = BTCUtils.generateWitnessSignData(
+            parsedTx, 0, script, uint64(amount), signHashFlag);
+
         bytes32 signHash = sha256(abi.encodePacked(sha256(signData)));
 
+        // Check output script is sent to arbitrator's address
+        bool isOutputOfArbitrator = false;
+        string memory arbitratorAddress = arbitratorManager.getArbitratorInfo(transaction.arbitrator).revenueBtcAddress;
+        for (uint i = 0; i < parsedTx.outputs.length; i++) {
+            bytes memory decodedScript = btcAddressParser.DecodeBtcAddressToScript(arbitratorAddress);
+            isOutputOfArbitrator = keccak256(parsedTx.outputs[i].scriptPubKey) == keccak256(decodedScript);
+            if (isOutputOfArbitrator) {
+                uint fee = amount * configManager.getArbitrationBTCFeeRate() / 10000;
+                if (parsedTx.outputs[i].value < fee) {
+                    revert(Errors.INVALID_OUTPUT_AMOUNT);
+                }
+                break;
+            }
+        }
+        if (!isOutputOfArbitrator) {
+            revert(Errors.INVALID_OUTPUT_SCRIPT);
+        }
+
         transaction.status = DataTypes.TransactionStatus.Arbitrated;
-        transaction.btcTx = signData;
+        transaction.btcTx = rawData;
         transaction.btcTxHash = signHash;
         transaction.timeoutCompensationReceiver = timeoutCompensationReceiver;
         transaction.script = script;
         transaction.requestArbitrationTime = block.timestamp;
         // Store txHash to id mapping
         txHashToId[signHash] = id;
+        // Store signData
+        transactionSignData[signHash] = signData;
 
         emit ArbitrationRequested(id, msg.sender, transaction.arbitrator, signData, script, timeoutCompensationReceiver);
     }
@@ -477,6 +509,14 @@ contract TransactionManager is
     function setArbitratorManager(address _arbitratorManager) external onlyOwner {
         arbitratorManager = IArbitratorManager(_arbitratorManager);
         emit SetArbitratorManager(_arbitratorManager);
+    }
+
+    function setBTCAddressParser(address _btcAddressParser) external onlyOwner {
+        if (_btcAddressParser == address(0)) {
+            revert(Errors.ZERO_ADDRESS);
+        }
+        btcAddressParser = IBtcAddress(_btcAddressParser);
+        emit BTCAddressParserChanged(_btcAddressParser);
     }
 
     // Add a gap for future storage variables

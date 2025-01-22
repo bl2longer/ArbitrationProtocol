@@ -24,8 +24,9 @@ interface ITransactionManager {
     // Request arbitration
     function requestArbitration(
         bytes32 id,
-        bytes calldata signData,
+        bytes calldata rawData,
         DataTypes.SignDataType signDataType,
+        uint8 signHashFlag,
         bytes calldata script,
         address timeoutCompensationReceiver
     ) external;
@@ -79,9 +80,11 @@ interface ITransactionManager {
         address indexed arbitrator,
         bytes btcTxSignature);
     event SetArbitratorManager(address indexed arbitratorManager);
+    event BTCAddressParserChanged(address indexed newParser);
 
     event DepositFeeTransfer(bytes32 indexed txId, address indexed revenueETHAddress, uint256 arbitratorFee, uint256 systemFee, uint256 refundedFee);
     // Functions
     function initialize(address _arbitratorManager, address _dappRegistry, address _configManager, address _compensationManager) external;
     function setArbitratorManager(address _arbitratorManager) external;
+    function setBTCAddressParser(address _btcAddressParser) external;
 }
