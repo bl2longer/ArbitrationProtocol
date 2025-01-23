@@ -71,7 +71,7 @@ interface ITransactionManager {
         bytes32 indexed txId,
         address indexed dapp,
         address arbitrator,
-        bytes signData,
+        bytes rawData,
         bytes script,
         address timeoutCompensationReceiver);
     event ArbitrationSubmitted(
