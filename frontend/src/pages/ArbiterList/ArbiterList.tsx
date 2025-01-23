@@ -63,7 +63,6 @@ export default function ArbiterList() {
   // Back to page 1 if search term changes, to not remain eg on page 10 
   // when there are not 10 pages in the new results
   useEffect(() => {
-    console.log("reset page to 1")
     setCurrentPage(1);
   }, [validatedSearch]);
 

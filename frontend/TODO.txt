@@ -1,13 +1,5 @@
-
-------------------------------------------
-
-TO BE CLARIFIED FIRST:
-
-- Email service for arbiters:
-  - "Arbiter can register an email for the arbitration notification, we need a background script to check the events"
-  - "new arbitration request" event. poll subgraph (better?) or listen to evm events.
-  - need to create a backend
-  - we already have bel2.org belayer2.org in zoho mail
+- Arbiter list sorting: use remote sorting, and default to stake amount.
+- Show tooltips over arbiter status to explain what this means (Active, Busy deadline, Busy stake...)
 
 ------------------------------------------
 

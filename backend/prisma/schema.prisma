@@ -10,15 +10,32 @@ datasource db {
 model ArbitrationRequest {
   id        String   @id @unique @default(uuid())
   createdAt DateTime @default(now())
+
+  transactionId          String   @unique
+  requestArbitrationTime DateTime // Matches transaction.requestArbitrationTime
+  deadline               DateTime // Matches transaction.deadline
+
+  arbiter   Arbiter? @relation(fields: [arbiterId], references: [id])
+  arbiterId String?  @unique()
+
+  email Email? // Email sent to arbiter owner
 }
 
 model Email {
   id        String   @id @unique @default(uuid())
   createdAt DateTime @default(now())
+
+  arbitrationRequest   ArbitrationRequest? @relation(fields: [arbitrationRequestId], references: [id])
+  arbitrationRequestId String?             @unique()
 }
 
 // backend specific entry to map arbiter info, owner, email address, etc.
 model Arbiter {
   id        String   @id @unique @default(uuid())
   createdAt DateTime @default(now())
+
+  ownerEvmAddress String @unique()
+  email           String
+
+  arbitrationRequests ArbitrationRequest[]
 }

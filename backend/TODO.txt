@@ -1,22 +1,10 @@
-- subgraph service
-- transaction-handler service
-  - get transactions
-    - save to DB
-    - if a tx is unhandled 
-- registration service
+- arbiter registration:
   - api to associate arbiter evm address with email address
-
-
-- Email service for arbiters:
-  - Arbiter owners can register an email
-  - Poll subgraph from time to time to retrieve "new arbitration request" events. 
-  - send emails using bel2.org or belayer2.org domains in zoho mail
+    - evm wallet verification challenge
+    - email PIN code confirmation challenge
+- implement zoho + send arb request emails with zoho
 
 - Pending questions:
   - on what UI page would you like arbiter owners to register their email address?
-  - should we send emails to arbiter owners? operators? or both?
-  - do you want the arbiter ownership to be verified first before accepting new email registration, to make sure not everyone can overwrite emails addresses, or we don't do that for now?
-  - what kind of email would you like to send? only when there is an arbitration request? Or also for other events?
-  - do you also want to use this service to send email to users who request compensations, for some kind of feedback?
 
 P2:
