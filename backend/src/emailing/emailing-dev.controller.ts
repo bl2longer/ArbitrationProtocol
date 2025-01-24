@@ -26,6 +26,10 @@ export class EmailingDevController {
         return {
           arbiterDashboardUrl: "https://arbiter.bel2.org/dashboard"
         }
+      case EmailTemplateType.EMAIL_VERIFICATION:
+        return {
+          pinCode: "1234"
+        }
       default:
         return {};
     }

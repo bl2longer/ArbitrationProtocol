@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { EmailingModule } from 'src/emailing/emailing.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { TransactionsModule } from 'src/transactions/transactions.module';
 import { TransactionHandlerService } from './transaction-handler.service';
@@ -9,7 +10,8 @@ import { TransactionHandlerService } from './transaction-handler.service';
   ],
   imports: [
     TransactionsModule,
-    PrismaModule
+    PrismaModule,
+    EmailingModule
   ]
 })
 export class TransactionHandlerModule { }

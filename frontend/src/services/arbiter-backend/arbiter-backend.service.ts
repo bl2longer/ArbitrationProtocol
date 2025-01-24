@@ -1,6 +1,8 @@
 import { EvmChallengePayload } from "../evm/hooks/useSignTypedData";
+import { ArbiterRegistrationResultDTO } from "./dto/arbiter-registration-result.dto";
 import { ArbiterRegistrationDTO } from "./dto/arbiter-registration.dto";
 import { ArbiterStatusDTO } from "./dto/arbiter-status.dto";
+import { EmailVerificationDTO } from "./dto/email-verification.dto";
 
 export const arbiterBackendEndpoint = import.meta.env.VITE_APP_ARBITER_BACKEND_ENDPOINT!;
 
@@ -22,7 +24,8 @@ const backendPost = async <BodyType, ReturnType = unknown>(path: string, body: B
   });
 
   if (!response.ok) {
-    console.error(`Failed to post ${path}: ${response.statusText}`);
+    const errorPayload = await response.json();
+    console.error(`Failed to post ${path}: ${response.statusText}`, errorPayload);
     return undefined;
   }
 
@@ -34,10 +37,18 @@ export const fetchBackendArbiterStatus = async (arbiterAddress: string): Promise
   return status;
 }
 
-export const upsertBackendArbiter = async (ownerAddress: string, email: string, evmChallengePayload: EvmChallengePayload, signature: string): Promise<ArbiterStatusDTO> => {
-  const result = await backendPost<ArbiterRegistrationDTO, ArbiterStatusDTO>(
+export const upsertBackendArbiter = async (ownerAddress: string, email: string, evmChallengePayload: EvmChallengePayload, signature: string): Promise<ArbiterRegistrationResultDTO> => {
+  const result = await backendPost<ArbiterRegistrationDTO, ArbiterRegistrationResultDTO>(
     `/registration/arbiter`,
     { ownerAddress, email, evmChallengePayload, signature }
+  );
+  return result;
+}
+
+export const sendEmailVerificationPIN = async (ownerAddress: string, pinCode: string): Promise<ArbiterStatusDTO> => {
+  const result = await backendPost<EmailVerificationDTO, ArbiterStatusDTO>(
+    `/registration/arbiter/email-verification`,
+    { arbiterAddress: ownerAddress, pinCode }
   );
   return result;
 }

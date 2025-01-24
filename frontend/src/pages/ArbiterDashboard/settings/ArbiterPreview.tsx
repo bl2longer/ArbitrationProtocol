@@ -15,7 +15,7 @@ import { BellIcon, CalendarIcon, DollarSignIcon, Layers2Icon, StarIcon } from "l
 import { FC, ReactNode, useCallback, useEffect, useState } from "react";
 import { EditDeadlineDialog } from "./dialogs/EditDeadline";
 import { EditFeeRateDialog } from "./dialogs/EditFeeRate";
-import { EditNotificationsDialog } from "./dialogs/EditNotifications";
+import { EditNotificationsDialog } from "./dialogs/EditNotifications/EditNotifications";
 import { EditOperatorDialog } from "./dialogs/EditOperator";
 import { EditRevenueDialog } from "./dialogs/EditRevenue";
 import { EditStakingDialog } from "./dialogs/EditStaking";
@@ -134,7 +134,7 @@ export const ArbiterPreview: FC<{
           <BoxTitle>Notifications</BoxTitle>
           <Button disabled={isFetchingBackendArbiterStatus} onClick={() => setOpenDialog("EditNotifications")}><BellIcon />Edit</Button>
         </div>
-        <InfoRow title="Email address" value={backendArbiterStatus?.emailKnown ? backendArbiterStatus.arbiterOwnerAddress : "Not set  "} />
+        <InfoRow title="Email notification" value={backendArbiterStatus?.emailKnown ? "Active" : "No email set yet"} />
       </div>
 
       <EditOperatorDialog arbiter={arbiter} isOpen={openDialog === "EditOperator"} onHandleClose={() => setOpenDialog(undefined)} onContractUpdated={handleArbiterUpdated} />

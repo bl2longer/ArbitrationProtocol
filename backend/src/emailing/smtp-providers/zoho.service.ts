@@ -1,36 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { createTransport, Transporter } from 'nodemailer';
+import { ConfigService } from '@nestjs/config';
+import { Transporter, createTransport } from 'nodemailer';
 import { IcalAttachment } from 'nodemailer/lib/mailer';
 import { ISmtpService } from '../interfaces/ismtp-service';
 
 @Injectable()
 export class ZohoService implements ISmtpService {
-  private readonly HOST = '127.0.0.1 TODO';
-  private readonly PORT = 925;
+  private readonly HOST = 'smtppro.zoho.com';
+  private readonly PORT = 465;
 
   private transporter: Transporter;
 
-  constructor() {
+  constructor(private config: ConfigService) {
     this.transporter = createTransport({
       host: this.HOST,
       port: this.PORT,
-      secure: false, // true for 465, false for other ports
+      secure: true, // true for 465, false for other ports
       tls: {
-        // Do not fail on invalid certs
-        rejectUnauthorized: false
+        rejectUnauthorized: false // Do not fail on invalid certs
       },
-      //logger: true,
-      //debug: true
+      auth: {
+        user: this.config.get("ZOHO_USERNAME"),
+        pass: this.config.get("ZOHO_PASSWORD")
+      }
     });
   }
 
   async sendEmail(from: string, to: string[], subject, htmlContent: string, textContent: string, calendarEvent?: IcalAttachment): Promise<void> {
-    const info = await this.transporter.sendMail({
+    await this.transporter.sendMail({
       from, to, subject,
       html: htmlContent,
       text: textContent,
-      icalEvent: calendarEvent
-      //text: "Hello world?", // plain text body
     });
   }
 }

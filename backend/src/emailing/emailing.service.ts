@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import validateEmail from 'deep-email-validator';
 import { readFileSync } from 'fs';
 import Handlebars from 'handlebars';
@@ -35,6 +36,7 @@ export class EmailingService {
   private templates: { [templateName: string]: HandlebarsTemplateDelegate } = {};
 
   constructor(
+    private config: ConfigService,
     private appService: AppService,
     private smtp4devService: Smtp4devService,
     private sendinblueService: SendinblueService,
@@ -106,10 +108,13 @@ export class EmailingService {
     return res.valid;
   }
 
-  public async sendEmail(emailTemplate: EmailTemplateType, from: string, to: string | Array<string>, subject: string, data: { [key: string]: any }, calendarEvent?: IcalAttachment): Promise<boolean> {
+  public async sendEmail(emailTemplate: EmailTemplateType, from: string | undefined = undefined, to: string | Array<string>, subject: string, data: { [key: string]: any }, calendarEvent?: IcalAttachment): Promise<boolean> {
     if (!(emailTemplate in this.templates)) {
       throw new Error(`Email template of given type ${emailTemplate} does not exist. Did you forget to load it in the emailing service?`);
     }
+
+    if (!from)
+      from = this.config.get("EMAIL_SENDER_ADDRESS")!;
 
     // Clone input data to avoid modification before sending
     data = cloneDeep(data);
@@ -145,7 +150,7 @@ export class EmailingService {
   }
 
   private getSmtpService(): ISmtpService {
-    const service = process.env.SMTP_SERVICE;
+    const service = this.config.get("EMAIL_PROVIDER");
     switch (service) {
       case SmtpService.SMTP4DEV:
         return this.smtp4devService;

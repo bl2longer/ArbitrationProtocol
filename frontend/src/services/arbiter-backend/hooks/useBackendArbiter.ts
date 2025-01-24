@@ -2,14 +2,14 @@ import { EvmChallengePayload } from "@/services/evm/hooks/useSignTypedData";
 import { useBehaviorSubject } from "@/utils/useBehaviorSubject";
 import { useCallback } from "react";
 import { BehaviorSubject } from "rxjs";
-import { fetchBackendArbiterStatus as fetchArbiterStatus, upsertBackendArbiter as upsertArbiter } from "../arbiter-backend.service";
+import { fetchBackendArbiterStatus as fetchArbiterStatus, sendEmailVerificationPIN, upsertBackendArbiter as upsertArbiter } from "../arbiter-backend.service";
 import { ArbiterStatusDTO } from "../dto/arbiter-status.dto";
 
 const state$ = new BehaviorSubject<{
   isFetchingStatus: boolean;
-  isUpserting: boolean;
+  isPosting: boolean;
   status?: ArbiterStatusDTO;
-}>({ isFetchingStatus: false, isUpserting: false });
+}>({ isFetchingStatus: false, isPosting: false });
 
 export const useBackendArbiter = (arbiterAddress: string) => {
   const state = useBehaviorSubject(state$);
@@ -21,20 +21,39 @@ export const useBackendArbiter = (arbiterAddress: string) => {
   }, [arbiterAddress]);
 
   const upsertBackendArbiter = useCallback(async (email: string, evmChallengePayload: EvmChallengePayload, signature: string): Promise<boolean> => {
-    state$.next({ ...state$.value, isUpserting: true });
+    state$.next({ ...state$.value, isPosting: true });
     if (await upsertArbiter(arbiterAddress, email, evmChallengePayload, signature)) {
       state$.next({
-        ...state$.value, isUpserting: false, status: {
+        ...state$.value, isPosting: false
+      });
+      return true;
+    }
+    else {
+      state$.next({ ...state$.value, isPosting: false });
+      return false;
+    }
+  }, [arbiterAddress]);
+
+  const sendEmailVerificationPinCode = useCallback(async (pinCode: string): Promise<boolean> => {
+    state$.next({ ...state$.value, isPosting: true });
+    if (await sendEmailVerificationPIN(arbiterAddress, pinCode)) {
+      state$.next({
+        ...state$.value, isPosting: false, status: {
           ...state$.value.status, emailKnown: true
         }
       });
       return true;
     }
     else {
-      state$.next({ ...state$.value, isUpserting: false });
+      state$.next({ ...state$.value, isPosting: false });
       return false;
     }
   }, [arbiterAddress]);
 
-  return { ...state, fetchBackendArbiterStatus, upsertBackendArbiter };
+  return {
+    ...state,
+    fetchBackendArbiterStatus,
+    upsertBackendArbiter,
+    sendEmailVerificationPinCode
+  };
 }

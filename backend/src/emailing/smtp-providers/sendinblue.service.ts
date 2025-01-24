@@ -29,7 +29,6 @@ export class SendinblueService implements ISmtpService {
 
       mailData.attachment = [{
         name: calendarEvent.filename,
-        // TODO: Change to unix style new line for outlook.com, it seems not work.
         content: btoa((calendarEvent.content as string).replace(/\r\n/g, '\n')),
       }]
     }

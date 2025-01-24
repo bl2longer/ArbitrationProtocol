@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { EmailingModule } from 'src/emailing/emailing.module';
 import { EvmModule } from 'src/evm/evm.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { RegistrationController } from './registration.controller';
@@ -9,7 +10,8 @@ import { RegistrationService } from './registration.service';
   providers: [RegistrationService],
   imports: [
     PrismaModule,
-    EvmModule
+    EvmModule,
+    EmailingModule
   ]
 })
 export class RegistrationModule { }

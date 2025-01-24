@@ -16,17 +16,9 @@ model ArbitrationRequest {
   deadline               DateTime // Matches transaction.deadline
 
   arbiter   Arbiter? @relation(fields: [arbiterId], references: [id])
-  arbiterId String?  @unique()
+  arbiterId String?
 
-  email Email? // Email sent to arbiter owner
-}
-
-model Email {
-  id        String   @id @unique @default(uuid())
-  createdAt DateTime @default(now())
-
-  arbitrationRequest   ArbitrationRequest? @relation(fields: [arbitrationRequestId], references: [id])
-  arbitrationRequestId String?             @unique()
+  arbiterOwnerNotifiedAt DateTime? // Date at which the arbiter owner was notified about the request
 }
 
 // backend specific entry to map arbiter info, owner, email address, etc.
@@ -35,7 +27,14 @@ model Arbiter {
   createdAt DateTime @default(now())
 
   ownerEvmAddress String @unique()
-  email           String
+
+  email String? // Verified email. Can be null for a while until verification completed.
+
+  emailToVerify                  String? // Email address, before it's verified
+  emailVerificationPin           String?
+  emailVerificationPinExpiration DateTime? // Date at which the pin expires. After that, need to request another pin.
+  emailVerifiedAt                DateTime?
+  emailVerificationAttempts      Int       @default(0)
 
   arbitrationRequests ArbitrationRequest[]
 }
