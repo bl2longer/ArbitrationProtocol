@@ -11,8 +11,6 @@ import "../interfaces/IArbitratorManager.sol";
 import "../libraries/Errors.sol";
 import "../libraries/DataTypes.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "hardhat/console.sol";
-
 contract CompensationManager is 
     ICompensationManager,
     OwnableUpgradeable 

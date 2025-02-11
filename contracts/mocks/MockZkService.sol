@@ -3,8 +3,6 @@ pragma solidity ^0.8.20;
 
 import "../interfaces/IZkService.sol";
 import "../libraries/DataTypes.sol";
-import "hardhat/console.sol";
-
 contract MockZkService is IZkService {
     // Mapping to store mock verification data
     mapping(bytes32 => DataTypes.ZKVerification) private _verifications;
@@ -109,8 +107,7 @@ contract MockZkService is IZkService {
         verification.status = 0;
         for(uint i = 0; i < utxos.length; i++) {
         }
-        console.log("inputIndex", inputIndex);
-        console.log("signatureIndex", signatureIndex);
+        // Mock verification logic for input and signature indices
 
         return evidence;
     }

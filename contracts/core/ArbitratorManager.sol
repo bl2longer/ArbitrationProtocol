@@ -10,8 +10,6 @@ import "../interfaces/IBNFTInfo.sol";
 import "./ConfigManager.sol";
 import "../libraries/DataTypes.sol";
 import "../libraries/Errors.sol";
-import "hardhat/console.sol";
-
 /**
  * @title ArbitratorManager
  * @notice Contract for managing arbitrators in the BeLayer2 arbitration protocol

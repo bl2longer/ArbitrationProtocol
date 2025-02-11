@@ -13,8 +13,6 @@ import "../libraries/DataTypes.sol";
 import "../libraries/Errors.sol";
 import "../libraries/BTCUtils.sol";
 import "../libraries/BytesLib.sol";
-import "hardhat/console.sol";
-
 /**
  * @title TransactionManager
  * @notice Manages transaction lifecycle in the BeLayer2 arbitration protocol
